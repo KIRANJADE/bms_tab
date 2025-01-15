@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const App = () => {
   return (
     <BrowserRouter>
-    <AppRoutes />
+      <AppRoutes />
     </BrowserRouter>
   )
 }

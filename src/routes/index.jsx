@@ -8,12 +8,12 @@ import Dashboard from "../pages/dashboard/dashboard";
 const AppRoutes = () => {
   return (
     <Routes>
-       <Route path="*" element={<h1>Not found</h1>} />
+      <Route path="*" element={<h1>Not found</h1>} />
       <Route element={<LoginLayout />}>
         <Route path="/" element={<Login />} />
       </Route>
       <Route element={<DashboardLayout />}>
-      <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Route>
     </Routes>
   );
