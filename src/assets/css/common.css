@@ -1,3 +1,20 @@
+/* main.css */
+@import url("variable.css");
+body {
+  font-family: var(--font-family-poppins) !important;
+  margin: 0;
+  /* background-color: #f4f5f8 !important; */
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6,p,a {
+  font-family: var(--font-family-poppins) !important;
+}
+.MuiTypography-root, .MuiTypography-h6,.MuiTypography-h5,.MuiTypography-h4,.MuiTypography-h3,.MuiTypography-h2,.MuiTypography-h1 {
+  font-family: var(--font-family-poppins) !important;
+}
+
 .parentContainer {
     display: flex;
     height: 100vh;
