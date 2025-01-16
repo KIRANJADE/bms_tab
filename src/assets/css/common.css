@@ -1,0 +1,9 @@
+.parentContainer {
+    display: flex;
+    height: 100vh;
+    overflow-x: hidden;
+  }
+  .childHeader {
+    width: 100%;
+   
+  }
