@@ -6,10 +6,35 @@ let BASE_URL = urls.BaseUrl;
 export const createUserLogin = async (params) => {
     try {
         const response = await axios.post(`${BASE_URL}/api/users/login`,params)
-        if(response?.data?.accessToken){
-            localStorage.setItem("user", JSON.stringify(response.data.accessToken));
+        console.log(response, "response")
+        if(response.data.user?.token){
+            localStorage.setItem("authToken", JSON.stringify(response.data.user?.token));
         }
-        localStorage.setItem("isAuthenticated", "true");
+        return response;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export const userList = async () => {
+    try {
+        const authToken = JSON.parse(localStorage.getItem("authToken"));
+        console.log(authToken,"authToken");
+        
+        // Set up headers, including the Authorization token
+        const headers = {
+          "x-access-token": `${authToken}`,
+          "Content-Type": "application/json",
+        };
+        console.log(headers,"headers");
+        
+        const response = await axios.get(`${BASE_URL}/api/users`, {
+            headers,
+          });
+      
+       console.log(response,"ContentContent");
+       
         return response;
     } catch (error) {
         console.log(error);

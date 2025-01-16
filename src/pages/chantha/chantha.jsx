@@ -3,19 +3,23 @@
 import CustomizedTables from '../../components/tableView/table'; // Import the CustomizedTables component
 
 // Parent component data
-const rows = [
-  { name: 'Frozen yoghurt', calories: 159, fat: 6.0, carbs: 24, protein: 4.0 },
-  { name: 'Ice cream sandwich', calories: 237, fat: 9.0, carbs: 37, protein: 4.3 },
-  { name: 'Eclair', calories: 262, fat: 16.0, carbs: 24, protein: 6.0 },
-  { name: 'Cupcake', calories: 305, fat: 3.7, carbs: 67, protein: 4.3 },
-  { name: 'Gingerbread', calories: 356, fat: 16.0, carbs: 49, protein: 3.9 },
+const ordersData = [
+  { id: '#1002', date: '11 Feb, 2024', customer: 'Wade Warren', payment: 'Pending', total: '$20.00', delivery: 'N/A', items: '2 items', fulfillment: 'Unfulfilled' },
+  { id: '#1004', date: '13 Feb, 2024', customer: 'Esther Howard', payment: 'Success', total: '$22.00', delivery: 'N/A', items: '3 items', fulfillment: 'Fulfilled' },
+  { id: '#1007', date: '15 Feb, 2024', customer: 'Jenny Wilson', payment: 'Pending', total: '$25.00', delivery: 'N/A', items: '2 items', fulfillment: 'Unfulfilled' },
+  { id: '#1009', date: '17 Feb, 2024', customer: 'Guy Hawkins', payment: 'Success', total: '$27.00', delivery: 'N/A', items: '5 items', fulfillment: 'Fulfilled' },
+  { id: '#1011', date: '18 Feb, 2024', customer: 'Jacob Jonas', payment: 'Pending', total: '$32.00', delivery: 'N/A', items: '4 items', fulfillment: 'Unfulfilled' },
+  { id: '#1013', date: '21 Feb, 2024', customer: 'Kristin Watson', payment: 'Success', total: '$25.00', delivery: 'N/A', items: '3 items', fulfillment: 'Fulfilled' },
+  { id: '#1015', date: '23 Feb, 2024', customer: 'Albert Flores', payment: 'Pending', total: '$28.00', delivery: 'N/A', items: '2 items', fulfillment: 'Unfulfilled' },
+  { id: '#1018', date: '25 Feb, 2024', customer: 'Eleanor Pena', payment: 'Success', total: '$35.00', delivery: 'N/A', items: '2 items', fulfillment: 'Fulfilled' },
+  { id: '#1019', date: '27 Feb, 2024', customer: 'Theresa Webb', payment: 'Pending', total: '$20.00', delivery: 'N/A', items: '2 items', fulfillment: 'Unfulfilled' },
 ];
 
 const ParentComponent = () => {
   return (
     <div className='p-3'>
       <h1>Data Table</h1>
-      <CustomizedTables rows={rows} /> {/* Pass the rows data as a prop */}
+      <CustomizedTables data={ordersData} /> {/* Pass the rows data as a prop */}
     </div>
   );
 };

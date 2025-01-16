@@ -16,7 +16,9 @@ const AppRoutes = () => {
       <Route element={<DashboardLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/chantha" element={<Chantha />} />
+        
       </Route>
+      
     </Routes>
   );
 };

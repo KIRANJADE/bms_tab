@@ -1,4 +1,5 @@
-import { Card, Avatar, Typography, Box, Divider, IconButton, Menu, MenuItem } from "@mui/material";
+/* eslint-disable react/prop-types */
+import { Card,  Typography, Box, Divider, IconButton, Menu, MenuItem, Avatar } from "@mui/material";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PhoneIcon from "@mui/icons-material/Phone";
 import LinkIcon from "@mui/icons-material/Link";
@@ -6,7 +7,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert"; // Three dots icon
 import React from "react";
 
 // eslint-disable-next-line react/prop-types
-const ActionCard = ({ card = {} }) => {
+const ActionCard = ({users,profile}) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   // Handle the opening of the menu
@@ -19,6 +20,8 @@ const ActionCard = ({ card = {} }) => {
     setAnchorEl(null);
   };
 
+  // eslint-disable-next-line react/prop-types
+  console.log(users, "usersusersusers",profile)
   return (
     <Card
       sx={{
@@ -36,16 +39,16 @@ const ActionCard = ({ card = {} }) => {
       {/* Header Section */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
         <Avatar
-          src={card.image}
-          alt={card.title}
+          src={users?.image}
+          alt={users?.title}
           sx={{ width: 40, height: 40 }} // Reduced avatar size
         />
         <Box>
           <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-            {card.title || "Default Title"}
+            {profile?.firstname }
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            Jan 5, 2021
+           {users?.phoneno}
           </Typography>
         </Box>
       </Box>
@@ -69,21 +72,21 @@ const ActionCard = ({ card = {} }) => {
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <MailOutlineIcon fontSize="small" color="action" />
         <Typography variant="body2" color="text.secondary">
-          {card.email || "example@gmail.com"}
+          {users?.role }
         </Typography>
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <PhoneIcon fontSize="small" color="action" />
         <Typography variant="body2" color="text.secondary">
-          {card.phone || "123-456-7890"}
+          {users?.memberdetails?.memberId }
         </Typography>
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <LinkIcon fontSize="small" color="action" />
         <Typography variant="body2" color="text.secondary">
-          {card.type || "Partnership"}
+          {users?.balance }
         </Typography>
       </Box>
 
@@ -93,8 +96,9 @@ const ActionCard = ({ card = {} }) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleClose}>Delete</MenuItem>
         <MenuItem onClick={handleClose}>Edit</MenuItem>
+
+        <MenuItem onClick={handleClose}>Delete</MenuItem>
       </Menu>
     </Card>
   );

@@ -1,10 +1,12 @@
-import React from 'react';
+/* eslint-disable react/prop-types */
 import { List, ListItemButton, ListItemText } from "@mui/material";
 
 const pages = [
-  { id: "tab1", label: "Page 1", path: "/dashboard" },
-  { id: "tab2", label: "Page 2", path: "/user" },
-  { id: "tab3", label: "Page 3", path: "/chantha" },
+  { id: "tab1", label: "Members", path: "/dashboard" },
+  { id: "tab2", label: "Users", path: "/user" },
+  { id: "tab3", label: "Chantha", path: "/chantha" },
+  { id: "tab3", label: "Events", path: "/events" },
+
 ];
 
 const SideBar = ({ addTab }) => {
