@@ -1,6 +1,8 @@
-// import React from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
+import { createUserLogin } from "../../state/redux/userApi"; // Adjust the import path as needed
 import "./login.less";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const {
@@ -9,9 +11,25 @@ const LoginPage = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Form Submitted:", data);
-    alert("Login successful!");
+  const navigate = useNavigate();
+
+  const onSubmit = async (data) => {
+	console.log(data,"data");
+	
+    try {
+      console.log("Form Submitted:", data);
+      const response = await createUserLogin(data); // Call the API
+	  console.log(response);
+	  
+      if (response) {
+        alert("Login successful!");
+        console.log("API Response:", response);
+		navigate("/dashboard")
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Login failed. Please check your credentials and try again.");
+    }
   };
 
   return (
