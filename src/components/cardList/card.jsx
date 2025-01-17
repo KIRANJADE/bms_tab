@@ -105,7 +105,7 @@ const ActionCard = ({users,profile}) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleClose}>Edit</MenuItem>
+        <MenuItem onClick={() => handleEdit(users?._id)}>Edit</MenuItem>
 
         <MenuItem onClick={() => handleDelete(users?._id)}>Delete</MenuItem>
       </Menu>

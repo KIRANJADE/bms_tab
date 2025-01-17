@@ -7,7 +7,7 @@ const TabsPanel = ({ activeTabs, activeTab, setActiveTab, removeTab }) => {
   };
 
   return (
-    <Box sx={{ backgroundColor: "#f4f4f4", padding: "10px" }}>
+    <Box sx={{ backgroundColor: "#f4f4f4", padding: "10px",position:"sticky",top:"0",zIndex:"999" }}>
       <Tabs
         value={activeTab}
         onChange={handleTabChange}

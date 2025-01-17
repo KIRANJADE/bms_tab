@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 
 const Dashboard = () => {
   const [editingCard, setEditingCard] = React.useState(null);
-  const [isModalOpen, setIsModalOpen] = React.useState(false); // Modal open state
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const users = useSelector((state) => state.auth);
   console.log(users, "users");
@@ -20,24 +20,23 @@ const Dashboard = () => {
   };
 
   const handleEdit = (card) => {
-    // Open a modal or toggle an edit form for the specific card
     setEditingCard(card);
+	setIsModalOpen(true)
   };
 
   const handleDelete = () => {
-    setEditingCard(null); // Close the edit form without saving
+    setEditingCard(null); 
   };
 
   return (
     <>
       {<AddNewModal open={isModalOpen} onClose={handleModalClose} />}
       <div className="p-3">
-        {/* Header Section */}
         <Box
           sx={{
             display: "flex",
-            justifyContent: "flex-end", // Align the button to the right
-            marginBottom: 2, // Add space between button and grid
+            justifyContent: "flex-end", 
+            marginBottom: 2, 
           }}
         >
           <Button

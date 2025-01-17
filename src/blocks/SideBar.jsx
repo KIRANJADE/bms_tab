@@ -14,17 +14,20 @@ const SideBar = ({ addTab }) => {
     <List
       sx={{
         width: 200,
-        backgroundColor: "#333",
-        color: "#fff",
+        backgroundColor: "#ffffff",
+        color: "#000",
         padding: "10px",
         height: "100vh",
         overflowY: "auto",
+        position:"sticky",
+        top:"0",
+        borderRight:"#dbdbdb solid red"
       }}
     >
       {pages.map((page) => (
         <ListItemButton
           key={page.id}
-          sx={{ color: "white", "&:hover": { backgroundColor: "#444" } }}
+          sx={{ color: "black", "&:hover": { backgroundColor: "#444" } }}
           onClick={() => addTab(page.id, page.label, page.path)}
         >
           <ListItemText primary={page.label} />
