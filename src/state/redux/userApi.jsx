@@ -83,7 +83,7 @@ export const deleteUserApi = async (id) => {
         "Content-Type": "application/json",
       };
   
-      const response = await axios.delete(`${BASE_URL}/api/users/${id}`, {
+      const response = await axios.delete(`${BASE_URL}/api/users/${id}`,params, {
         headers,
       });
   

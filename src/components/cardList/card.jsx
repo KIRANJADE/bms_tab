@@ -29,20 +29,18 @@ const ActionCard = ({ users, profile }) => {
     setAnchorEl(null);
   };
 
-  const handleDelete = async (usersId) => {
+  const handleDelete = (usersId) => {
     console.log(usersId, "usersId");
 
-    try {
-      const response = await deleteUserApi(usersId);
-      console.log(response, "myraesponse");
-
-      // if(response){
-      // 	dispatch(deleteUser(response))
-      // }
-    } catch (error) {
-      throw error;
-    }
-  };
+    deleteUserApi(usersId)
+      .then(response => {
+        console.log(response, "myraesponse");
+       
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
 
   return (
     <Card

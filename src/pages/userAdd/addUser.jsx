@@ -51,7 +51,9 @@ const AddNewModal = ({ open, onClose }) => {
     "position":"member"
     }
     const response = await createUserApi(payload);
-    if(response.data.status){
+    console.log("Payload:", response);
+
+    if(response.status === 201){
       dispatch(userCreate(response.data))
     }
     reset(); // Reset form fields after submission
