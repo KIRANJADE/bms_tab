@@ -1,7 +1,7 @@
 import React from "react";
 import ActionCard from "../../components/cardList/card";
 import { Grid, Box, Button } from "@mui/material";
-import AddNewModal from "../membersAdd/addMember";
+import AddNewModal from "../userAdd/addUser";
 
 const cards = [
   {
