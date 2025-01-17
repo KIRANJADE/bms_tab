@@ -57,7 +57,12 @@ const ActionCard = ({users,profile}) => {
           sx={{ width: 40, height: 40 }} 
         />
         <Box>
-          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 600,textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 1,
+    display: '-webkit-box',
+    wordBreak: 'break-all', }}>
             {profile?.firstname }
           </Typography>
           <Typography variant="caption" color="text.secondary">
