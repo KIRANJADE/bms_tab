@@ -1,7 +1,7 @@
 import React from "react";
 import ActionCard from "../../components/cardList/card";
 import {  Box, Button, Grid } from "@mui/material";
-import AddNewModal from "../membersAdd/addMember";
+import AddNewModal from "../userAdd/addUser";
 import { useSelector } from "react-redux";
 
 const Dashboard = () => {
