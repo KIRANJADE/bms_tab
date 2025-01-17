@@ -3,7 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const INTIAL_STATE = {
     loginData : [],
     users : [],
-    addUser : false
+    addUser : false,
+    userDelete : false
 }
 
   export const loginSlice = createSlice({
@@ -20,9 +21,12 @@ const INTIAL_STATE = {
             },
             userCreate : (state,action) => {
                 state.addUser = action.payload
+            },
+            deleteUser : (state,action) => {
+                state.userDelete = action.payload
             }
         }
   })
 
-export const {adminLogin,userListData,userCreate} = loginSlice.actions;
+export const {adminLogin,userListData,userCreate,deleteUser} = loginSlice.actions;
 export default loginSlice.reducer

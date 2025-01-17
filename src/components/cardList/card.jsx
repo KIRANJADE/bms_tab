@@ -1,26 +1,40 @@
-/* eslint-disable react/prop-types */
 import { Card,  Typography, Box, Divider, IconButton, Menu, MenuItem, Avatar } from "@mui/material";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PhoneIcon from "@mui/icons-material/Phone";
 import LinkIcon from "@mui/icons-material/Link";
-import MoreVertIcon from "@mui/icons-material/MoreVert"; // Three dots icon
+import MoreVertIcon from "@mui/icons-material/MoreVert"; 
 import React from "react";
+import { useDispatch } from "react-redux";
+import { deleteUserApi } from "../../state/redux/userApi";
 
-// eslint-disable-next-line react/prop-types
 const ActionCard = ({users,profile}) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  // Handle the opening of the menu
+  const dispatch = useDispatch()
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Handle the closing of the menu
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  // eslint-disable-next-line react/prop-types
+  const handleDelete = async(usersId) => {
+	console.log(usersId,"usersId");
+	
+	try {
+		const response = await deleteUserApi(usersId);
+		console.log(response,"myraesponse");
+		
+		// if(response){
+		// 	dispatch(deleteUser(response))
+		// }
+	} catch (error) {
+		throw error
+	}
+  }
+
   console.log(users, "usersusersusers",profile)
   return (
     <Card
@@ -29,19 +43,18 @@ const ActionCard = ({users,profile}) => {
         maxWidth: 300,
         padding: 2,
         borderRadius: 2,
-        boxShadow: 6, // Increased shadow
+        boxShadow: 6, 
         display: "flex",
         flexDirection: "column",
         gap: 1,
-        position: "relative", // Set relative positioning to place the icon correctly
+        position: "relative", 
       }}
     >
-      {/* Header Section */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
         <Avatar
           src={users?.image}
           alt={users?.title}
-          sx={{ width: 40, height: 40 }} // Reduced avatar size
+          sx={{ width: 40, height: 40 }} 
         />
         <Box>
           <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
@@ -53,22 +66,19 @@ const ActionCard = ({users,profile}) => {
         </Box>
       </Box>
 
-      {/* Menu Icon (3 dots) at the top right corner */}
       <IconButton
         onClick={handleClick}
         sx={{
           position: "absolute",
           top: 8,
-          right: 8, // Position at the top-right corner
+          right: 8, 
         }}
       >
         <MoreVertIcon />
       </IconButton>
 
-      {/* Divider above the email */}
       <Divider sx={{ backgroundColor: "#0b080899" }} />
 
-      {/* Contact Details */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <MailOutlineIcon fontSize="small" color="action" />
         <Typography variant="body2" color="text.secondary">
@@ -90,7 +100,6 @@ const ActionCard = ({users,profile}) => {
         </Typography>
       </Box>
 
-      {/* Menu for actions */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -98,7 +107,7 @@ const ActionCard = ({users,profile}) => {
       >
         <MenuItem onClick={handleClose}>Edit</MenuItem>
 
-        <MenuItem onClick={handleClose}>Delete</MenuItem>
+        <MenuItem onClick={() => handleDelete(users?._id)}>Delete</MenuItem>
       </Menu>
     </Card>
   );
