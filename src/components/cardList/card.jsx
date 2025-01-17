@@ -9,12 +9,15 @@ import {
   Avatar,
 } from "@mui/material";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import PhoneIcon from "@mui/icons-material/Phone";
 import LinkIcon from "@mui/icons-material/Link";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { deleteUserApi } from "../../state/redux/userApi";
+import PersonIcon from '@mui/icons-material/Person';
+import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 
 const ActionCard = ({ users, profile }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -93,21 +96,21 @@ const ActionCard = ({ users, profile }) => {
       <Divider sx={{ backgroundColor: "#0b080899" }} />
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <MailOutlineIcon fontSize="small" color="action" />
+        <PersonIcon fontSize="small" color="action" />
         <Typography variant="body2" color="text.secondary">
           {users?.role}
         </Typography>
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <PhoneIcon fontSize="small" color="action" />
+        <FolderSharedIcon fontSize="small" color="action" />
         <Typography variant="body2" color="text.secondary">
           {users?.memberdetails?.memberId}
         </Typography>
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <LinkIcon fontSize="small" color="action" />
+        <CurrencyRupeeIcon fontSize="small" color="action" />
         <Typography variant="body2" color="text.secondary">
           {users?.balance}
         </Typography>

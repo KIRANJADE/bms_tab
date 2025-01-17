@@ -59,7 +59,7 @@ const SideBar = ({ addTab, isOpen, toggleSidebar }) => {
           {pages.map((page) => (
             <ListItemButton
               key={page.id}
-              sx={{ color: "black", "&:hover": { backgroundColor: "#444", color: "#fff" } }}
+              sx={{ color: "black", "&:hover": { backgroundColor: "#1976d2", color: "#fff", borderRadius: '10px' } }}
               onClick={() => addTab(page.id, page.label, page.path)} // Do not toggle sidebar here
             >
               <ListItemText primary={page.label} />
