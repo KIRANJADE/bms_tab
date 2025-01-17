@@ -28,13 +28,31 @@ const AddNewModal = ({ open, onClose }) => {
 
   const onSubmit = async(data) => {
     console.log("Form Data:", data);
-    try {
-      const response = await createUserApi(data);
-      if(response.data.status){
-        dispatch(userCreate(response.data))
-      }
-    } catch (error) {
-      throw error
+    let payload = {
+
+    "isAdministrator": false,
+    "isChitCommitteeMember":false,
+    "profile": {
+        "firstname": data.firstName,
+        "lastname": data.lastName,
+        "phoneno": data.phoneNumber,
+        "fathername":data.fatherName,
+        "gender": data.gender
+        
+    },
+    "memberdetails": {
+        "memberType": data?.memberType,
+        "joiningDate":"06-12-2024",
+        "userType": data?.type,
+    },
+    "otherdetails": {},
+    "role":"member",
+    "status":"active",
+    "position":"member"
+    }
+    const response = await createUserApi(payload);
+    if(response.data.status){
+      dispatch(userCreate(response.data))
     }
     reset(); // Reset form fields after submission
     onClose(); // Close the modal
@@ -85,14 +103,7 @@ const AddNewModal = ({ open, onClose }) => {
             error={!!errors.fatherName}
             helperText={errors.fatherName?.message}
           />
-          <TextField
-            fullWidth
-            label="Mother's Name"
-            margin="normal"
-            {...register("motherName", { required: "Mother's name is required" })}
-            error={!!errors.motherName}
-            helperText={errors.motherName?.message}
-          />
+         
           <TextField
             fullWidth
             label="Phone Number"
@@ -109,13 +120,13 @@ const AddNewModal = ({ open, onClose }) => {
           />
           <TextField
             fullWidth
-            label="Date of Birth"
+            label="joining Date"
             type="date"
             margin="normal"
             InputLabelProps={{
               shrink: true,
             }}
-            {...register("dob", { required: "Date of birth is required" })}
+            {...register("dob", { required: "Joining date is required" })}
             error={!!errors.dob}
             helperText={errors.dob?.message}
           />
@@ -148,21 +159,7 @@ const AddNewModal = ({ open, onClose }) => {
             )}
           </FormControl>
 
-          {/* Marital Status */}
-          <FormControl margin="normal">
-            <FormLabel>Marital Status</FormLabel>
-            <RadioGroup row {...register("maritalStatus", { required: true })}>
-              <FormControlLabel value="single" control={<Radio />} label="Single" />
-              <FormControlLabel value="married" control={<Radio />} label="Married" />
-              <FormControlLabel value="widowed" control={<Radio />} label="Widowed" />
-
-            </RadioGroup>
-            {errors.maritalStatus && (
-              <Typography variant="caption" color="error">
-                Please select marital status.
-              </Typography>
-            )}
-          </FormControl>
+      
 
           {/* Type */}
           <FormControl margin="normal">
