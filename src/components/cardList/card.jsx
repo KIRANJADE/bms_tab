@@ -1,3 +1,6 @@
+import React from "react";
+import { useDispatch } from "react-redux";
+import { deleteUserApi } from "../../state/redux/userApi";
 import {
   Card,
   Typography,
@@ -8,20 +11,15 @@ import {
   MenuItem,
   Avatar,
 } from "@mui/material";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import FolderSharedIcon from '@mui/icons-material/FolderShared';
-import PhoneIcon from "@mui/icons-material/Phone";
-import LinkIcon from "@mui/icons-material/Link";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import React from "react";
-import { useDispatch } from "react-redux";
-import { deleteUserApi } from "../../state/redux/userApi";
-import PersonIcon from '@mui/icons-material/Person';
-import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
+import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
+import classNames from "classnames";
+import "../../components/cardList/cards.less";
 
 const ActionCard = ({ users, profile }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
-
   const dispatch = useDispatch();
 
   const handleClick = (event) => {
@@ -33,92 +31,67 @@ const ActionCard = ({ users, profile }) => {
   };
 
   const handleDelete = (usersId) => {
-    console.log(usersId, "usersId");
-
     deleteUserApi(usersId)
-      .then(response => {
-        console.log(response, "myraesponse");
-       
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
+      .then((response) => console.log(response))
+      .catch((error) => console.error(error));
+  };
 
   return (
-    <Card
-      sx={{width: "100%",maxWidth: 300,padding: 2,borderRadius: 2, boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
-		border:"1px solid #dbdbdb",
-        display: "flex",
-        flexDirection: "column",
-        gap: 1,
-        position: "relative",
-      }}
-    >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-        <Avatar sizes="small"
-          src={users?.image}
-          alt={users?.title}
-          sx={{ width: 40, height: 40 }}
-        />
+    <Card className={classNames("action-card")}>
+      {/* Header Section */}
+      <Box className="action-card-header">
+        <Box className="d-flex align-items-center">
+          <Avatar
+            src={users?.image}
+            alt={users?.title}
+            className="action-card-avatar"
+          />
+          <Box className="action-card-details">
+            <Typography variant="subtitle1" className="action-card-name">
+              {profile?.firstname}
+            </Typography>
+            <Typography variant="body2" className="action-card-id">
+              {users?.memberdetails?.memberId}
+            </Typography>
+            <Typography variant="caption" className="action-card-phone">
+              {users?.phoneno}
+            </Typography>
+          </Box>
+        </Box>
         <Box>
-          <Typography
-            variant="subtitle1"
-            sx={{
-              fontWeight: 600,
-              textOverflow: "ellipsis",
-              overflow: "hidden",
-              WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 1,
-              display: "-webkit-box",
-              wordBreak: "break-all",
-            }}
-          >
-            {profile?.firstname}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            {users?.phoneno}
-          </Typography>
+          <IconButton onClick={handleClick} className="action-card-options">
+            <MoreVertIcon />
+          </IconButton>
         </Box>
       </Box>
-
-      <IconButton
-        onClick={handleClick}
-        sx={{
-          position: "absolute",
-          top: 8,
-          right: 8,
-        }}
-      >
-        <MoreVertIcon />
-      </IconButton>
-
-      <Divider sx={{ backgroundColor: "#0b080899" }} />
-
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <PersonIcon fontSize="small" color="action" />
-        <Typography variant="body2" color="text.secondary">
-          {users?.role}
+      <Divider />
+      {/* Details Section */}
+      <Box className="action-card-details-item">
+        <AdminPanelSettingsOutlinedIcon fontSize="small" color="action" />
+        <Typography variant="body2" className="action-card-role">
+          {users?.role.charAt(0).toUpperCase() + users?.role.slice(1)}
         </Typography>
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <FolderSharedIcon fontSize="small" color="action" />
-        <Typography variant="body2" color="text.secondary">
-          {users?.memberdetails?.memberId}
+      <Box className="action-card-details-item">
+        <LocalPhoneOutlinedIcon fontSize="small" color="action" />
+        <Typography variant="body2" className="action-card-memberId">
+          {profile?.phoneno}
         </Typography>
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box className="action-card-details-item">
         <CurrencyRupeeIcon fontSize="small" color="action" />
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" className="action-card-balance">
           {users?.balance}
         </Typography>
       </Box>
 
+      {/* Context Menu */}
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        <MenuItem onClick={() => handleEdit(users?._id)}>Edit</MenuItem>
-
+        <MenuItem onClick={() => console.log("Edit action for", users?._id)}>
+          Edit
+        </MenuItem>
         <MenuItem onClick={() => handleDelete(users?._id)}>Delete</MenuItem>
       </Menu>
     </Card>

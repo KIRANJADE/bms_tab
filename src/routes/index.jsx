@@ -4,6 +4,7 @@ import LoginLayout from "../layout/Login";
 import DashboardLayout from "../layout/DashboardLayout";
 import Login from "../pages/login/login";
 import Dashboard from "../pages/dashboard/dashboard";
+import Admin from "../pages/administrator";
 import Chantha from "../pages/chantha/chantha";
 
 const AppRoutes = () => {
@@ -15,10 +16,9 @@ const AppRoutes = () => {
       </Route>
       <Route element={<DashboardLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/chantha" element={<Chantha />} />
-        
       </Route>
-      
     </Routes>
   );
 };

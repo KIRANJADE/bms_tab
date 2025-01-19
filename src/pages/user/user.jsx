@@ -88,11 +88,11 @@ const User = () => {
         <Box
           sx={{
             display: "flex",
-            justifyContent: "flex-end", // Align the button to the right
+            justifyContent: "flex-start", // Align the button to the right
             marginBottom: 2, // Add space between button and grid
           }}
         >
-          <Button
+          <Button style={{backgroundColor:"#4c79f8"}}
             variant="contained"
             color="primary"
             onClick={handleModalOpen} // Open modal on click
