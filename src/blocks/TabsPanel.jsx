@@ -14,7 +14,6 @@ const TabsPanel = ({ activeTabs, activeTab, setActiveTab, removeTab }) => {
         position: "sticky",
         top: "0",
         zIndex: "999",
-        // boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // Subtle shadow for elevated appearance
       }}
     >
       <Tabs
@@ -24,7 +23,7 @@ const TabsPanel = ({ activeTabs, activeTab, setActiveTab, removeTab }) => {
         scrollButtons="auto"
         sx={{
           "& .MuiTabs-flexContainer": {
-            gap: "30px", // Add spacing between tabs
+            gap: "30px",
           },
         }}
       >
@@ -45,13 +44,13 @@ const TabsPanel = ({ activeTabs, activeTab, setActiveTab, removeTab }) => {
                 {tab.label}
                 <span
                   style={{
-                    color: "#F44336", // Red close icon
+                    color: "#F44336",
                     fontWeight: "bold",
                     cursor: "pointer",
                     fontSize: "18px",
                   }}
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent triggering tab change on close
+                    e.stopPropagation();
                     removeTab(tab.id);
                   }}
                 >
@@ -61,22 +60,22 @@ const TabsPanel = ({ activeTabs, activeTab, setActiveTab, removeTab }) => {
             }
             value={tab.id}
             sx={{
-              textTransform: "none", // Prevent uppercase text
-              padding: "6px 16px", // Adjust spacing for a balanced look
-              minWidth: "auto", // Shrink to fit content
-              borderRadius: "6px", // Rounded edges for every tab
-              backgroundColor: "#FFFFFF", // Background color for all tabs
-              border: "1px solid #E0E0E0", // Border around all tabs
-              boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.1)", // Subtle shadow
+              textTransform: "none",
+              padding: "6px 16px",
+              minWidth: "auto",
+              borderRadius: "6px",
+              backgroundColor: "#FFFFFF",
+              border: "1px solid #E0E0E0",
+              boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.1)",
               "&.Mui-selected": {
-                color: "#1976D2", // Blue text for active tab
-                backgroundColor: "#F4F5F8", // Light gray background for active tab
+                color: "#1976D2",
+                backgroundColor: "#F4F5F8",
                 fontWeight: "bold",
-                border: "1px solid #1976D2", // Blue border for active tab
-                boxShadow: "none", // Remove shadow for active tab
+                border: "1px solid #1976D2",
+                boxShadow: "none",
               },
               "&:hover": {
-                backgroundColor: "#F9F9F9", // Slightly darker on hover
+                backgroundColor: "#F9F9F9",
               },
             }}
           />

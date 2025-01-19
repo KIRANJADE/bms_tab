@@ -20,7 +20,6 @@ const LoginPage = () => {
       console.log("Form Submitted:", data);
       const response = await createUserLogin(data); // Call the API
       if (response) {
-        alert("Login successful!");
         navigate("/dashboard");
       }
     } catch (error) {

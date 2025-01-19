@@ -32,7 +32,6 @@ const DashboardLayout = () => {
         "memberdetails.memberType": "a-class",
         "memberdetails.userType": "full",
       });
-      console.log(response?.userDetails);
 
       if (response.status) {
         dispatch(userListData(response.userDetails));
@@ -96,7 +95,7 @@ const DashboardLayout = () => {
           flex: 1,
           marginLeft: isSidebarOpen ? 250 : 50,
           transition: "margin-left 0.3s ease-in-out",
-          overflow: "scroll",
+          overflow: "auto", // Ensure only card container scrolls
         }}
       >
         <TabsPanel
@@ -109,6 +108,7 @@ const DashboardLayout = () => {
         <div style={{ padding: "16px" }}>
           {tabComponents[activeTab] || <Dashboard />}
         </div>
+
         {/* Pagination */}
         <div
           style={{ display: "flex", justifyContent: "center", padding: "16px" }}

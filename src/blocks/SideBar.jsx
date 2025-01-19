@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   List,
   ListItemButton,
@@ -25,74 +25,62 @@ const pages = [
   { id: "tab5", label: "Events", path: "/events", icon: <EventIcon /> },
 ];
 
-const SideBar = ({ addTab, isOpen,toggleSidebar }) => {
+const SideBar = ({ addTab, isOpen, toggleSidebar }) => {
+  const navigate = useNavigate();
 
-	const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
 
-	const handleLogout = () => {
-		localStorage.clear();
-		navigate("/");
-	  };
   return (
-    <>
-      <Box
-        sx={{
-			width: isOpen ? 250 : 50,
-			transition: "width 0.3s ease-in-out",
-			backgroundColor: "#ffffff",
-			color: "#000",
-			height: "100vh",
-			overflowX: "hidden",
-			position: "fixed",
-			top: 0,
-			left: 0,
-			boxShadow: isOpen ? "none" : "none",
-			zIndex: 1500,
-			display: "flex",
-			flexDirection: "column",
-			justifyContent: "space-between",
-			paddingLeft: isOpen ? "10px" : "5px",
-        }}
-      >
-        <Box sx={{ paddingTop: "20px", display: "flex", alignItems: "center", flexDirection: "column" }}>
-          <Box sx={{flex: 1,display: "flex",flexDirection: "row",justifyContent: "space-between",}}>
-            <h2>Logo</h2>
-          </Box>
-			<IconButton
-			  onClick={toggleSidebar}
-			  sx={{position: "fixed",top: 10,left: 10,zIndex: 2000,padding: "5px", }}
-			>
-			  <MenuIcon />
-			</IconButton>
-          <Divider />
-          <Box sx={{ paddingTop: "10px" }}>
-            <List>
-              {pages.map((page) => (
-                <ListItemButton
-                  key={page.id}
-                  sx={{
-                    color: "black",
-                    padding: "10px 0px",
-                    display: isOpen ? "flex" : "none",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    "&:hover": {
-                      backgroundColor: "#DEEFFF",
-                      color: "black",
-                      borderRadius: "10px",
-                    },
-                  }}
-                  onClick={() => addTab(page.id, page.label, page.path)}
-                >
-                  <ListItemIcon>{page.icon}</ListItemIcon>
-                  {isOpen && <ListItemText primary={page.label} />}
-                </ListItemButton>
-              ))}
-            </List>
-          </Box>
+    <Box
+      sx={{
+        width: isOpen ? 250 : 50,
+        transition: "width 0.3s ease-in-out",
+        backgroundColor: "#ffffff",
+        color: "#000",
+        height: "100vh",
+        overflowX: "hidden",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        boxShadow: isOpen ? "none" : "none",
+        zIndex: 1500,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        paddingLeft: isOpen ? "10px" : "5px",
+      }}
+    >
+      <Box sx={{ paddingTop: "20px", display: "flex", alignItems: "center", flexDirection: "column" }}>
+        <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+          <h2 onClick={toggleSidebar}
+          sx={{ position: "fixed", top: 10, left: 10, zIndex: 2000, }} style={{cursor:"pointer"}}>Logo</h2>
         </Box>
+      <Divider />
 
-        <Box sx={{ padding: "0px", textAlign: "center" }}>
+      <List sx={{  padding: "0px", textAlign: "center" }}>
+        {pages.map((page) => (
+          <ListItemButton
+            key={page.id}
+            onClick={() => addTab(page.id, page.label, page.path)}
+            sx={{
+              padding: "12px 20px 10px 0px",
+              "&:hover": {
+                backgroundColor: "#DEEFFF",
+              },
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 32 }}>{page.icon}</ListItemIcon>
+            <ListItemText primary={page.label} sx={{ display: isOpen ? "block" : "none" }} />
+          </ListItemButton>
+        ))}
+      </List>
+      </Box>
+      <Divider />
+
+       <Box sx={{ padding: "0px", textAlign: "center" }}>
           <ListItemButton
             sx={{
               display: isOpen ? "flex" : "none",
@@ -125,8 +113,7 @@ const SideBar = ({ addTab, isOpen,toggleSidebar }) => {
             {isOpen && <ListItemText primary="Logout" />}
           </ListItemButton>
         </Box>
-      </Box>
-    </>
+    </Box>
   );
 };
 
