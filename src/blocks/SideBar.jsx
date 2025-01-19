@@ -56,7 +56,7 @@ const SideBar = ({ addTab, isOpen, toggleSidebar }) => {
       <Box sx={{ paddingTop: "20px", display: "flex", alignItems: "center", flexDirection: "column" }}>
         <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
           <h2 onClick={toggleSidebar}
-          sx={{ position: "fixed", top: 10, left: 10, zIndex: 2000, }} style={{cursor:"pointer"}}>Logo</h2>
+          sx={{ position: "fixed", top: 10, left: 10, zIndex: 2000, }} style={{cursor:"pointer",marginBottom:30}}>Logo</h2>
         </Box>
       <Divider />
 

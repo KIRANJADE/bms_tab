@@ -19,7 +19,7 @@ const DashboardLayout = () => {
   const [error, setError] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(8); // Limit set to 8 cards per page
   const [totalPages, setTotalPages] = useState(0);
 
   const dispatch = useDispatch();

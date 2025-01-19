@@ -67,16 +67,17 @@ const TabsPanel = ({ activeTabs, activeTab, setActiveTab, removeTab }) => {
               backgroundColor: "#FFFFFF",
               border: "1px solid #E0E0E0",
               boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.1)",
-              "&.Mui-selected": {
-                color: "#1976D2",
-                backgroundColor: "#F4F5F8",
-                fontWeight: "bold",
-                border: "1px solid #1976D2",
-                boxShadow: "none",
-              },
-              "&:hover": {
-                backgroundColor: "#F9F9F9",
-              },
+              // "&.Mui-selected": {
+              //   color: "white",
+              //   backgroundColor: "#4c79f8",
+              //   fontWeight: "bold",
+              //   border: "none",
+              //   boxShadow: "none",
+              //   borderBottom:"none"
+              // },
+              // "&:hover": {
+              //   backgroundColor: "#4c79f8",
+              // },
             }}
           />
         ))}
