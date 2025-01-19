@@ -16,7 +16,7 @@ const INTIAL_STATE = {
             },
             userListData : (state,action) => {
                 state.users = action.payload
-                console.log(action.payload,"action.payload",state.users?.userDetails);
+                console.log(action.payload,"action.payload",state.users);
                 
             },
             userCreate : (state,action) => {

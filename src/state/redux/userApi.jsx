@@ -17,30 +17,25 @@ export const createUserLogin = async (params) => {
     }
 }
 
-export const userList = async () => {
-    try {
-        const authToken = JSON.parse(localStorage.getItem("authToken"));
-        console.log(authToken,"authToken");
-        
-        // Set up headers, including the Authorization token
-        const headers = {
+export const userList = async (page = 1, limit = 10, payload = {}) => {
+  try {
+      const authToken = JSON.parse(localStorage.getItem("authToken"));
+
+      const headers = {
           "x-access-token": `${authToken}`,
           "Content-Type": "application/json",
-        };
-        console.log(headers,"headers");
-        
-        const response = await axios.get(`${BASE_URL}/api/users`, {
-            headers,
-          });
-      
-       console.log(response,"ContentContent");
-       
-        return response;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-}
+      };
+
+      const queryParams = new URLSearchParams({ page, limit, ...payload });
+
+      const response = await axios.get(`${BASE_URL}/api/users?${queryParams}`, { headers });
+      return response.data;
+  } catch (error) {
+      console.error("Error fetching user list:", error);
+      throw error;
+  }
+};
+
 
 export const createUserApi = async(params) => {
     try {

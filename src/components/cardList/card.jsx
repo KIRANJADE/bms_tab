@@ -64,7 +64,7 @@ const ActionCard = ({ users, profile }) => {
           </IconButton>
         </Box>
       </Box>
-      <Divider />
+      {/* <Divider sx={{borderColor:"2px solid red"}}/> */}
       {/* Details Section */}
       <Box className="action-card-details-item">
         <AdminPanelSettingsOutlinedIcon fontSize="small" color="action" />

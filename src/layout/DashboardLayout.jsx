@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import SideBar from "../blocks/SideBar";
-import TabsPanel from "../blocks/TabsPanel"; 
+import TabsPanel from "../blocks/TabsPanel";
 import Dashboard from "../pages/dashboard/dashboard";
 import Admin from "../pages/administrator";
 import User from "../pages/user/user";
@@ -10,32 +10,48 @@ import "../assets/css/common.css";
 import { userList } from "../state/redux/userApi";
 import { useDispatch } from "react-redux";
 import { userListData } from "../state/redux/authSlice";
+import { Pagination, Stack } from "@mui/material";
 
 const DashboardLayout = () => {
   const [activeTabs, setActiveTabs] = useState([]);
-  const [activeTab, setActiveTab] = useState("tab1"); 
+  const [activeTab, setActiveTab] = useState("tab1");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
 
   const dispatch = useDispatch();
 
   const fetchUserList = async () => {
+    setLoading(true);
     try {
-      const response = await userList();
+      const response = await userList(page, limit, {
+        status: "active",
+        "memberdetails.memberType": "a-class",
+        "memberdetails.userType": "full",
+      });
+      console.log(response?.userDetails);
+
       if (response.status) {
-        dispatch(userListData(response.data));
+        dispatch(userListData(response.userDetails));
+        setTotalPages(response.totalPages);
       }
-      setLoading(false);
     } catch (error) {
       setError("Failed to fetch user data");
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchUserList();
-  }, []);
+  }, [page, limit]);
+
+  const handlePageChange = (event, newPage) => {
+    setPage(newPage);
+  };
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
@@ -46,7 +62,7 @@ const DashboardLayout = () => {
     tab2: <Admin />,
     tab3: <User />,
     tab4: <Chantha />,
-    tab5: <Events />, 
+    tab5: <Events />,
   };
 
   const addTab = (tabId, label, path) => {
@@ -80,7 +96,7 @@ const DashboardLayout = () => {
           flex: 1,
           marginLeft: isSidebarOpen ? 250 : 50,
           transition: "margin-left 0.3s ease-in-out",
-          overflow: "hidden",
+          overflow: "scroll",
         }}
       >
         <TabsPanel
@@ -92,6 +108,19 @@ const DashboardLayout = () => {
 
         <div style={{ padding: "16px" }}>
           {tabComponents[activeTab] || <Dashboard />}
+        </div>
+        {/* Pagination */}
+        <div
+          style={{ display: "flex", justifyContent: "center", padding: "16px" }}
+        >
+          <Stack spacing={2}>
+            <Pagination
+              count={totalPages} // Total number of pages
+              page={page} // Current page
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Stack>
         </div>
       </div>
     </div>

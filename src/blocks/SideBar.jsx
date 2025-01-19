@@ -15,6 +15,7 @@ import EventIcon from "@mui/icons-material/Event";
 import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
+import { useNavigate } from "react-router-dom";
 
 const pages = [
   { id: "tab1", label: "Administrators", path: "/admin", icon: <SupervisorAccountIcon /> },
@@ -25,57 +26,44 @@ const pages = [
 ];
 
 const SideBar = ({ addTab, isOpen,toggleSidebar }) => {
-//   const toggleSidebar = () => {
-//     setIsOpen(!isOpen);
-//   };
 
+	const navigate = useNavigate();
 
-
+	const handleLogout = () => {
+		localStorage.clear();
+		navigate("/");
+	  };
   return (
     <>
-      <IconButton
-        onClick={toggleSidebar}
-        sx={{
-          position: "fixed",
-          top: 10,
-          left: 10,
-          zIndex: 2000,
-          padding: "5px",
-        }}
-      >
-        <MenuIcon />
-      </IconButton>
-
       <Box
         sx={{
-          width: isOpen ? 250 : 50,
-          transition: "width 0.3s ease-in-out",
-          backgroundColor: "#ffffff",
-          color: "#000",
-          height: "100vh",
-          overflowX: "hidden",
-          position: "fixed",
-          top: 0,
-          left: 0,
-          boxShadow: isOpen ? "none" : "none",
-          zIndex: 1500,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          paddingLeft: isOpen ? "10px" : "5px",
+			width: isOpen ? 250 : 50,
+			transition: "width 0.3s ease-in-out",
+			backgroundColor: "#ffffff",
+			color: "#000",
+			height: "100vh",
+			overflowX: "hidden",
+			position: "fixed",
+			top: 0,
+			left: 0,
+			boxShadow: isOpen ? "none" : "none",
+			zIndex: 1500,
+			display: "flex",
+			flexDirection: "column",
+			justifyContent: "space-between",
+			paddingLeft: isOpen ? "10px" : "5px",
         }}
       >
         <Box sx={{ paddingTop: "20px", display: "flex", alignItems: "center", flexDirection: "column" }}>
-          <Box
-            sx={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
+          <Box sx={{flex: 1,display: "flex",flexDirection: "row",justifyContent: "space-between",}}>
             <h2>Logo</h2>
           </Box>
+			<IconButton
+			  onClick={toggleSidebar}
+			  sx={{position: "fixed",top: 10,left: 10,zIndex: 2000,padding: "5px", }}
+			>
+			  <MenuIcon />
+			</IconButton>
           <Divider />
           <Box sx={{ paddingTop: "10px" }}>
             <List>
@@ -129,7 +117,7 @@ const SideBar = ({ addTab, isOpen,toggleSidebar }) => {
                 borderRadius: "10px",
               },
             }}
-            onClick={() => alert("Logged out!")}
+            onClick={() => handleLogout()}
           >
             <ListItemIcon>
               <LogoutIcon style={{ color: "red" }} />
