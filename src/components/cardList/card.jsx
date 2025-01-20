@@ -17,6 +17,7 @@ import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import classNames from "classnames";
 import "../../components/cardList/cards.less";
+import { deleteUser } from "../../state/redux/authSlice";
 
 const ActionCard = ({ users, profile }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -30,10 +31,15 @@ const ActionCard = ({ users, profile }) => {
     setAnchorEl(null);
   };
 
-  const handleDelete = (usersId) => {
-    deleteUserApi(usersId)
-      .then((response) => console.log(response))
-      .catch((error) => console.error(error));
+  const handleDelete = async(usersId) => {
+    console.log(usersId,"usersId");
+    try {
+      const response = await deleteUserApi(usersId);
+      console.log(response);
+      dispatch(deleteUser(response))
+    } catch (error) {
+        throw error
+    }
   };
 
   return (
