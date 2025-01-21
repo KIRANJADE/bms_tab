@@ -89,11 +89,9 @@ const DashboardLayout = () => {
         isOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}
       />
-
-      <div
-        style={{
+      <div style={{
           flex: 1,
-          marginLeft: isSidebarOpen ? 250 : 50,
+          marginLeft: isSidebarOpen ? 0 : 50,
           transition: "margin-left 0.3s ease-in-out",
           overflow: "auto", // Ensure only card container scrolls
         }}
@@ -111,7 +109,7 @@ const DashboardLayout = () => {
 
         {/* Pagination */}
         <div
-          style={{ display: "flex", justifyContent: "center", padding: "16px" }}
+          style={{ display: "flex", justifyContent: "center" }}
         >
           <Stack spacing={2}>
             <Pagination
