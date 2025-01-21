@@ -1,20 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import {
+  Drawer,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   Divider,
   IconButton,
+  useMediaQuery,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import PersonIcon from "@mui/icons-material/Person";
 import HomeIcon from "@mui/icons-material/Home";
 import EventIcon from "@mui/icons-material/Event";
 import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
-import { useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
+import { useNavigate } from "react-router-dom";
 
 const pages = [
   {
@@ -35,6 +38,9 @@ const pages = [
 ];
 
 const SideBar = ({ addTab }) => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -42,103 +48,113 @@ const SideBar = ({ addTab }) => {
     navigate("/");
   };
 
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
+
+  const drawerContent = (
+    <>
+      <div>
+        <Divider />
+        <List>
+          {pages.map((page) => (
+            <ListItemButton
+              key={page.id}
+              onClick={() => {
+                addTab(page.id, page.label, page.path);
+                if (isSmallScreen) setIsDrawerOpen(false);
+              }}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "#DEEFFF",
+                },
+              }}
+            >
+              <ListItemIcon>{page.icon}</ListItemIcon>
+              <ListItemText primary={page.label} />
+            </ListItemButton>
+          ))}
+        </List>
+        <Divider />
+      </div>
+
+      {/* Footer Section */}
+      <div>
+        <List>
+          <ListItemButton
+            onClick={() => {
+              navigate("/profile");
+              if (isSmallScreen) setIsDrawerOpen(false);
+            }}
+            sx={{
+              "&:hover": {
+                backgroundColor: "#f0f0f0",
+                borderRadius: "10px",
+              },
+            }}
+          >
+            <ListItemIcon>
+              <PersonIcon />
+            </ListItemIcon>
+            <ListItemText primary="Profile" />
+          </ListItemButton>
+          <ListItemButton
+            onClick={handleLogout}
+            sx={{
+              color: "red",
+              "&:hover": {
+                backgroundColor: "#f0f0f0",
+                borderRadius: "10px",
+              },
+            }}
+          >
+            <ListItemIcon>
+              <LogoutIcon style={{ color: "red" }} />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </ListItemButton>
+        </List>
+      </div>
+    </>
+  );
+
   return (
     <>
-      <div className="d-flex justify-content-between flex-row">
-        <h4>Logo</h4>
+      {/* Menu Icon for Small Screens */}
+      {isSmallScreen && (
         <IconButton
-          data-bs-toggle="offcanvas"
-          data-bs-target="#offcanvasScrolling"
-          aria-controls="offcanvasScrolling"
           color="primary"
-          onClick={() =>
-            document
-              .getElementById("offcanvasScrolling")
-              .classList.toggle("show")
-          }
+          onClick={toggleDrawer}
           style={{ position: "fixed", top: 10, left: 10 }}
         >
           <MenuIcon />
         </IconButton>
-      </div>
+      )}
 
-      <div
-        style={{ width: 250 }}
-        className="offcanvas offcanvas-start"
-        data-bs-scroll="true"
-        data-bs-backdrop="false"
-        tabindex="-1"
-        id="offcanvasScrolling"
-        aria-labelledby="offcanvasScrollingLabel"
+      {/* Sidebar Drawer */}
+      <Drawer
+        variant={isSmallScreen ? "temporary" : "permanent"}
+        open={isSmallScreen ? isDrawerOpen : true}
+        onClose={toggleDrawer}
+        sx={{
+          "& .MuiDrawer-paper": {
+            width: 250,
+          },
+        }}
       >
-        <div className="offcanvas-header">
-          <h5 className="offcanvas-title" id="offcanvasScrollingLabel">
-            LOGO
-          </h5>
-          <button
-            type="button"
-            className="btn-close text-reset"
-            data-bs-dismiss="offcanvas"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div className="offcanvas-body d-flex flex-column justify-content-between">
-          <div>
-            <Divider />
-            <List>
-              {pages.map((page) => (
-                <ListItemButton
-                  key={page.id}
-                  onClick={() => addTab(page.id, page.label, page.path)}
-                  sx={{
-                    "&:hover": {
-                      backgroundColor: "#DEEFFF",
-                    },
-                  }}
-                >
-                  <ListItemIcon>{page.icon}</ListItemIcon>
-                  <ListItemText primary={page.label} />
-                </ListItemButton>
-              ))}
-            </List>
-            <Divider />
-          </div>
+        <div style={{ padding: 16 }}>LOGO</div>
+        {drawerContent}
+      </Drawer>
 
-          {/* Footer Section */}
-          <div>
-            <List>
-              <ListItemButton
-                onClick={() => navigate("/profile")}
-                sx={{
-                  "&:hover": {
-                    backgroundColor: "#f0f0f0",
-                    borderRadius: "10px",
-                  },
-                }}
-              >
-                <ListItemIcon>
-                  <PersonIcon />
-                </ListItemIcon>
-                <ListItemText primary="Profile" />
-              </ListItemButton>
-              <ListItemButton
-                onClick={handleLogout}
-                sx={{
-                  color: "red",
-                  "&:hover": {
-                    backgroundColor: "#f0f0f0",
-                    borderRadius: "10px",
-                  },
-                }}
-              >
-                <ListItemIcon>
-                  <LogoutIcon style={{ color: "red" }} />
-                </ListItemIcon>
-                <ListItemText primary="Logout" />
-              </ListItemButton>
-            </List>
-          </div>
-        </div>
+      {/* Main Content Adjust */}
+      <div
+        style={{
+          marginLeft: isSmallScreen ? 0 : 250,
+          padding: 16,
+          transition: "margin-left 0.3s",
+        }}
+      >
+        {/* Main Content Goes Here */}
       </div>
     </>
   );
