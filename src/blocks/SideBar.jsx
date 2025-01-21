@@ -20,20 +20,10 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
 
 const pages = [
-  {
-    id: "tab1",
-    label: "Administrators",
-    path: "/admin",
-    icon: <SupervisorAccountIcon />,
-  },
+  {id: "tab1",label: "Administrators", path: "/admin",icon: <SupervisorAccountIcon />,},
   { id: "tab2", label: "Users", path: "/dashboard", icon: <PersonIcon /> },
   { id: "tab3", label: "Committee Meeting", path: "/user", icon: <HomeIcon /> },
-  {
-    id: "tab4",
-    label: "Chantha",
-    path: "/chantha",
-    icon: <PaidOutlinedIcon />,
-  },
+  { id: "tab4",label: "Chantha",path: "/chantha",icon: <PaidOutlinedIcon />,},
   { id: "tab5", label: "Events", path: "/events", icon: <EventIcon /> },
 ];
 

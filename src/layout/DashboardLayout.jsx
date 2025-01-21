@@ -57,8 +57,8 @@ const DashboardLayout = () => {
   };
 
   const tabComponents = {
-    tab1: <Dashboard />,
-    tab2: <Admin />,
+    tab1: <Admin />,
+    tab2: <Dashboard />,
     tab3: <User />,
     tab4: <Chantha />,
     tab5: <Events />,
@@ -106,9 +106,6 @@ const DashboardLayout = () => {
         <div style={{ padding: "16px" }}>
           {tabComponents[activeTab] || <Dashboard />}
         </div>
-
-      
-        
       </div>
     </div>
   );

@@ -109,7 +109,7 @@ const Dashboard = () => {
         {/* Load More Button */}
         {hasMore && (
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
-            <Button
+            <Button style={{backgroundColor:"#4c79f8",color:"white"}}
               variant="outlined"
               onClick={handleLoadMore}
               disabled={loading} // Disable button while loading

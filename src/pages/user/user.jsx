@@ -73,37 +73,33 @@ const User = () => {
   };
 
   const handleEdit = (card) => {
-    // Open a modal or toggle an edit form for the specific card
     setEditingCard(card);
   };
 
   const handleDelete = () => {
-    setEditingCard(null); // Close the edit form without saving
+    setEditingCard(null); 
   };
   return (
     <>
       {<AddNewModal open={isModalOpen} onClose={handleModalClose} />}
-      <div className="p-3">
-        {/* Header Section */}
+      <div >
         <Box
           sx={{
             display: "flex",
-            justifyContent: "flex-start", // Align the button to the right
-            marginBottom: 2, // Add space between button and grid
+            justifyContent: "flex-start", 
+            marginBottom: 2, 
           }}
         >
           <Button style={{backgroundColor:"#4c79f8"}}
             variant="contained"
             color="primary"
-            onClick={handleModalOpen} // Open modal on click
+            onClick={handleModalOpen} 
           >
             + Add New
           </Button>
         </Box>
 
-        {/* Grid Section */}
         <Grid container spacing={1}>
-          {/* Existing Cards */}
           {cards.map((card, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
               <ActionCard

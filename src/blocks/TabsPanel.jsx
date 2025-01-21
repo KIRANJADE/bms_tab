@@ -10,7 +10,7 @@ const TabsPanel = ({ activeTabs, activeTab, setActiveTab, removeTab }) => {
     <Box
       sx={{
         backgroundColor: "#F4F5F8",
-        padding: "30px 30px 5px",
+        padding: "30px 15px 5px",
         position: "sticky",
         top: "0",
         zIndex: "999",
