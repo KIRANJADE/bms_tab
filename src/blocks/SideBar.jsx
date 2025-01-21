@@ -41,6 +41,7 @@ const SideBar = ({ addTab }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(null); // Track active tab
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -53,7 +54,8 @@ const SideBar = ({ addTab }) => {
   };
 
   const drawerContent = (
-    <>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      {/* Main Menu Section */}
       <div>
         <Divider />
         <List>
@@ -61,10 +63,12 @@ const SideBar = ({ addTab }) => {
             <ListItemButton
               key={page.id}
               onClick={() => {
+                setActiveTab(page.id);
                 addTab(page.id, page.label, page.path);
                 if (isSmallScreen) setIsDrawerOpen(false);
               }}
               sx={{
+                backgroundColor: activeTab === page.id ? "#DEEFFF" : "inherit",
                 "&:hover": {
                   backgroundColor: "#DEEFFF",
                 },
@@ -78,8 +82,8 @@ const SideBar = ({ addTab }) => {
         <Divider />
       </div>
 
-      {/* Footer Section */}
-      <div>
+      {/* Footer Section (Profile and Logout) */}
+      <div style={{ marginTop: "auto" }}>
         <List>
           <ListItemButton
             onClick={() => {
@@ -115,7 +119,7 @@ const SideBar = ({ addTab }) => {
           </ListItemButton>
         </List>
       </div>
-    </>
+    </div>
   );
 
   return (
