@@ -93,7 +93,7 @@ const DashboardLayout = () => {
           flex: 1,
           marginLeft: isSidebarOpen ? 0 : 50,
           transition: "margin-left 0.3s ease-in-out",
-          overflow: "auto", // Ensure only card container scrolls
+        //   overflow: "auto", // Ensure only card container scrolls
         }}
       >
         <TabsPanel

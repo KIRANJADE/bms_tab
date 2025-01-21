@@ -66,7 +66,7 @@ const Dashboard = () => {
   return (
     <>
       <AddNewModal open={isModalOpen} onClose={handleModalClose} />
-      <div className="p-3">
+      <div className="">
         <Box
           sx={{
             display: "flex",
@@ -85,7 +85,7 @@ const Dashboard = () => {
           </Button>
         </Box>
 
-        <Grid container spacing={1}>
+        <Grid container spacing={1} style={{height:460,overflowY:"scroll"}}>
           {users.map((user, index) => (
             <Grid className="mb-3" item xs={12} sm={6} md={3} key={index}>
               <ActionCard
