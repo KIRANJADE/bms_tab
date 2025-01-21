@@ -116,13 +116,13 @@ const SideBar = ({ addTab }) => {
     <>
       {/* Menu Icon for Small Screens */}
       {isSmallScreen && (
-        <IconButton
-          color="primary"
-          onClick={toggleDrawer}
-          style={{ position: "fixed", top: 10, left: 10 }}
-        >
-          <MenuIcon />
-        </IconButton>
+			<IconButton
+			color="primary"
+			onClick={toggleDrawer}
+			style={{ position: "fixed", top: 10, left: 10 }}
+			>
+			<MenuIcon />
+			</IconButton>
       )}
 
       {/* Sidebar Drawer */}
@@ -144,7 +144,7 @@ const SideBar = ({ addTab }) => {
       <div
         style={{
           marginLeft: isSmallScreen ? 0 : 250,
-          padding: 16,
+          padding: 20,
           transition: "margin-left 0.3s",
         }}
       >
