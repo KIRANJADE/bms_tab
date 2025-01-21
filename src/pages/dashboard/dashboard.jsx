@@ -2,18 +2,50 @@ import React, { useState } from "react";
 import ActionCard from "../../components/cardList/card";
 import { Box, Button, Grid } from "@mui/material";
 import AddNewModal from "../userAdd/addUser";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { userList } from "../../state/redux/userApi";
+import { userListData } from "../../state/redux/authSlice";
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 8;
 
 const Dashboard = () => {
   const [editingCard, setEditingCard] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1); // Tracks the current page for API
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [hasMore, setHasMore] = useState(true); // To track if more data is available
 
-  const users = useSelector((state) => state.auth);
-  console.log(users?.users,"usereresr");
-  
+  const users = useSelector((state) => state.auth?.users || []); // Get users from Redux state
+  const dispatch = useDispatch();
+
+  const fetchUserList = async (currentPage) => {
+    setLoading(true);
+    setError(""); // Reset error state before fetching
+    try {
+      const response = await userList(currentPage, ITEMS_PER_PAGE, {
+        status: "active",
+        "memberdetails.memberType": "a-class",
+        "memberdetails.userType": "full",
+      });
+
+      if (response.status) {
+        // Add fetched users to the Redux store
+        dispatch(userListData([...users, ...response.userDetails]));
+
+        // Check if more pages are available
+        if (currentPage >= response.totalPages) {
+          setHasMore(false); // No more data to load
+        }
+      } else {
+        setError("Failed to fetch user data.");
+      }
+    } catch (error) {
+      setError("Failed to fetch user data.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => setIsModalOpen(false);
@@ -25,25 +57,36 @@ const Dashboard = () => {
 
   const handleDelete = () => setEditingCard(null);
 
-  const paginatedUsers = users?.users?.slice(0, currentPage * ITEMS_PER_PAGE);
-  console.log(paginatedUsers,"ppppp");
-  
   const handleLoadMore = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
+    const nextPage = page + 1; // Calculate the next page
+    setPage(nextPage); // Update the state to track the current page
+    fetchUserList(nextPage); // Fetch data for the next page
   };
 
   return (
     <>
       <AddNewModal open={isModalOpen} onClose={handleModalClose} />
       <div className="p-3">
-        <Box sx={{ display: "flex", justifyContent: "flex-start", marginBottom: 3,marginTop:0 }}>
-          <Button style={{backgroundColor:"#4C79F8",width:'180px'}} variant="contained" color="primary" onClick={handleModalOpen}>
-             Add User
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            marginBottom: 3,
+            marginTop: 0,
+          }}
+        >
+          <Button
+            style={{ backgroundColor: "#4C79F8", width: "180px" }}
+            variant="contained"
+            color="primary"
+            onClick={handleModalOpen}
+          >
+            Add User
           </Button>
         </Box>
 
-        <Grid container spacing={1} >
-          {paginatedUsers.map((user, index) => (
+        <Grid container spacing={1}>
+          {users.map((user, index) => (
             <Grid className="mb-3" item xs={12} sm={6} md={3} key={index}>
               <ActionCard
                 users={user}
@@ -56,10 +99,22 @@ const Dashboard = () => {
           ))}
         </Grid>
 
-        {paginatedUsers?.length < users?.users?.userDetails?.length && (
+        {/* Display error if fetch fails */}
+        {error && (
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
-            <Button variant="outlined" onClick={handleLoadMore}>
-              Load More
+            <p style={{ color: "red" }}>{error}</p>
+          </Box>
+        )}
+
+        {/* Load More Button */}
+        {hasMore && (
+          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={handleLoadMore}
+              disabled={loading} // Disable button while loading
+            >
+              {loading ? "Loading..." : "Load More"}
             </Button>
           </Box>
         )}

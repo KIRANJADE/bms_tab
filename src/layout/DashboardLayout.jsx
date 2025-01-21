@@ -46,7 +46,7 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     fetchUserList();
-  }, [page, limit]);
+  }, []);
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
@@ -107,19 +107,8 @@ const DashboardLayout = () => {
           {tabComponents[activeTab] || <Dashboard />}
         </div>
 
-        {/* Pagination */}
-        <div
-          style={{ display: "flex", justifyContent: "center" }}
-        >
-          <Stack spacing={2}>
-            <Pagination
-              count={totalPages} // Total number of pages
-              page={page} // Current page
-              onChange={handlePageChange}
-              color="primary"
-            />
-          </Stack>
-        </div>
+      
+        
       </div>
     </div>
   );
