@@ -59,9 +59,12 @@ const SideBar = ({ addTab }) => {
               }}
               sx={{
                 backgroundColor: activeTab === page.id ? "#DEEFFF" : "inherit",
+                borderRadius: activeTab === page.id ? "10px" : "0",
                 "&:hover": {
                   backgroundColor: "#DEEFFF",
+                  borderRadius: "10px",
                 },
+                margin: "4px 8px", // Add margin for better spacing
               }}
             >
               <ListItemIcon>{page.icon}</ListItemIcon>
@@ -85,6 +88,7 @@ const SideBar = ({ addTab }) => {
                 backgroundColor: "#f0f0f0",
                 borderRadius: "10px",
               },
+              margin: "4px 8px",
             }}
           >
             <ListItemIcon>
@@ -100,6 +104,7 @@ const SideBar = ({ addTab }) => {
                 backgroundColor: "#f0f0f0",
                 borderRadius: "10px",
               },
+              margin: "4px 8px",
             }}
           >
             <ListItemIcon>
