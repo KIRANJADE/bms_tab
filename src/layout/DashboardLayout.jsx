@@ -46,7 +46,7 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     fetchUserList();
-  }, []);
+  }, [page, limit]);
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);

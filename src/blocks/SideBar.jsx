@@ -1,5 +1,12 @@
 import React from "react";
-import { List, ListItemButton, ListItemIcon, ListItemText, Divider, IconButton } from "@mui/material";
+import {
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  IconButton,
+} from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import HomeIcon from "@mui/icons-material/Home";
 import EventIcon from "@mui/icons-material/Event";
@@ -10,10 +17,20 @@ import { useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 
 const pages = [
-  { id: "tab1", label: "Administrators", path: "/admin", icon: <SupervisorAccountIcon />, },
+  {
+    id: "tab1",
+    label: "Administrators",
+    path: "/admin",
+    icon: <SupervisorAccountIcon />,
+  },
   { id: "tab2", label: "Users", path: "/dashboard", icon: <PersonIcon /> },
   { id: "tab3", label: "Committee Meeting", path: "/user", icon: <HomeIcon /> },
-  { id: "tab4", label: "Chantha", path: "/chantha", icon: <PaidOutlinedIcon />, },
+  {
+    id: "tab4",
+    label: "Chantha",
+    path: "/chantha",
+    icon: <PaidOutlinedIcon />,
+  },
   { id: "tab5", label: "Events", path: "/events", icon: <EventIcon /> },
 ];
 
@@ -34,8 +51,13 @@ const SideBar = ({ addTab }) => {
           data-bs-target="#offcanvasScrolling"
           aria-controls="offcanvasScrolling"
           color="primary"
-          onClick={() => document.getElementById("offcanvasScrolling").classList.toggle("show")}
-          style={{ position: "fixed", top: 10, left: 10 }}>
+          onClick={() =>
+            document
+              .getElementById("offcanvasScrolling")
+              .classList.toggle("show")
+          }
+          style={{ position: "fixed", top: 10, left: 10 }}
+        >
           <MenuIcon />
         </IconButton>
       </div>
@@ -60,57 +82,62 @@ const SideBar = ({ addTab }) => {
             aria-label="Close"
           ></button>
         </div>
-        <div className="offcanvas-body">
-          <Divider />
-          <List>
-            {pages.map((page) => (
+        <div className="offcanvas-body d-flex flex-column justify-content-between">
+          <div>
+            <Divider />
+            <List>
+              {pages.map((page) => (
+                <ListItemButton
+                  key={page.id}
+                  onClick={() => addTab(page.id, page.label, page.path)}
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "#DEEFFF",
+                    },
+                  }}
+                >
+                  <ListItemIcon>{page.icon}</ListItemIcon>
+                  <ListItemText primary={page.label} />
+                </ListItemButton>
+              ))}
+            </List>
+            <Divider />
+          </div>
+
+          {/* Footer Section */}
+          <div>
+            <List>
               <ListItemButton
-                key={page.id}
-                onClick={() => addTab(page.id, page.label, page.path)}
+                onClick={() => navigate("/profile")}
                 sx={{
                   "&:hover": {
-                    backgroundColor: "#DEEFFF",
+                    backgroundColor: "#f0f0f0",
+                    borderRadius: "10px",
                   },
                 }}
               >
-                <ListItemIcon>{page.icon}</ListItemIcon>
-                <ListItemText primary={page.label} />
+                <ListItemIcon>
+                  <PersonIcon />
+                </ListItemIcon>
+                <ListItemText primary="Profile" />
               </ListItemButton>
-            ))}
-          </List>
-          <Divider />
-          
-          <List>
-            <ListItemButton
-              onClick={() => navigate("/profile")}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "#f0f0f0",
-                  borderRadius: "10px",
-                },
-              }}
-            >
-              <ListItemIcon>
-                <PersonIcon />
-              </ListItemIcon>
-              <ListItemText primary="Profile" />
-            </ListItemButton>
-            <ListItemButton
-              onClick={handleLogout}
-              sx={{
-                color: "red",
-                "&:hover": {
-                  backgroundColor: "#f0f0f0",
-                  borderRadius: "10px",
-                },
-              }}
-            >
-              <ListItemIcon>
-                <LogoutIcon style={{ color: "red" }} />
-              </ListItemIcon>
-              <ListItemText primary="Logout" />
-            </ListItemButton>
-          </List>
+              <ListItemButton
+                onClick={handleLogout}
+                sx={{
+                  color: "red",
+                  "&:hover": {
+                    backgroundColor: "#f0f0f0",
+                    borderRadius: "10px",
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <LogoutIcon style={{ color: "red" }} />
+                </ListItemIcon>
+                <ListItemText primary="Logout" />
+              </ListItemButton>
+            </List>
+          </div>
         </div>
       </div>
     </>
