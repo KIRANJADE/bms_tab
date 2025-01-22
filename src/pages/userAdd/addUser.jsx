@@ -220,6 +220,11 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     onClose();
   };
 
+  const onCloseReset = () => {
+    reset();
+    onClose();
+  }
+
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="add-new-modal-title">
       <Box
@@ -654,7 +659,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
 
           {/* Buttons */}
           <Box mt={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button onClick={onClose} sx={{ marginRight: 1 }}>
+            <Button onClick={() => onCloseReset()} sx={{ marginRight: 1 }}>
               Cancel
             </Button>
             {cardsUserId ? (
