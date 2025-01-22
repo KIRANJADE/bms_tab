@@ -206,7 +206,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       remark: data?.remarks,
     };
     if (userById && isEditUsers) {
-      const response = await editUserApi(payload);
+      const response = await editUserApi(cardsUserId,payload);
       console.log("Payload:", response);
     } else {
       const response = await createUserApi(payload);

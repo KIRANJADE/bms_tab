@@ -57,14 +57,14 @@ export const createUserApi = async (params) => {
   }
 };
 
-export const editUserApi = async (id) => {
+export const editUserApi = async (id,requestParams) => {
   try {
     const authToken = JSON.parse(localStorage.getItem("authToken"));
     const headers = {
       "x-access-token": `${authToken}`,
       "Content-Type": "application/json",
     };
-    const response = await axios.put(`${BASE_URL}/api/users/${id}`, {
+    const response = await axios.put(`${BASE_URL}/api/users/${id}`,requestParams, {
       headers,
     });
     return response;
