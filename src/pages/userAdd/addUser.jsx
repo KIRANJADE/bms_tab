@@ -43,6 +43,8 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     console.log(userById, "userById");
   }, [cardsUserId]);
 
+  console.log(cardsUserId, "cardsUserId")
+
   // Set values on form load
   useEffect(() => {
     if (isEditUsers && userById) {
@@ -94,25 +96,34 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
 
   useEffect(() => {
     if (userById?.memberdetails?.joiningDate) {
-      const formattedDate = new Date(userById.memberdetails.joiningDate)
+      const formattedDate = new Date(userById?.memberdetails?.joiningDate)
         .toISOString()
         .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
       setValue("joiningDate", formattedDate);
     }
     if (userById?.memberdetails?.rejoiningDate) {
-      const formattedDate = new Date(userById.memberdetails.rejoiningDate)
+      const formattedDate = new Date(userById?.memberdetails?.rejoiningDate)
         .toISOString()
         .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
       setValue("rejoiningDate", formattedDate);
     }
     if (userById?.memberdetails?.userTypeChangedDate !== "Invalid date") {
-      const formattedDate = new Date(userById.memberdetails.userTypeChangedDate)
-        .toISOString()
-        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
-      setValue("userTypeChangedDate", formattedDate);
+      const rawDate = userById?.memberdetails?.userTypeChangedDate;
+
+      if (rawDate) {
+        const parsedDate = new Date(rawDate);
+        if (!isNaN(parsedDate)) {
+          const formattedDate = parsedDate.toISOString().split("T")[0]; // Format to YYYY-MM-DD
+          setValue("userTypeChangedDate", formattedDate);
+        } else {
+          console.error("Invalid date value:", rawDate);
+        }
+      } else {
+        console.warn("userTypeChangedDate is undefined or null.");
+      }
     }
     if (userById?.memberdetails?.bClassToAClassChangeDate ) {
-      const formattedDate = new Date(userById.memberdetails.bClassToAClassChangeDate)
+      const formattedDate = new Date(userById?.memberdetails?.bClassToAClassChangeDate)
         .toISOString()
         .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
       setValue("bClassToAClassChangeDate", formattedDate);
@@ -124,7 +135,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       setValue("dob", formattedDob);
     }
     if (userById?.profile?.gender) {
-      setValue("gender", userById.profile.gender);
+      setValue("gender", userById?.profile?.gender);
     }
     if (userById?.statusChangedDate) {
       const formattedDate = new Date(userById?.statusChangedDate)
