@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import {
   Modal,
   Box,
@@ -24,7 +24,6 @@ import { userCreate } from "../../state/redux/authSlice";
 import { useEffect, useState } from "react";
 
 const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
-
   const [userById, setUserById] = useState([]);
   const {
     register,
@@ -32,6 +31,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     formState: { errors },
     reset,
     setValue,
+    control,
   } = useForm();
 
   const addUser = useSelector((state) => state.auth);
@@ -45,45 +45,94 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
 
   // Set values on form load
   useEffect(() => {
-	if (isEditUsers && userById) {
-	  setValue("firstName", userById?.profile?.firstname);
-	  setValue("lastName", userById?.profile?.lastname);
-	  setValue("phoneNumber", userById?.profile?.phoneno);
-	  setValue("fatherName", userById?.profile?.fathername);
-	  setValue("motherName", userById?.profile?.mothername);
-	  setValue("gender", userById?.profile?.gender);
-	  setValue("avatar", userById?.profile?.avatar);
-	  setValue("address", userById?.profile?.address);
-	  setValue("dob", userById?.profile?.dob);
-  
-	  setValue("balance", userById?.balance);
-	  setValue("isAdministrator", userById?.isAdministrator);
-	  setValue("position", userById?.position);
-	  setValue("isChitCommitteeMember", userById?.isChitCommitteeMember);
-	  setValue("chitCommitteePosition", userById?.chitCommitteePosition);
-	  setValue("role", userById?.role);
-	  setValue("status", userById?.status);
-	  setValue("statusChangedDate", userById?.statusChangedDate);
-  
-	  setValue("memberType", userById?.memberdetails?.memberType);
-	  setValue("userType", userById?.memberdetails?.userType);
-	  setValue("joiningDate", userById?.memberdetails?.joiningDate);
-	  setValue("rejoiningDate", userById?.memberdetails?.rejoiningDate);
-	  setValue("userTypeChangedDate", userById?.memberdetails?.userTypeChangedDate);
-	  setValue("bClassToAClassChangeDate", userById?.memberdetails?.bClassToAClassChangeDate);
-  
-	  setValue("identityProof", userById?.otherdetails?.identityproof);
-	  setValue("identityProofNo", userById?.otherdetails?.identityproofno);
-	  setValue("qualification", userById?.otherdetails?.qualification);
-	  setValue("jobType", userById?.otherdetails?.jobType);
-	  setValue("jobPortal", userById?.otherdetails?.jobPortal);
-	  setValue("jobDetails", userById?.otherdetails?.jobDetails);
-	  setValue("jobProfessional", userById?.otherdetails?.jobProfessional);
-  
-	  setValue("remarks", userById?.remark);
-	}
+    if (isEditUsers && userById) {
+      setValue("firstName", userById?.profile?.firstname);
+      setValue("lastName", userById?.profile?.lastname);
+      setValue("phoneNumber", userById?.profile?.phoneno);
+      setValue("fatherName", userById?.profile?.fathername);
+      setValue("motherName", userById?.profile?.mothername);
+      setValue("gender", userById?.profile?.gender === "male" ? "male" : "female");
+      setValue("avatar", userById?.profile?.avatar);
+      setValue("address", userById?.profile?.address);
+      setValue("dob", userById?.profile?.dob);
+
+      setValue("balance", userById?.balance);
+      setValue("isAdministrator", userById?.isAdministrator === false ? "no" : "yes");
+      setValue("position", userById?.position);
+      setValue("isChitCommitteeMember", userById?.isChitCommitteeMember);
+      setValue("chitCommitteePosition", userById?.chitCommitteePosition);
+      setValue("role", userById?.role);
+      setValue("status", userById?.status);
+      setValue("statusChangedDate", userById?.statusChangedDate);
+
+      setValue("memberType", userById?.memberdetails?.memberType === "b-class" ? "B-type" : "A-type");
+      setValue("userType", userById?.memberdetails?.userType);
+      setValue("joiningDate", userById?.memberdetails?.joiningDate);
+      setValue("rejoiningDate", userById?.memberdetails?.rejoiningDate);
+      setValue(
+        "userTypeChangedDate",
+        userById?.memberdetails?.userTypeChangedDate
+      );
+      setValue(
+        "bClassToAClassChangeDate",
+        userById?.memberdetails?.bClassToAClassChangeDate
+      );
+
+      setValue("identityProof", userById?.otherdetails?.identityproof);
+      setValue("identityProofNo", userById?.otherdetails?.identityproofno);
+      setValue("qualification", userById?.otherdetails?.qualification);
+      setValue("jobType", userById?.otherdetails?.jobType);
+      setValue("jobPortal", userById?.otherdetails?.jobPortal);
+      setValue("jobDetails", userById?.otherdetails?.jobDetails);
+      setValue("jobProfessional", userById?.otherdetails?.jobProfessional);
+
+      setValue("remarks", userById?.remark);
+    }
+
+    console.log("userById", userById);
   }, [userById, setValue, isEditUsers]);
-  
+
+  useEffect(() => {
+    if (userById?.memberdetails?.joiningDate) {
+      const formattedDate = new Date(userById.memberdetails.joiningDate)
+        .toISOString()
+        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
+      setValue("joiningDate", formattedDate);
+    }
+    if (userById?.memberdetails?.rejoiningDate) {
+      const formattedDate = new Date(userById.memberdetails.rejoiningDate)
+        .toISOString()
+        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
+      setValue("rejoiningDate", formattedDate);
+    }
+    if (userById?.memberdetails?.userTypeChangedDate !== "Invalid date") {
+      const formattedDate = new Date(userById.memberdetails.userTypeChangedDate)
+        .toISOString()
+        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
+      setValue("userTypeChangedDate", formattedDate);
+    }
+    if (userById?.memberdetails?.bClassToAClassChangeDate ) {
+      const formattedDate = new Date(userById.memberdetails.bClassToAClassChangeDate)
+        .toISOString()
+        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
+      setValue("bClassToAClassChangeDate", formattedDate);
+    }
+    if (userById?.profile?.dob) {
+      const formattedDob = new Date(userById?.profile?.dob)
+        .toISOString()
+        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
+      setValue("dob", formattedDob);
+    }
+    if (userById?.profile?.gender) {
+      setValue("gender", userById.profile.gender);
+    }
+    if (userById?.statusChangedDate) {
+      const formattedDate = new Date(userById?.statusChangedDate)
+        .toISOString()
+        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
+      setValue("statusChangedDate", formattedDate);
+    }
+  }, [userById, setValue]);
 
   const fetchUsersById = async () => {
     const response = await getUserById(cardsUserId);
@@ -94,9 +143,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
   const getTenderTypes = async () => {
     try {
       const response = await userList();
-		if (response) {
-			console.log(response, "response");
-		}
+      if (response) {
+        console.log(response, "response");
+      }
     } catch (error) {
       throw error;
     }
@@ -202,6 +251,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 {...register("firstName", {
                   required: "First name is required",
                 })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.firstName}
                 helperText={errors.firstName?.message}
               />
@@ -210,6 +262,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Last Name"
                 margin="normal"
                 {...register("lastName", { required: "Last name is required" })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.lastName}
                 helperText={errors.lastName?.message}
               />
@@ -224,6 +279,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                     message: "Enter a valid 10-digit phone number",
                   },
                 })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.phoneNumber}
                 helperText={errors.phoneNumber?.message}
               />
@@ -234,6 +292,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 {...register("fatherName", {
                   required: "Father's name is required",
                 })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.fatherName}
                 helperText={errors.fatherName?.message}
               />
@@ -244,6 +305,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 {...register("motherName", {
                   required: "Mother's name is required",
                 })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.motherName}
                 helperText={errors.motherName?.message}
               />
@@ -252,6 +316,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Address"
                 margin="normal"
                 {...register("address", { required: "Address is required" })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.address}
                 helperText={errors.address?.message}
               />
@@ -268,24 +335,33 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 helperText={errors.dob?.message}
               />
               {/* Gender */}
-              <FormControl margin="normal">
-                <FormLabel>Gender</FormLabel>
-                <RadioGroup row {...register("gender", { required: true })}>
-                  <FormControlLabel
-                    value="male"
-                    control={<Radio />}
-                    label="Male"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={<Radio />}
-                    label="Female"
-                  />
-                </RadioGroup>
+              <FormControl
+                component="fieldset"
+                margin="normal"
+                error={!!errors.gender}
+              >
+                <FormLabel component="legend">Gender</FormLabel>
+                <Controller
+                  name="gender"
+                  control={control}
+                  rules={{ required: "Please select a gender." }}
+                  render={({ field }) => (
+                    <RadioGroup {...field} row>
+                      <FormControlLabel
+                        value="male"
+                        control={<Radio />}
+                        label="Male"
+                      />
+                      <FormControlLabel
+                        value="female"
+                        control={<Radio />}
+                        label="Female"
+                      />
+                    </RadioGroup>
+                  )}
+                />
                 {errors.gender && (
-                  <Typography variant="caption" color="error">
-                    Please select a gender.
-                  </Typography>
+                  <FormHelperText>{errors.gender.message}</FormHelperText>
                 )}
               </FormControl>
             </Grid>
@@ -296,6 +372,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Balance"
                 margin="normal"
                 {...register("balance", { required: "Balance is required" })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.balance}
                 helperText={errors.balance?.message}
               />
@@ -324,6 +403,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Position"
                 margin="normal"
                 {...register("position", { required: "Position is required" })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.position}
                 helperText={errors.position?.message}
               />
@@ -332,7 +414,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 <FormLabel>Is Chit Committee Member</FormLabel>
                 <RadioGroup
                   row
-                  defaultValue="no" // Set default value (can be 'yes' or 'no')
+                  defaultValue="no"
                   {...register("isChitCommitteeMember", {
                     required: "Please select an option.",
                   })}
@@ -356,6 +438,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Role"
                 margin="normal"
                 {...register("role", { required: "Role is required" })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.role}
                 helperText={errors.role?.message}
               />
@@ -365,6 +450,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Status"
                 margin="normal"
                 {...register("status", { required: "Status is required" })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.status}
                 helperText={errors.status?.message}
               />
@@ -411,6 +499,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="User Type"
                 margin="normal"
                 {...register("userType", { required: "User type is required" })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.userType}
                 helperText={errors.userType?.message}
               />
@@ -470,6 +561,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 {...register("identityProof", {
                   required: "Identity proof is required",
                 })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.identityProof}
                 helperText={errors.identityProof?.message}
               />
@@ -481,6 +575,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 {...register("identityProofNo", {
                   required: "Identity proof number is required",
                 })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.identityProofNo}
                 helperText={errors.identityProofNo?.message}
               />
@@ -489,6 +586,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Qualification"
                 margin="normal"
                 {...register("qualification")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
             </Grid>
             {/* Column 4 */}
@@ -498,30 +598,45 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Job Type"
                 margin="normal"
                 {...register("jobType")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
               <TextField
                 fullWidth
                 label="Job Portal"
                 margin="normal"
                 {...register("jobPortal")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
               <TextField
                 fullWidth
                 label="Job Details"
                 margin="normal"
                 {...register("jobDetails")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
               <TextField
                 fullWidth
                 label="Job Professional"
                 margin="normal"
                 {...register("jobProfessional")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
               <TextField
                 fullWidth
                 label="Remarks"
                 margin="normal"
                 {...register("remarks")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
             </Grid>
           </Grid>
