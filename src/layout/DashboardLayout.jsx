@@ -3,13 +3,13 @@ import SideBar from "../blocks/SideBar";
 import TabsPanel from "../blocks/TabsPanel";
 import Dashboard from "../pages/dashboard/dashboard";
 import Admin from "../pages/administrator";
-import User from "../pages/user/user";
+import Committee from "../pages/committeeMeating/committee";
 import Chantha from "../pages/chantha/chantha";
 import Events from "../pages/events/index";
 import "../assets/css/common.css";
-import { userList } from "../state/redux/userApi";
+import { userList, CommitteeList } from "../state/redux/userApi";
 import { useDispatch } from "react-redux";
-import { userListData } from "../state/redux/authSlice";
+import { userListData , committeeListData } from "../state/redux/authSlice";
 import { Pagination, Stack } from "@mui/material";
 
 const DashboardLayout = () => {
@@ -44,9 +44,33 @@ const DashboardLayout = () => {
     }
   };
 
+  const fetchCommitteeList = async () => {
+    setLoading(true);
+    try {
+      const response = await CommitteeList(page, limit, {
+        status: "active",
+        "memberdetails.memberType": "a-class",
+        "memberdetails.userType": "full",
+      });
+
+      if (response.status) {
+        dispatch(committeeListData(response));
+        // setTotalPages(response.totalPages);
+      }
+    } catch (error) {
+      setError("Failed to fetch user data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchUserList();
   }, [page, limit]);
+
+  useEffect(() => {
+    fetchCommitteeList();
+  }, []);
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
@@ -59,7 +83,7 @@ const DashboardLayout = () => {
   const tabComponents = {
     tab1: <Admin />,
     tab2: <Dashboard />,
-    tab3: <User />,
+    tab3: <Committee />,
     tab4: <Chantha />,
     tab5: <Events />,
   };
