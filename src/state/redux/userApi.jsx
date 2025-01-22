@@ -88,3 +88,21 @@ export const deleteUserApi = async (id) => {
     }
   };
 
+export const getUserById = async (id) => {
+    try {
+      const authToken = JSON.parse(localStorage.getItem("authToken"));
+      const headers = {
+        "x-access-token": `${authToken}`,
+        "Content-Type": "application/json",
+      };
+  
+      const response = await axios.get(`${BASE_URL}/api/users/${id}`, {
+        headers,
+      });
+  
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+

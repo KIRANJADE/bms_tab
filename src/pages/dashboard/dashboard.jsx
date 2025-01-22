@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ActionCard from "../../components/cardList/card";
 import { Box, Button, Grid } from "@mui/material";
 import AddNewModal from "../userAdd/addUser";
 import { useSelector, useDispatch } from "react-redux";
 import { userList } from "../../state/redux/userApi";
 import { userListData } from "../../state/redux/authSlice";
+import { useForm } from "react-hook-form";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -15,9 +16,14 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasMore, setHasMore] = useState(true);
-
+  const [cardsUserId,setcardsUserId] = useState(null)
+  const [isEditUsers,setIsEditMode] = useState(false)
   const users = useSelector((state) => state.auth?.users || []);
   const dispatch = useDispatch();
+
+   const {
+	  reset,
+	} = useForm();
 
   const fetchUserList = async (currentPage) => {
     setLoading(true);
@@ -45,12 +51,22 @@ const Dashboard = () => {
     }
   };
 
+  useEffect(() => {
+	console.log(cardsUserId,"cardsUserId");
+  }, [cardsUserId])
+  
+
   const handleModalOpen = () => setIsModalOpen(true);
-  const handleModalClose = () => setIsModalOpen(false);
+  const handleModalClose = () => {
+	  setIsModalOpen(false);
+	  reset();
+  }
 
   const handleEdit = (card) => {
+    setcardsUserId(card?._id);
     setEditingCard(card);
     setIsModalOpen(true);
+	setIsEditMode(true)
   };
 
   const handleDelete = () => setEditingCard(null);
@@ -68,8 +84,10 @@ const Dashboard = () => {
         onClose={handleModalClose} 
         users={editingCard} 
         isEditMode={!!editingCard}
+        cardsUserId = {cardsUserId}
+		isEditUsers = {isEditUsers}
       />
-      <div className="">
+      <div>
         <Box sx={{ display: "flex", justifyContent: "flex-start", marginBottom: 3, marginTop: 0 }}>
           <Button style={{ backgroundColor: "#4C79F8", width: "180px" }} variant="contained" color="primary" onClick={handleModalOpen}>
             Add User
@@ -82,7 +100,7 @@ const Dashboard = () => {
               <ActionCard
                 users={user}
                 profile={user?.profile}
-                onEdit={handleEdit}
+                onEdit={() => handleEdit(user)}
                 onDelete={handleDelete}
                 isEdit={editingCard}
               />

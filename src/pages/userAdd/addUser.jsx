@@ -14,33 +14,93 @@ import {
   Grid,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { createUserApi, userList } from "../../state/redux/userApi";
+import {
+  createUserApi,
+  editUserApi,
+  getUserById,
+  userList,
+} from "../../state/redux/userApi";
 import { userCreate } from "../../state/redux/authSlice";
+import { useEffect, useState } from "react";
 
-const AddNewModal = ({ open, onClose }) => {
+const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
+
+  const [userById, setUserById] = useState([]);
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm();
 
   const addUser = useSelector((state) => state.auth);
-  console.log(addUser, "addddddddd");
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    fetchUsersById();
+    console.log(userById, "userById");
+  }, [cardsUserId]);
+
+  // Set values on form load
+  useEffect(() => {
+	if (isEditUsers && userById) {
+	  setValue("firstName", userById?.profile?.firstname);
+	  setValue("lastName", userById?.profile?.lastname);
+	  setValue("phoneNumber", userById?.profile?.phoneno);
+	  setValue("fatherName", userById?.profile?.fathername);
+	  setValue("motherName", userById?.profile?.mothername);
+	  setValue("gender", userById?.profile?.gender);
+	  setValue("avatar", userById?.profile?.avatar);
+	  setValue("address", userById?.profile?.address);
+	  setValue("dob", userById?.profile?.dob);
+  
+	  setValue("balance", userById?.balance);
+	  setValue("isAdministrator", userById?.isAdministrator);
+	  setValue("position", userById?.position);
+	  setValue("isChitCommitteeMember", userById?.isChitCommitteeMember);
+	  setValue("chitCommitteePosition", userById?.chitCommitteePosition);
+	  setValue("role", userById?.role);
+	  setValue("status", userById?.status);
+	  setValue("statusChangedDate", userById?.statusChangedDate);
+  
+	  setValue("memberType", userById?.memberdetails?.memberType);
+	  setValue("userType", userById?.memberdetails?.userType);
+	  setValue("joiningDate", userById?.memberdetails?.joiningDate);
+	  setValue("rejoiningDate", userById?.memberdetails?.rejoiningDate);
+	  setValue("userTypeChangedDate", userById?.memberdetails?.userTypeChangedDate);
+	  setValue("bClassToAClassChangeDate", userById?.memberdetails?.bClassToAClassChangeDate);
+  
+	  setValue("identityProof", userById?.otherdetails?.identityproof);
+	  setValue("identityProofNo", userById?.otherdetails?.identityproofno);
+	  setValue("qualification", userById?.otherdetails?.qualification);
+	  setValue("jobType", userById?.otherdetails?.jobType);
+	  setValue("jobPortal", userById?.otherdetails?.jobPortal);
+	  setValue("jobDetails", userById?.otherdetails?.jobDetails);
+	  setValue("jobProfessional", userById?.otherdetails?.jobProfessional);
+  
+	  setValue("remarks", userById?.remark);
+	}
+  }, [userById, setValue, isEditUsers]);
+  
+
+  const fetchUsersById = async () => {
+    const response = await getUserById(cardsUserId);
+    console.log(response, "myresss");
+    setUserById(response?.data);
+  };
+
   const getTenderTypes = async () => {
-	try {
-	  const response = await userList();
-	  if (response) {
-		  
-		  console.log(response,"response");
-	  }
-	} catch (error) {
-	  throw error
-	}
-	}
+    try {
+      const response = await userList();
+		if (response) {
+			console.log(response, "response");
+		}
+    } catch (error) {
+      throw error;
+    }
+  };
 
   const onSubmit = async (data) => {
     console.log("Form Data:", data);
@@ -85,19 +145,20 @@ const AddNewModal = ({ open, onClose }) => {
       },
       remark: data?.remarks,
     };
-
-    const response = await createUserApi(payload);
-    console.log("Payload:", response);
-
+    if (userById && isEditUsers) {
+      const response = await editUserApi(payload);
+      console.log("Payload:", response);
+    } else {
+      const response = await createUserApi(payload);
+      console.log("Payload:", response);
+    }
     if (response.status) {
       dispatch(userCreate(response.data));
-	  getTenderTypes()
+      getTenderTypes();
     }
-    reset(); // Reset form fields after submission
-    onClose(); // Close the modal
+    reset();
+    onClose();
   };
-
-  
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="add-new-modal-title">
@@ -470,9 +531,15 @@ const AddNewModal = ({ open, onClose }) => {
             <Button onClick={onClose} sx={{ marginRight: 1 }}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained">
-              Add
-            </Button>
+            {cardsUserId ? (
+              <Button type="submit" variant="contained">
+                Update
+              </Button>
+            ) : (
+              <Button type="submit" variant="contained">
+                Add
+              </Button>
+            )}
           </Box>
         </form>
       </Box>
