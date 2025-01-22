@@ -4,7 +4,8 @@ const INTIAL_STATE = {
     loginData : [],
     users : [],
     addUser : false,
-    userDelete : false
+    userDelete : false,
+    addUser : {}
 }
 
   export const loginSlice = createSlice({

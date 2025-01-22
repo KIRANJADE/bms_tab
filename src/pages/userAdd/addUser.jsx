@@ -13,8 +13,8 @@ import {
   FormControl,
   Grid,
 } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { createUserApi } from "../../state/redux/userApi";
+import { useDispatch, useSelector } from "react-redux";
+import { createUserApi, userList } from "../../state/redux/userApi";
 import { userCreate } from "../../state/redux/authSlice";
 
 const AddNewModal = ({ open, onClose }) => {
@@ -25,42 +25,25 @@ const AddNewModal = ({ open, onClose }) => {
     reset,
   } = useForm();
 
+  const addUser = useSelector((state) => state.auth);
+  console.log(addUser, "addddddddd");
+
   const dispatch = useDispatch();
+
+  const getTenderTypes = async () => {
+	try {
+	  const response = await userList();
+	  if (response) {
+		  
+		  console.log(response,"response");
+	  }
+	} catch (error) {
+	  throw error
+	}
+	}
 
   const onSubmit = async (data) => {
     console.log("Form Data:", data);
-    // let payload = {
-    //   isAdministrator: false,
-    //   isChitCommitteeMember: false,
-    //   profile: {
-    //     firstname: data.firstName,
-    //     lastname: data.lastName,
-    //     phoneno: data.phoneNumber,
-    //     fathername: data.fatherName,
-    //     mothername: data.motherName,
-    //     gender: data.gender,
-    //     address: data.address,
-    //     dob: data.dob,
-    //   },
-    //   memberdetails: {
-    //     memberType: data?.memberType,
-    //     joiningDate: data.joiningDate,
-    //     rejoiningDate: data.rejoiningDate,
-    //     userType: data?.type,
-    //     userTypeChangedDate: data.userTypeChangedDate,
-    //   },
-    //   otherdetails: {
-    //     identityProof: data.identityProof,
-    //     identityProofNo: data.identityProofNo,
-    //   },
-    //   role: data.role,
-    //   status: data.status,
-    //   statusChangedDate: data.statusChangedDate,
-    //   position: data.position,
-    // };
-
-
-
     let payload = {
       profile: {
         firstname: data.firstName,
@@ -72,7 +55,7 @@ const AddNewModal = ({ open, onClose }) => {
         avatar: "avatar_url_here",
         address: data.address,
         dob: data.dob,
-    
+
         isChanthaRequired: true,
       },
       balance: data?.balance,
@@ -100,18 +83,21 @@ const AddNewModal = ({ open, onClose }) => {
         jobDetails: data?.jobDetails,
         jobProfessional: data?.jobProfessional,
       },
-      remark:   data?.remarks,
+      remark: data?.remarks,
     };
 
     const response = await createUserApi(payload);
     console.log("Payload:", response);
 
-    if (response.status === 201) {
+    if (response.status) {
       dispatch(userCreate(response.data));
+	  getTenderTypes()
     }
     reset(); // Reset form fields after submission
     onClose(); // Close the modal
   };
+
+  
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="add-new-modal-title">
@@ -152,7 +138,9 @@ const AddNewModal = ({ open, onClose }) => {
                 fullWidth
                 label="First Name"
                 margin="normal"
-                {...register("firstName", { required: "First name is required", })}
+                {...register("firstName", {
+                  required: "First name is required",
+                })}
                 error={!!errors.firstName}
                 helperText={errors.firstName?.message}
               />
@@ -168,10 +156,13 @@ const AddNewModal = ({ open, onClose }) => {
                 fullWidth
                 label="Phone Number"
                 margin="normal"
-                {...register("phoneNumber", {  required: "Phone number is required",
+                {...register("phoneNumber", {
+                  required: "Phone number is required",
                   pattern: {
                     value: /^[0-9]{10}$/,
-                    message: "Enter a valid 10-digit phone number",   },  })}
+                    message: "Enter a valid 10-digit phone number",
+                  },
+                })}
                 error={!!errors.phoneNumber}
                 helperText={errors.phoneNumber?.message}
               />
@@ -179,7 +170,9 @@ const AddNewModal = ({ open, onClose }) => {
                 fullWidth
                 label="Father's Name"
                 margin="normal"
-                {...register("fatherName", {  required: "Father's name is required", })}
+                {...register("fatherName", {
+                  required: "Father's name is required",
+                })}
                 error={!!errors.fatherName}
                 helperText={errors.fatherName?.message}
               />
@@ -274,23 +267,28 @@ const AddNewModal = ({ open, onClose }) => {
                 helperText={errors.position?.message}
               />
 
-<FormControl margin="normal" className="mb-0">
-  <FormLabel>Is Chit Committee Member</FormLabel>
-  <RadioGroup
-    row
-    defaultValue="no" // Set default value (can be 'yes' or 'no')
-    {...register("isChitCommitteeMember", { required: "Please select an option." })}
-  >
-    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-    <FormControlLabel value="no" control={<Radio />} label="No" />
-  </RadioGroup>
-  {errors.isChitCommitteeMember && (
-    <Typography variant="caption" color="error">
-      {errors.isChitCommitteeMember.message}
-    </Typography>
-  )}
-</FormControl>
-
+              <FormControl margin="normal" className="mb-0">
+                <FormLabel>Is Chit Committee Member</FormLabel>
+                <RadioGroup
+                  row
+                  defaultValue="no" // Set default value (can be 'yes' or 'no')
+                  {...register("isChitCommitteeMember", {
+                    required: "Please select an option.",
+                  })}
+                >
+                  <FormControlLabel
+                    value="yes"
+                    control={<Radio />}
+                    label="Yes"
+                  />
+                  <FormControlLabel value="no" control={<Radio />} label="No" />
+                </RadioGroup>
+                {errors.isChitCommitteeMember && (
+                  <Typography variant="caption" color="error">
+                    {errors.isChitCommitteeMember.message}
+                  </Typography>
+                )}
+              </FormControl>
 
               <TextField
                 fullWidth
