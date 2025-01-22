@@ -11,17 +11,17 @@ const ITEMS_PER_PAGE = 8;
 const Dashboard = () => {
   const [editingCard, setEditingCard] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [page, setPage] = useState(1); // Tracks the current page for API
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [hasMore, setHasMore] = useState(true); // To track if more data is available
+  const [hasMore, setHasMore] = useState(true);
 
-  const users = useSelector((state) => state.auth?.users || []); // Get users from Redux state
+  const users = useSelector((state) => state.auth?.users || []);
   const dispatch = useDispatch();
 
   const fetchUserList = async (currentPage) => {
     setLoading(true);
-    setError(""); // Reset error state before fetching
+    setError(""); 
     try {
       const response = await userList(currentPage, ITEMS_PER_PAGE, {
         status: "active",
@@ -30,12 +30,10 @@ const Dashboard = () => {
       });
 
       if (response.status) {
-        // Add fetched users to the Redux store
         dispatch(userListData([...users, ...response.userDetails]));
 
-        // Check if more pages are available
         if (currentPage >= response.totalPages) {
-          setHasMore(false); // No more data to load
+          setHasMore(false);
         }
       } else {
         setError("Failed to fetch user data.");
@@ -58,29 +56,22 @@ const Dashboard = () => {
   const handleDelete = () => setEditingCard(null);
 
   const handleLoadMore = () => {
-    const nextPage = page + 1; // Calculate the next page
-    setPage(nextPage); // Update the state to track the current page
-    fetchUserList(nextPage); // Fetch data for the next page
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchUserList(nextPage);
   };
 
   return (
     <>
-      <AddNewModal open={isModalOpen} onClose={handleModalClose} />
+      <AddNewModal 
+        open={isModalOpen} 
+        onClose={handleModalClose} 
+        users={editingCard} 
+        isEditMode={!!editingCard}
+      />
       <div className="">
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-start",
-            marginBottom: 3,
-            marginTop: 0,
-          }}
-        >
-          <Button
-            style={{ backgroundColor: "#4C79F8", width: "180px" }}
-            variant="contained"
-            color="primary"
-            onClick={handleModalOpen}
-          >
+        <Box sx={{ display: "flex", justifyContent: "flex-start", marginBottom: 3, marginTop: 0 }}>
+          <Button style={{ backgroundColor: "#4C79F8", width: "180px" }} variant="contained" color="primary" onClick={handleModalOpen}>
             Add User
           </Button>
         </Box>
@@ -99,20 +90,18 @@ const Dashboard = () => {
           ))}
         </Grid>
 
-        {/* Display error if fetch fails */}
         {error && (
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
             <p style={{ color: "red" }}>{error}</p>
           </Box>
         )}
 
-        {/* Load More Button */}
         {hasMore && (
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
             <Button style={{backgroundColor:"#4c79f8",color:"white"}}
               variant="outlined"
               onClick={handleLoadMore}
-              disabled={loading} // Disable button while loading
+              disabled={loading} 
             >
               {loading ? "Loading..." : "Load More"}
             </Button>
@@ -124,3 +113,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

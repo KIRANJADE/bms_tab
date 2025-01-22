@@ -5,7 +5,8 @@ const INTIAL_STATE = {
     users : [],
     addUser : false,
     userDelete : false,
-    committeeData : []
+    committeeData : [],
+    addUser : {}
 }
 
   export const loginSlice = createSlice({
