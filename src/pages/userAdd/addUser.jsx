@@ -20,7 +20,7 @@ import {
   getUserById,
   userList,
 } from "../../state/redux/userApi";
-import { userCreate } from "../../state/redux/authSlice";
+import { userCreate, userListData } from "../../state/redux/authSlice";
 import { useEffect, useState } from "react";
 
 const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
@@ -34,8 +34,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     control,
   } = useForm();
 
-  const addUser = useSelector((state) => state.auth);
-
+  const {addUser,editUser} = useSelector((state) => state.auth);
+  console.log(editUser, "editUser");
+  
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -43,7 +44,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     console.log(userById, "userById");
   }, [cardsUserId]);
 
-  console.log(cardsUserId, "cardsUserId")
+  console.log(cardsUserId, "cardsUserId");
 
   // Set values on form load
   useEffect(() => {
@@ -53,13 +54,19 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       setValue("phoneNumber", userById?.profile?.phoneno);
       setValue("fatherName", userById?.profile?.fathername);
       setValue("motherName", userById?.profile?.mothername);
-      setValue("gender", userById?.profile?.gender === "male" ? "male" : "female");
+      setValue(
+        "gender",
+        userById?.profile?.gender === "male" ? "male" : "female"
+      );
       setValue("avatar", userById?.profile?.avatar);
       setValue("address", userById?.profile?.address);
       setValue("dob", userById?.profile?.dob);
 
       setValue("balance", userById?.balance);
-      setValue("isAdministrator", userById?.isAdministrator === false ? "no" : "yes");
+      setValue(
+        "isAdministrator",
+        userById?.isAdministrator === false ? "no" : "yes"
+      );
       setValue("position", userById?.position);
       setValue("isChitCommitteeMember", userById?.isChitCommitteeMember);
       setValue("chitCommitteePosition", userById?.chitCommitteePosition);
@@ -67,7 +74,10 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       setValue("status", userById?.status);
       setValue("statusChangedDate", userById?.statusChangedDate);
 
-      setValue("memberType", userById?.memberdetails?.memberType === "b-class" ? "B-type" : "A-type");
+      setValue(
+        "memberType",
+        userById?.memberdetails?.memberType === "b-class" ? "B-type" : "A-type"
+      );
       setValue("userType", userById?.memberdetails?.userType);
       setValue("joiningDate", userById?.memberdetails?.joiningDate);
       setValue("rejoiningDate", userById?.memberdetails?.rejoiningDate);
@@ -122,8 +132,10 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
         console.warn("userTypeChangedDate is undefined or null.");
       }
     }
-    if (userById?.memberdetails?.bClassToAClassChangeDate ) {
-      const formattedDate = new Date(userById?.memberdetails?.bClassToAClassChangeDate)
+    if (userById?.memberdetails?.bClassToAClassChangeDate) {
+      const formattedDate = new Date(
+        userById?.memberdetails?.bClassToAClassChangeDate
+      )
         .toISOString()
         .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
       setValue("bClassToAClassChangeDate", formattedDate);
@@ -179,9 +191,10 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
         isChanthaRequired: true,
       },
       balance: data?.balance,
-      isAdministrator: data?.isAdministrator,
+      isAdministrator: data?.isAdministrator === "yes" ? true : false,
       position: data?.position,
-      isChitCommitteeMember: data?.isChitCommitteeMember,
+      isChitCommitteeMember:
+        data?.isChitCommitteeMember === "yes" ? true : false,
       chitCommitteePosition: data?.chitCommitteePosition,
       role: data?.role,
       status: data?.status,
@@ -206,8 +219,14 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       remark: data?.remarks,
     };
     if (userById && isEditUsers) {
-      const response = await editUserApi(cardsUserId,payload);
+      const response = await editUserApi(cardsUserId, payload);
       console.log("Payload:", response);
+      if (response?.status) {
+		console.log(response, "responseresponse");
+		
+        fetchUserList();
+        onClose();
+      }
     } else {
       const response = await createUserApi(payload);
       console.log("Payload:", response);
@@ -216,14 +235,43 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       dispatch(userCreate(response.data));
       getTenderTypes();
     }
-    reset();
+
     onClose();
+  };
+
+  const fetchUserList = async () => {
+    try {
+      const response = await userList(1, 8, {
+        status: "active",
+        "memberdetails.memberType": "a-class",
+        "memberdetails.userType": "full",
+      });
+	  alert("fetchUserList")
+
+      if (response.status) {
+	alert("fetchUserfsdfsdfList")
+
+        dispatch(userListData(response.userDetails));
+        // setTotalPages(response.totalPages);
+      }
+    } catch (error) {
+      console.log("Failed to fetch user data");
+    } finally {
+      // setLoading(false);
+    }
   };
 
   const onCloseReset = () => {
     reset();
     onClose();
-  }
+  };
+
+//   useEffect(() => {
+// 	if (editUser) {
+// 		fetchUserList()
+// 	}
+//   }, [editUser])
+  
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="add-new-modal-title">
