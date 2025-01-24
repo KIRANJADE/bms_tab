@@ -19,7 +19,7 @@ const DashboardLayout = () => {
   const [error, setError] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(8); // Limit set to 8 cards per page
+  const [limit, setLimit] = useState(12); // Limit set to 8 cards per page
   const [totalPages, setTotalPages] = useState(0);
 
   const dispatch = useDispatch();
@@ -29,8 +29,6 @@ const DashboardLayout = () => {
     try {
       const response = await userList(page, limit, {
         status: "active",
-        "memberdetails.memberType": "a-class",
-        "memberdetails.userType": "full",
       });
 
       if (response.status) {

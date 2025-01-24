@@ -71,9 +71,6 @@ const ActionCard = ({ users, profile, onEdit }) => {
             <Typography variant="body2" className="action-card-id">
               {users?.memberdetails?.memberId}
             </Typography>
-            <Typography variant="caption" className="action-card-phone">
-              {users?.phoneno}
-            </Typography>
           </Box>
         </Box>
         <Box>
@@ -85,9 +82,9 @@ const ActionCard = ({ users, profile, onEdit }) => {
       {/* <Divider sx={{borderColor:"2px solid red"}}/> */}
       {/* Details Section */}
       <Box className="action-card-details-item">
-        <AdminPanelSettingsOutlinedIcon fontSize="small" color="action" />
+        <AdminPanelSettingsOutlinedIcon fontSize="small" color="success" />
         <Typography variant="body2" className="action-card-role">
-          {users?.role.charAt(0).toUpperCase() + users?.role.slice(1)}
+          {users?.position.charAt(0).toUpperCase() + users?.position.slice(1)}
         </Typography>
       </Box>
 
