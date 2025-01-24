@@ -20,11 +20,27 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
 
 const pages = [
-  {id: "tab1",label: "Administrators", path: "/admin",icon: <SupervisorAccountIcon />,},
-  { id: "tab2", label: "Users", path: "/dashboard", icon: <PersonIcon /> },
-  { id: "tab3", label: "Committee Meeting", path: "/user", icon: <HomeIcon /> },
-  { id: "tab4",label: "Chantha",path: "/chantha",icon: <PaidOutlinedIcon />,},
-  { id: "tab5", label: "Events", path: "/events", icon: <EventIcon /> },
+  {
+    id: "tab1",
+    label: "Dashboard",
+    path: "/home",
+    icon: <SupervisorAccountIcon />,
+  },
+  {
+    id: "tab2",
+    label: "Administrators",
+    path: "/admin",
+    icon: <SupervisorAccountIcon />,
+  },
+  { id: "tab3", label: "Users", path: "/dashboard", icon: <PersonIcon /> },
+  { id: "tab4", label: "Committee Meeting", path: "/user", icon: <HomeIcon /> },
+  {
+    id: "tab5",
+    label: "Chantha",
+    path: "/chantha",
+    icon: <PaidOutlinedIcon />,
+  },
+  { id: "tab6", label: "Events", path: "/events", icon: <EventIcon /> },
 ];
 
 const SideBar = ({ addTab }) => {
@@ -121,13 +137,13 @@ const SideBar = ({ addTab }) => {
     <>
       {/* Menu Icon for Small Screens */}
       {isSmallScreen && (
-			<IconButton
-			color="primary"
-			onClick={toggleDrawer}
-			style={{ position: "fixed", top: 10, left: 10 }}
-			>
-			<MenuIcon />
-			</IconButton>
+        <IconButton
+          color="primary"
+          onClick={toggleDrawer}
+          style={{ position: "fixed", top: 10, left: 10 }}
+        >
+          <MenuIcon />
+        </IconButton>
       )}
 
       {/* Sidebar Drawer */}

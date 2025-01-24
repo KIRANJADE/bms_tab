@@ -23,15 +23,13 @@ import {
 import { userCreate, userListData } from "../../state/redux/authSlice";
 import { useEffect, useState } from "react";
 
-const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
-  const [userById, setUserById] = useState([]);
+const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers   }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
-    control,
+    setValue
   } = useForm();
 
   const {addUser,editUser} = useSelector((state) => state.auth);
@@ -277,18 +275,19 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     <Modal open={open} onClose={onClose} aria-labelledby="add-new-modal-title">
       <Box
         sx={{
-          position: "fixed", // Position it as fixed to cover the entire viewport
-          top: 0,
-          left: 0,
-          width: "100%", // Full width
-          height: "100%", // Full height
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "90%", // Adjust width as needed
+         
+          height: "auto", // Let the height adjust based on content
+          maxHeight: "90vh", // Optional: to limit the height and make it scrollable if content overflows
           bgcolor: "background.paper",
-          borderRadius: 0,
+          borderRadius: 2, // Adds rounded corners
           boxShadow: 24,
           p: 3,
-          overflow: "auto", // Enable scrolling for overflowing content
-          display: "flex",
-          flexDirection: "column", // Ensure form content is in a column layout
+          overflowY: "auto", //
         }}
       >
         <Typography

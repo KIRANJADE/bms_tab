@@ -17,7 +17,12 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [hasMore, setHasMore] = useState(true); // To track if more data is available
   const [isExpanded, setIsExpanded] = useState(false);
-  const users = useSelector((state) => state.auth?.users || []); // Get users from Redux state
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [cardsUserId, setcardsUserId] = useState(null);
+  const [isEditUsers, setIsEditMode] = useState(false);
+  const users = useSelector((state) => state.auth?.users || []);
+  
   const dispatch = useDispatch();
 
    const {
@@ -78,7 +83,7 @@ const Dashboard = () => {
   };
   return (
     <>
-      <AddNewModal open={isModalOpen} onClose={handleModalClose} />
+      <AddNewModal open={isModalOpen} onClose={handleModalClose}  cardsUserId={cardsUserId}  isEditUsers={isEditUsers}/>
       <div className="">
       <Box
         sx={{
