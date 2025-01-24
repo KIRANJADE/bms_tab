@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Modal,
   Box,
@@ -13,176 +13,54 @@ import {
   FormControl,
   Grid,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  createUserApi,
-  editUserApi,
-  getUserById,
-  userList,
-} from "../../state/redux/userApi";
-import { userCreate, userListData } from "../../state/redux/authSlice";
-import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { createUserApi } from "../../state/redux/userApi";
+import { userCreate } from "../../state/redux/authSlice";
 
-const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
-  const [userById, setUserById] = useState([]);
+const AddNewModal = ({ open, onClose }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
-    control,
   } = useForm();
-
-  const { addUser, editUser } = useSelector((state) => state.auth);
-  console.log(editUser, "editUser");
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    fetchUsersById();
-  }, [cardsUserId]);
-
-  // Set values on form load
-  useEffect(() => {
-    if (isEditUsers && userById) {
-      setValue("firstName", userById?.profile?.firstname);
-      setValue("lastName", userById?.profile?.lastname);
-      setValue("phoneNumber", userById?.profile?.phoneno);
-      setValue("fatherName", userById?.profile?.fathername);
-      setValue("motherName", userById?.profile?.mothername);
-      setValue(
-        "gender",
-        userById?.profile?.gender === "male" ? "male" : "female"
-      );
-      setValue("avatar", userById?.profile?.avatar);
-      setValue("address", userById?.profile?.address);
-      setValue("dob", userById?.profile?.dob);
-
-      setValue("balance", userById?.balance);
-      setValue(
-        "isAdministrator",
-        userById?.isAdministrator === false ? "no" : "yes"
-      );
-      setValue("position", userById?.position);
-      setValue("isChitCommitteeMember", userById?.isChitCommitteeMember);
-      setValue("chitCommitteePosition", userById?.chitCommitteePosition);
-      setValue("role", userById?.role);
-      setValue("status", userById?.status);
-      setValue("statusChangedDate", userById?.statusChangedDate);
-
-      setValue(
-        "memberType",
-        userById?.memberdetails?.memberType === "b-class" ? "B-type" : "A-type"
-      );
-      setValue("userType", userById?.memberdetails?.userType);
-      setValue("joiningDate", userById?.memberdetails?.joiningDate);
-      setValue("rejoiningDate", userById?.memberdetails?.rejoiningDate);
-      setValue(
-        "userTypeChangedDate",
-        userById?.memberdetails?.userTypeChangedDate
-      );
-      setValue(
-        "bClassToAClassChangeDate",
-        userById?.memberdetails?.bClassToAClassChangeDate
-      );
-
-      setValue("identityProof", userById?.otherdetails?.identityproof);
-      setValue("identityProofNo", userById?.otherdetails?.identityproofno);
-      setValue("qualification", userById?.otherdetails?.qualification);
-      setValue("jobType", userById?.otherdetails?.jobType);
-      setValue("jobPortal", userById?.otherdetails?.jobPortal);
-      setValue("jobDetails", userById?.otherdetails?.jobDetails);
-      setValue("jobProfessional", userById?.otherdetails?.jobProfessional);
-
-      setValue("remarks", userById?.remark);
-    }
-
-    console.log("userById", userById);
-  }, [userById, setValue, isEditUsers]);
-
-  useEffect(() => {
-    if (userById?.memberdetails?.joiningDate) {
-      const formattedDate = new Date(userById?.memberdetails?.joiningDate)
-        .toISOString()
-        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
-      setValue("joiningDate", formattedDate);
-    }
-    if (userById?.memberdetails?.rejoiningDate) {
-      const formattedDate = new Date(userById?.memberdetails?.rejoiningDate)
-        .toISOString()
-        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
-      setValue("rejoiningDate", formattedDate);
-    }
-    if (userById?.memberdetails?.userTypeChangedDate !== "Invalid date") {
-      const rawDate = userById?.memberdetails?.userTypeChangedDate;
-
-      if (rawDate) {
-        const parsedDate = new Date(rawDate);
-        if (!isNaN(parsedDate)) {
-          const formattedDate = parsedDate.toISOString().split("T")[0]; // Format to YYYY-MM-DD
-          setValue("userTypeChangedDate", formattedDate);
-        } else {
-          console.error("Invalid date value:", rawDate);
-        }
-      } else {
-        console.warn("userTypeChangedDate is undefined or null.");
-      }
-    }
-    if (userById?.memberdetails?.bClassToAClassChangeDate) {
-      const formattedDate = new Date(
-        userById?.memberdetails?.bClassToAClassChangeDate
-      )
-        .toISOString()
-        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
-      setValue("bClassToAClassChangeDate", formattedDate);
-    }
-    if (userById?.profile?.dob) {
-      const formattedDob = new Date(userById?.profile?.dob)
-        .toISOString()
-        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
-      setValue("dob", formattedDob);
-    }
-    if (userById?.profile?.gender) {
-      setValue("gender", userById?.profile?.gender);
-    }
-    if (userById?.statusChangedDate) {
-      const formattedDate = new Date(userById?.statusChangedDate)
-        .toISOString()
-        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
-      setValue("statusChangedDate", formattedDate);
-    }
-  }, [userById, setValue]);
-
-  const fetchUsersById = async () => {
-    const response = await getUserById(cardsUserId);
-    console.log(response, "myresss");
-    setUserById(response?.data);
-  };
-
-  const fetchUserList = async () => {
-    try {
-      const response = await userList(1, 8, {
-        status: "active",
-        "memberdetails.memberType": "a-class",
-        "memberdetails.userType": "full",
-      });
-      if (response.status) {
-        dispatch(userListData(response.userDetails));
-      }
-    } catch (error) {
-      console.log("Failed to fetch user data");
-    } finally {
-    }
-  };
-
-  const onCloseReset = () => {
-    reset();
-    onClose();
-  };
-
   const onSubmit = async (data) => {
     console.log("Form Data:", data);
+    // let payload = {
+    //   isAdministrator: false,
+    //   isChitCommitteeMember: false,
+    //   profile: {
+    //     firstname: data.firstName,
+    //     lastname: data.lastName,
+    //     phoneno: data.phoneNumber,
+    //     fathername: data.fatherName,
+    //     mothername: data.motherName,
+    //     gender: data.gender,
+    //     address: data.address,
+    //     dob: data.dob,
+    //   },
+    //   memberdetails: {
+    //     memberType: data?.memberType,
+    //     joiningDate: data.joiningDate,
+    //     rejoiningDate: data.rejoiningDate,
+    //     userType: data?.type,
+    //     userTypeChangedDate: data.userTypeChangedDate,
+    //   },
+    //   otherdetails: {
+    //     identityProof: data.identityProof,
+    //     identityProofNo: data.identityProofNo,
+    //   },
+    //   role: data.role,
+    //   status: data.status,
+    //   statusChangedDate: data.statusChangedDate,
+    //   position: data.position,
+    // };
+
+
+
     let payload = {
       profile: {
         firstname: data.firstName,
@@ -194,14 +72,13 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
         avatar: "avatar_url_here",
         address: data.address,
         dob: data.dob,
-        maritalStatus: data.maritalStatus,
+        maritalStatus:data.maritalStatus
       },
       isChanthaRequired: true,
       balance: data?.balance,
-      isAdministrator: data?.isAdministrator === "yes" ? true : false,
+      isAdministrator: data?.isAdministrator,
       position: data?.position,
-      isChitCommitteeMember:
-        data?.isChitCommitteeMember === "yes" ? true : false,
+      isChitCommitteeMember: data?.isChitCommitteeMember,
       chitCommitteePosition: data?.chitCommitteePosition,
       role: data?.role,
       status: data?.status,
@@ -223,47 +100,43 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
         jobDetails: data?.jobDetails,
         jobProfessional: data?.jobProfessional,
       },
-      remark: data?.remarks,
+      remark:   data?.remarks,
     };
-    if (userById && isEditUsers) {
-      const response = await editUserApi(cardsUserId, payload);
-      console.log("Payload:", response);
-      if (response?.status) {
-        console.log(response, "responseresponse");
-        fetchUserList();
-        onClose();
-      }
-    } else {
-      const response = await createUserApi(payload);
-      console.log("Payload:", response);
-      if (response.status) {
-        dispatch(userCreate(response.data));
-        fetchUserList();
-        onClose();
-      }
+
+    const response = await createUserApi(payload);
+    console.log("Payload:", response);
+
+    if (response.status === 201) {
+      dispatch(userCreate(response.data));
     }
-    onClose();
+    reset(); // Reset form fields after submission
+    onClose(); // Close the modal
   };
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="add-new-modal-title">
       <Box
         sx={{
-          position: "fixed",
+          position: "fixed", // Position it as fixed to cover the entire viewport
           top: 0,
           left: 0,
-          width: "100%",
-          height: "100%",
+          width: "100%", // Full width
+          height: "100%", // Full height
           bgcolor: "background.paper",
           borderRadius: 0,
           boxShadow: 24,
           p: 3,
-          overflow: "auto",
+          overflow: "auto", // Enable scrolling for overflowing content
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "column", // Ensure form content is in a column layout
         }}
       >
-        <Typography id="add-new-modal-title" variant="h6" component="h2" mb={3}>
+        <Typography
+          id="add-new-modal-title"
+          variant="h6"
+          component="h2"
+          mb={3} // Increased margin-bottom to ensure heading doesn't overlap
+        >
           Add / Edit User
         </Typography>
         <form
@@ -271,44 +144,38 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
           style={{ flex: 1, overflow: "auto" }}
         >
           <Grid container spacing={3}>
+            {/* Added spacing to ensure consistent gaps between fields */}
             <Grid item xs={12} sm={3}>
-              <TextField
+            <TextField
                 fullWidth
                 label="First Name"
                 margin="normal"
-                {...register("firstName", {
-                  required: "First name is required",
-                })}
-                slotProps={{ inputLabel: { shrink: true } }}
+                {...register("firstName", { required: "First name is required", })}
                 error={!!errors.firstName}
                 helperText={errors.firstName?.message}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Last Name"
                 margin="normal"
                 {...register("lastName", { required: "Last name is required" })}
-                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.lastName}
                 helperText={errors.lastName?.message}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Father's Name"
                 margin="normal"
-                slotProps={{ inputLabel: { shrink: true } }}
-                {...register("fatherName", {
-                  required: "Father's name is required",
-                })}
+                {...register("fatherName", {  required: "Father's name is required", })}
                 error={!!errors.fatherName}
                 helperText={errors.fatherName?.message}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Mother's Name"
@@ -316,29 +183,24 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 {...register("motherName", {
                   required: "Mother's name is required",
                 })}
-                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.motherName}
                 helperText={errors.motherName?.message}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Phone Number"
                 margin="normal"
-                {...register("phoneNumber", {
-                  required: "Phone number is required",
+                {...register("phoneNumber", {  required: "Phone number is required",
                   pattern: {
                     value: /^[0-9]{10}$/,
-                    message: "Enter a valid 10-digit phone number",
-                  },
-                })}
-                slotProps={{ inputLabel: { shrink: true } }}
+                    message: "Enter a valid 10-digit phone number",   },  })}
                 error={!!errors.phoneNumber}
                 helperText={errors.phoneNumber?.message}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <FormControl margin="normal">
                 <FormLabel>Gender</FormLabel>
                 <RadioGroup row {...register("gender", { required: true })}>
@@ -354,17 +216,16 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   />
                 </RadioGroup>
                 {errors.gender && (
-                  <FormHelperText>{errors.gender.message}</FormHelperText>
+                  <Typography variant="caption" color="error">
+                    Please select a gender.
+                  </Typography>
                 )}
               </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <FormControl margin="normal">
                 <FormLabel>Marital Status</FormLabel>
-                <RadioGroup
-                  row
-                  {...register("maritalStatus", { required: true })}
-                >
+                <RadioGroup row {...register("maritalStatus", { required: true })}>
                   <FormControlLabel
                     value="sinle"
                     control={<Radio />}
@@ -387,24 +248,23 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   </Typography>
                 )}
               </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Address"
                 margin="normal"
                 {...register("address", { required: "Address is required" })}
-                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.address}
                 helperText={errors.address?.message}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <FormControl margin="normal" className="mb-0">
                 <FormLabel>Is Administrator</FormLabel>
                 <RadioGroup
                   row
-                  defaultValue="no"
+                   defaultValue="no"
                   {...register("isAdministrator", { required: true })}
                 >
                   <FormControlLabel
@@ -420,55 +280,48 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   </Typography>
                 )}
               </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Position"
                 margin="normal"
                 {...register("position", { required: "Position is required" })}
-                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.position}
                 helperText={errors.position?.message}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <FormControl margin="normal" className="mb-0">
-                <FormLabel>Is Chit Committee Member</FormLabel>
-                <RadioGroup
-                  row
-                  defaultValue="no"
-                  {...register("isChitCommitteeMember", {
-                    required: "Please select an option.",
-                  })}
-                >
-                  <FormControlLabel
-                    value="yes"
-                    control={<Radio />}
-                    label="Yes"
-                  />
-                  <FormControlLabel value="no" control={<Radio />} label="No" />
-                </RadioGroup>
-                {errors.isChitCommitteeMember && (
-                  <Typography variant="caption" color="error">
-                    {errors.isChitCommitteeMember.message}
-                  </Typography>
-                )}
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                
+<FormControl margin="normal" className="mb-0">
+  <FormLabel>Is Chit Committee Member</FormLabel>
+  <RadioGroup
+    row
+    defaultValue="no" // Set default value (can be 'yes' or 'no')
+    {...register("isChitCommitteeMember", { required: "Please select an option." })}
+  >
+    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+    <FormControlLabel value="no" control={<Radio />} label="No" />
+  </RadioGroup>
+  {errors.isChitCommitteeMember && (
+    <Typography variant="caption" color="error">
+      {errors.isChitCommitteeMember.message}
+    </Typography>
+  )}
+</FormControl>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Chit Committee Position"
                 margin="normal"
-                {...register("position")}
-                slotProps={{ inputLabel: { shrink: true } }}
+                {...register("position",)}
                 error={!!errors.position}
                 helperText={errors.position?.message}
               />
-            </Grid>
-
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              
+              <Grid item xs={12} sm={3}>
               <FormControl margin="normal">
                 <FormLabel>Member Type</FormLabel>
                 <RadioGroup row {...register("memberType", { required: true })}>
@@ -494,9 +347,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   </Typography>
                 )}
               </FormControl>
-            </Grid>
+              </Grid>
 
-            <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={3}>
               <FormControl margin="normal">
                 <FormLabel>User Type</FormLabel>
                 <RadioGroup row {...register("userType", { required: true })}>
@@ -517,20 +370,22 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   </Typography>
                 )}
               </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Joining Date"
                 type="date"
                 margin="normal"
-                slotProps={{ inputLabel: { shrink: true } }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 {...register("dob", { required: "Joining date is required" })}
                 error={!!errors.dob}
                 helperText={errors.dob?.message}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Status"
@@ -538,96 +393,82 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 {...register("status", { required: "Status is required" })}
                 error={!!errors.status}
                 helperText={errors.status?.message}
-                slotProps={{ inputLabel: { shrink: true } }}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Identity Proof"
                 margin="normal"
                 {...register("identityProof")}
-                slotProps={{ inputLabel: { shrink: true } }}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Identity Proof No"
                 margin="normal"
                 {...register("identityProofNo")}
-                slotProps={{ inputLabel: { shrink: true } }}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Qualification"
                 margin="normal"
                 {...register("qualification")}
-                slotProps={{ inputLabel: { shrink: true } }}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Job Type"
                 margin="normal"
                 {...register("jobType")}
-                slotProps={{ inputLabel: { shrink: true } }}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Job Portal"
                 margin="normal"
                 {...register("jobPortal")}
-                slotProps={{ inputLabel: { shrink: true } }}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Job Details"
                 margin="normal"
                 {...register("jobDetails")}
-                slotProps={{ inputLabel: { shrink: true } }}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Job Professional"
                 margin="normal"
                 {...register("jobProfessional")}
-                slotProps={{ inputLabel: { shrink: true } }}
               />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Remarks"
                 margin="normal"
                 {...register("remarks")}
-                slotProps={{ inputLabel: { shrink: true } }}
               />
-            </Grid>
+              </Grid>
           </Grid>
 
+          {/* Buttons */}
           <Box mt={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button onClick={() => onCloseReset()} sx={{ marginRight: 1 }}>
+            <Button onClick={onClose} sx={{ marginRight: 1 }}>
               Cancel
             </Button>
-            {cardsUserId ? (
-              <Button type="submit" variant="contained">
-                Update
-              </Button>
-            ) : (
-              <Button type="submit" variant="contained">
-                Add
-              </Button>
-            )}
+            <Button type="submit" variant="contained">
+              Add
+            </Button>
           </Box>
         </form>
       </Box>

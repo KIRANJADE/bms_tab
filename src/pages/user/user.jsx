@@ -2,8 +2,6 @@ import React from "react";
 import ActionCard from "../../components/cardList/card";
 import { Grid, Box, Button } from "@mui/material";
 import AddNewModal from "../userAdd/addUser";
-import { useSelector } from "react-redux";
-
 
 const cards = [
   {
@@ -65,7 +63,6 @@ const cards = [
 const User = () => {
   const [editingCard, setEditingCard] = React.useState(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false); // Modal open state
-  const committeeData = useSelector((state) => state.auth?.committeeData || []); // Get users from Redux state
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
@@ -82,7 +79,6 @@ const User = () => {
   const handleDelete = () => {
     setEditingCard(null); 
   };
-  console.log(committeeData, "committeeData")
   return (
     <>
       {<AddNewModal open={isModalOpen} onClose={handleModalClose} />}
