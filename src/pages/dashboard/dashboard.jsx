@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { userList } from "../../state/redux/userApi";
 import { userListData } from "../../state/redux/authSlice";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import { useForm } from "react-hook-form";
 
 const ITEMS_PER_PAGE =12;
 
@@ -17,10 +18,13 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [hasMore, setHasMore] = useState(true); // To track if more data is available
   const [isExpanded, setIsExpanded] = useState(false);
+  const [cardsUserId, setcardsUserId] = useState(null);
+  const [isEditUsers, setIsEditMode] = useState(false);
   const users = useSelector((state) => state.auth?.users || []); // Get users from Redux state
   const dispatch = useDispatch();
 
   const { reset } = useForm();
+
 
   const fetchUserList = async (currentPage) => {
     setLoading(true);
@@ -46,9 +50,9 @@ const Dashboard = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(cardsUserId, "cardsUserId");
-  }, [cardsUserId]);
+  // useEffect(() => {
+  //   console.log(cardsUserId, "cardsUserId");
+  // }, [cardsUserId]);
 
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => {
@@ -75,7 +79,8 @@ const Dashboard = () => {
   };
   return (
     <>
-      <AddNewModal open={isModalOpen} onClose={handleModalClose} />
+      <AddNewModal open={isModalOpen} onClose={handleModalClose}  cardsUserId={cardsUserId}
+        isEditUsers={isEditUsers}/>
       <div className="">
       <Box
         sx={{
