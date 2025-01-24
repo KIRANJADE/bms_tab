@@ -22,6 +22,8 @@ const Dashboard = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [cardsUserId, setcardsUserId] = useState(null);
+  const [isEditUsers, setIsEditMode] = useState(false);
   const users = useSelector((state) => state.auth?.users || []);
   
   const dispatch = useDispatch();
@@ -81,7 +83,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <AddNewModal open={isModalOpen} onClose={handleModalClose} />
+      <AddNewModal open={isModalOpen} onClose={handleModalClose}  cardsUserId={cardsUserId}  isEditUsers={isEditUsers}/>
       <div className="">
       <Box
         sx={{

@@ -11,15 +11,15 @@ import { userList } from "../state/redux/userApi";
 import { useDispatch } from "react-redux";
 import { userListData } from "../state/redux/authSlice";
 import { Pagination, Stack } from "@mui/material";
-
+import Home from "../pages/homePage";
 const DashboardLayout = () => {
-  const [activeTabs, setActiveTabs] = useState([]);
+  const [activeTabs, setActiveTabs] = useState([{ id: "tab1", label:"Dashboard" }]);
   const [activeTab, setActiveTab] = useState("tab1");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(12); // Limit set to 8 cards per page
+  const [limit, setLimit] = useState(12); 
   const [totalPages, setTotalPages] = useState(0);
 
   const dispatch = useDispatch();
@@ -55,11 +55,12 @@ const DashboardLayout = () => {
   };
 
   const tabComponents = {
-    tab1: <Admin />,
-    tab2: <Dashboard />,
-    tab3: <User />,
-    tab4: <Chantha />,
-    tab5: <Events />,
+    tab1: <Home />,
+    tab2: <Admin />,
+    tab3: <Dashboard />,
+    tab4: <User />,
+    tab5: <Chantha />,
+    tab6: <Events />,
   };
 
   const addTab = (tabId, label, path) => {
