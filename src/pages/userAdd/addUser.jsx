@@ -40,7 +40,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    fetchUsersById();
+    if (userById) {
+      fetchUsersById();
+    }
     console.log(userById, "userById");
   }, [cardsUserId]);
 
@@ -158,9 +160,11 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
   }, [userById, setValue]);
 
   const fetchUsersById = async () => {
-    const response = await getUserById(cardsUserId);
-    console.log(response, "myresss");
-    setUserById(response?.data);
+    if (cardsUserId) {
+      const response = await getUserById(cardsUserId);
+      console.log(response, "myresss");
+      setUserById(response?.data);
+    }
   };
 
   const getTenderTypes = async () => {
