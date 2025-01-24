@@ -16,6 +16,7 @@ import {
 import { useDispatch } from "react-redux";
 import { createUserApi } from "../../state/redux/userApi";
 import { userCreate } from "../../state/redux/authSlice";
+import { useEffect } from "react";
 
 const AddNewModal = ({ open, onClose }) => {
   const {
