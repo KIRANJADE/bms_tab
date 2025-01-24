@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ActionCard from "../../components/cardList/card";
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button,IconButton, Grid,  Collapse ,TextField ,Select, MenuItem, FormControl, InputLabel} from "@mui/material";
 import AddNewModal from "../userAdd/addUser";
 import { useSelector, useDispatch } from "react-redux";
 import { userList } from "../../state/redux/userApi";
 import { userListData } from "../../state/redux/authSlice";
-import { useForm } from "react-hook-form";
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE =12;
 
 const Dashboard = () => {
   const [editingCard, setEditingCard] = useState(null);
@@ -15,10 +15,9 @@ const Dashboard = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [cardsUserId,setcardsUserId] = useState(null)
-  const [isEditUsers,setIsEditMode] = useState(false)
-  const users = useSelector((state) => state.auth?.users || []);
+  const [hasMore, setHasMore] = useState(true); // To track if more data is available
+  const [isExpanded, setIsExpanded] = useState(false);
+  const users = useSelector((state) => state.auth?.users || []); // Get users from Redux state
   const dispatch = useDispatch();
 
    const {
@@ -31,8 +30,6 @@ const Dashboard = () => {
     try {
       const response = await userList(currentPage, ITEMS_PER_PAGE, {
         status: "active",
-        "memberdetails.memberType": "a-class",
-        "memberdetails.userType": "full",
       });
 
       if (response.status) {
@@ -76,23 +73,84 @@ const Dashboard = () => {
     setPage(nextPage);
     fetchUserList(nextPage);
   };
-
+  const handleExpandClick = () => {
+    setIsExpanded(!isExpanded);
+  };
   return (
     <>
-      <AddNewModal 
-        open={isModalOpen} 
-        onClose={handleModalClose} 
-        users={editingCard} 
-        isEditMode={!!editingCard}
-        cardsUserId = {cardsUserId}
-		isEditUsers = {isEditUsers}
-      />
-      <div>
-        <Box sx={{ display: "flex", justifyContent: "flex-start", marginBottom: 3, marginTop: 0 }}>
-          <Button style={{ backgroundColor: "#4C79F8", width: "180px" }} variant="contained" color="primary" onClick={handleModalOpen}>
-            Add User
-          </Button>
+      <AddNewModal open={isModalOpen} onClose={handleModalClose} />
+      <div className="">
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-start",
+          marginBottom: 3,
+          marginTop: 0,
+        }}
+      >
+        <Button
+          style={{ backgroundColor: "#4C79F8", width: "180px" }}
+          variant="contained"
+          color="primary"
+          onClick={handleModalOpen}
+        >
+          Add User
+        </Button>
+
+        <Box sx={{ flexGrow: 1 }} /> {/* Added to push the icon to the right */}
+
+        <IconButton
+          onClick={handleExpandClick}
+          aria-expanded={isExpanded}
+          aria-label="show more"
+          sx={{ alignItems: "center" }}
+        >
+          <FilterAltIcon />
+        </IconButton>
+      </Box>
+      <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+        <Box sx={{ marginTop: 2,marginBottom: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel id="memberType-label">Member Type</InputLabel>
+              <Select
+                labelId="memberType-label"
+                label="Member Type"
+              >
+                <MenuItem value=""><em>Select Member Type</em></MenuItem>
+                <MenuItem value={'a-class'}>A-Class</MenuItem>
+                <MenuItem value={'b-class'}>B-Class</MenuItem>
+                <MenuItem value={'c-class'}>C-Class</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel id="gender-label">Gender</InputLabel>
+              <Select
+                labelId="gender-label"
+                label="Gender"
+              >
+                <MenuItem value=""><em>Select Gender</em></MenuItem>
+                <MenuItem value={'male'}>Male</MenuItem>
+                <MenuItem value={'female'}>Female</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel id="userType-label">User Type</InputLabel>
+              <Select
+                labelId="userType-label"
+                label="User Type"
+              >
+                <MenuItem value=""><em>Select User Type</em></MenuItem>
+                <MenuItem value={'full'}>Full</MenuItem>
+                <MenuItem value={'half'}>Half</MenuItem>
+              </Select>
+            </FormControl>
+            <Button variant="contained" color="primary" sx={{ paddingLeft: '50px', paddingRight: '50px' }}>
+              Filter
+            </Button>
+          </Box>
         </Box>
+      </Collapse>
 
         <Grid container spacing={1} style={{height:460,overflowY:"scroll"}}>
           {users.map((user, index) => (
