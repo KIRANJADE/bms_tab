@@ -38,49 +38,7 @@ const ActionCard = ({ users, profile, onEdit }) => {
 	const handleEdit = (dataId, user) => {
     console.log(dataId, user,"jhjhjhj",user.profile.firstname);
 
-    // Assuming we have a method to set form values
-    setValue("profile.firstname", user.profile.firstname);
-    setValue("profile.lastname", user.profile.lastname);
-    setValue("profile.phoneno", user.profile.phoneno);
-    setValue("profile.gender", user.profile.gender);
-    setValue("profile.avatar", user.profile.avatar);
-    setValue("profile.address", user.profile.address);
-    setValue("profile.dob", user.profile.dob);
-    setValue("profile.fathername", user.profile.fathername);
-    setValue("profile.mothername", user.profile.mothername);
-    setValue("profile.isChanthaRequired", user.profile.isChanthaRequired);
-
-    setValue("balance", user.balance);
-    setValue("isAdministrator", user.isAdministrator);
-    setValue("position", user.position);
-    setValue("isChitCommitteeMember", user.isChitCommitteeMember);
-    setValue("chitCommitteePosition", user.chitCommitteePosition);
-    setValue("role", user.role);
-    setValue("status", user.status);
-    setValue("statusChangedDate", user.statusChangedDate);
-
-    setValue("memberdetails.memberType", user.memberdetails.memberType);
-    setValue("memberdetails.userType", user.memberdetails.userType);
-    setValue("memberdetails.joiningDate", user.memberdetails.joiningDate);
-    setValue("memberdetails.rejoiningDate", user.memberdetails.rejoiningDate);
-    setValue(
-      "memberdetails.userTypeChangedDate",
-      user.memberdetails.userTypeChangedDate
-    );
-    setValue(
-      "memberdetails.bClassToAClassChangeDate",
-      user.memberdetails.bClassToAClassChangeDate
-    );
-
-    setValue("otherdetails.identityproof", user.otherdetails.identityproof);
-    setValue("otherdetails.identityproofno", user.otherdetails.identityproofno);
-    setValue("otherdetails.qualification", user.otherdetails.qualification);
-    setValue("otherdetails.jobType", user.otherdetails.jobType);
-    setValue("otherdetails.jobPortal", user.otherdetails.jobPortal);
-    setValue("otherdetails.jobDetails", user.otherdetails.jobDetails);
-    setValue("otherdetails.jobProfessional", user.otherdetails.jobProfessional);
-
-    setValue("remark", user.remark);
+   
 
     onEdit(); // Assuming onEdit handles the UI updates
   };
@@ -107,7 +65,7 @@ const ActionCard = ({ users, profile, onEdit }) => {
             className="action-card-avatar"
           />
           <Box className="action-card-details">
-            <Typography variant="subtitle1" className="action-card-name">
+            <Typography title={profile?.firstname}variant="subtitle1" className="action-card-name">
               {profile?.firstname}
             </Typography>
             <Typography variant="body2" className="action-card-id">

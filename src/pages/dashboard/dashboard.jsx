@@ -20,13 +20,11 @@ const Dashboard = () => {
   const users = useSelector((state) => state.auth?.users || []); // Get users from Redux state
   const dispatch = useDispatch();
 
-   const {
-	  reset,
-	} = useForm();
+  const { reset } = useForm();
 
   const fetchUserList = async (currentPage) => {
     setLoading(true);
-    setError(""); 
+    setError("");
     try {
       const response = await userList(currentPage, ITEMS_PER_PAGE, {
         status: "active",
@@ -49,21 +47,20 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-	console.log(cardsUserId,"cardsUserId");
-  }, [cardsUserId])
-  
+    console.log(cardsUserId, "cardsUserId");
+  }, [cardsUserId]);
 
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => {
-	  setIsModalOpen(false);
-	  reset();
-  }
+    setIsModalOpen(false);
+    reset();
+  };
 
   const handleEdit = (card) => {
     setcardsUserId(card?._id);
     setEditingCard(card);
     setIsModalOpen(true);
-	setIsEditMode(true)
+    setIsEditMode(true);
   };
 
   const handleDelete = () => setEditingCard(null);
@@ -152,7 +149,11 @@ const Dashboard = () => {
         </Box>
       </Collapse>
 
-        <Grid container spacing={1} style={{height:460,overflowY:"scroll"}}>
+        <Grid
+          container
+          spacing={1}
+          style={{ height: 460, overflowY: "scroll" }}
+        >
           {users.map((user, index) => (
             <Grid className="mb-3" item xs={12} sm={6} md={3} key={index}>
               <ActionCard
@@ -174,10 +175,11 @@ const Dashboard = () => {
 
         {hasMore && (
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
-            <Button style={{backgroundColor:"#4c79f8",color:"white"}}
+            <Button
+              style={{ backgroundColor: "#4c79f8", color: "white" }}
               variant="outlined"
               onClick={handleLoadMore}
-              disabled={loading} 
+              disabled={loading}
             >
               {loading ? "Loading..." : "Load More"}
             </Button>
@@ -189,4 +191,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
