@@ -13,7 +13,7 @@ import { userListData , committeeListData } from "../state/redux/authSlice";
 import { Pagination, Stack } from "@mui/material";
 
 const DashboardLayout = () => {
-  const [activeTabs, setActiveTabs] = useState([]);
+  const [activeTabs, setActiveTabs] = useState([{ id: "tab1", label:"Administrators" }]);
   const [activeTab, setActiveTab] = useState("tab1");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

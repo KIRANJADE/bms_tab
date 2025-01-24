@@ -1,10 +1,21 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 const index = () => {
+  const [count,setCount] = useState(0);
+
+  useEffect(() => {
+    console.log('Effect Runs');
+    
+    return () => {
+      console.log("Unmount",count);
+      
+    }
+  }, [count])
+  
   return (
-    <div>
-      events
-    </div>
+    <button onClick={() => setCount(count + 1)}>
+      Events {count}
+    </button>
   )
 }
 
