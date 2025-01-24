@@ -57,7 +57,7 @@ const ActionCard = ({ users, profile }) => {
             {profile?.lastname} {profile?.firstname}
             </Typography>
             <Typography variant="body2" className="action-card-id">
-              {users?.memberdetails?.memberId}
+              {users?.memberdetails?.memberId ? users?.memberdetails?.memberId : "No Member ID"}
             </Typography>
           </Box>
         </Box>
