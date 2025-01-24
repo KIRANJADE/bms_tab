@@ -14,6 +14,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import PasswordIcon from '@mui/icons-material/Password';
 
 const LoginPage = () => {
   const {
@@ -75,7 +76,7 @@ const LoginPage = () => {
           style={{ width: "100%", display: "flex", flexDirection: "column", gap: "16px" }}
         >
           <div>
-            <div style={{ marginBottom: "20px" }}>
+            <div style={{ marginBottom: "5px" }}>
               <TextField
                 fullWidth
                 id="username"
@@ -99,7 +100,7 @@ const LoginPage = () => {
                 {errors.username?.message}
               </FormHelperText>
             </div>
-            <div style={{ marginBottom: "20px" }}>
+            <div style={{ marginBottom: "5px" }}>
               <TextField
                 fullWidth
                 id="password"
@@ -108,6 +109,11 @@ const LoginPage = () => {
                 variant="outlined"
                 placeholder="Enter your password"
                 InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PasswordIcon />
+                    </InputAdornment>
+                  ),
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton onClick={togglePasswordVisibility}>
