@@ -7,6 +7,8 @@ import { userList } from "../../state/redux/userApi";
 import { userListData } from "../../state/redux/authSlice";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { useForm } from "react-hook-form";
+import SearchIcon from "@mui/icons-material/Search";
+import CloseSharpIcon from '@mui/icons-material/CloseSharp';
 
 const ITEMS_PER_PAGE =12;
 
