@@ -1,46 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ActionCard from "../../components/cardList/card";
-import { Box, Button,IconButton, Grid,  Collapse ,TextField ,Select, MenuItem, FormControl, InputLabel,OutlinedInput,InputAdornment,} from "@mui/material";
+import { Box, Button,IconButton, Grid,  Collapse ,TextField ,Select, MenuItem, FormControl, InputLabel} from "@mui/material";
 import AddNewModal from "../userAdd/addUser";
 import { useSelector, useDispatch } from "react-redux";
 import { userList } from "../../state/redux/userApi";
 import { userListData } from "../../state/redux/authSlice";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import { useForm } from "react-hook-form";
-import SearchIcon from "@mui/icons-material/Search";
-import CloseSharpIcon from '@mui/icons-material/CloseSharp';
 
 const ITEMS_PER_PAGE =12;
 
 const Dashboard = () => {
   const [editingCard, setEditingCard] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [page, setPage] = useState(1); // Tracks the current page for API
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasMore, setHasMore] = useState(true); // To track if more data is available
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const users = useSelector((state) => state.auth?.users || []);
-  
+  const users = useSelector((state) => state.auth?.users || []); // Get users from Redux state
   const dispatch = useDispatch();
+
+   const {
+	  reset,
+	} = useForm();
 
   const fetchUserList = async (currentPage) => {
     setLoading(true);
-    setError(""); // Reset error state before fetching
+    setError(""); 
     try {
       const response = await userList(currentPage, ITEMS_PER_PAGE, {
         status: "active",
       });
 
       if (response.status) {
-        // Add fetched users to the Redux store
         dispatch(userListData([...users, ...response.userDetails]));
 
-        // Check if more pages are available
         if (currentPage >= response.totalPages) {
-          setHasMore(false); // No more data to load
+          setHasMore(false);
         }
       } else {
         setError("Failed to fetch user data.");
@@ -52,33 +48,34 @@ const Dashboard = () => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(cardsUserId, "cardsUserId");
-  // }, [cardsUserId]);
+  useEffect(() => {
+	console.log(cardsUserId,"cardsUserId");
+  }, [cardsUserId])
+  
 
   const handleModalOpen = () => setIsModalOpen(true);
-  const handleModalClose = () => setIsModalOpen(false);
+  const handleModalClose = () => {
+	  setIsModalOpen(false);
+	  reset();
+  }
 
   const handleEdit = (card) => {
+    setcardsUserId(card?._id);
     setEditingCard(card);
     setIsModalOpen(true);
+	setIsEditMode(true)
   };
 
   const handleDelete = () => setEditingCard(null);
 
   const handleLoadMore = () => {
-    const nextPage = page + 1; // Calculate the next page
-    setPage(nextPage); // Update the state to track the current page
-    fetchUserList(nextPage); // Fetch data for the next page
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchUserList(nextPage);
   };
   const handleExpandClick = () => {
     setIsExpanded(!isExpanded);
   };
-  const handleSearchToggle = () => {
-    setShowSearch(!showSearch);
-    setSearchValue("");
-  };
-
   return (
     <>
       <AddNewModal open={isModalOpen} onClose={handleModalClose} />
@@ -101,34 +98,6 @@ const Dashboard = () => {
         </Button>
 
         <Box sx={{ flexGrow: 1 }} /> {/* Added to push the icon to the right */}
-        {showSearch && (
-          <OutlinedInput
-            size="small"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Search..."
-            sx={{
-              maxWidth: "250px",
-              transition: "max-width 0.3s ease-in-out",
-              marginRight: 1,
-            }}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton onClick={() => console.log("Searching:", searchValue)}>
-                <SearchIcon />
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-        )}
-
-        <IconButton
-          onClick={handleSearchToggle}
-          aria-label="toggle search"
-          sx={{ alignItems: "center", marginRight: 1 }}
-        >
-          {showSearch ? <CloseSharpIcon /> :  <SearchIcon />}
-        </IconButton>
 
         <IconButton
           onClick={handleExpandClick}
@@ -142,20 +111,6 @@ const Dashboard = () => {
       <Collapse in={isExpanded} timeout="auto" unmountOnExit>
         <Box sx={{ marginTop: 2,marginBottom: 2 }}>
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-          <FormControl variant="outlined" fullWidth>
-              <InputLabel id="Status-label">Status</InputLabel>
-              <Select
-                labelId="Status-label"
-                label="Status"
-              >
-                <MenuItem value=""><em>Select Status</em></MenuItem>
-                <MenuItem value={'active'}>Active</MenuItem>
-                <MenuItem value={'death'}>Death</MenuItem>
-                <MenuItem value={'dismiss'}>Dismiss</MenuItem>
-                <MenuItem value={'suspend'}>Suspend</MenuItem>
-                <MenuItem value={'VRS'}>VRS</MenuItem>
-              </Select>
-            </FormControl>
             <FormControl variant="outlined" fullWidth>
               <InputLabel id="memberType-label">Member Type</InputLabel>
               <Select
@@ -203,7 +158,7 @@ const Dashboard = () => {
               <ActionCard
                 users={user}
                 profile={user?.profile}
-                onEdit={handleEdit}
+                onEdit={() => handleEdit(user)}
                 onDelete={handleDelete}
                 isEdit={editingCard}
               />
@@ -211,20 +166,18 @@ const Dashboard = () => {
           ))}
         </Grid>
 
-        {/* Display error if fetch fails */}
         {error && (
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
             <p style={{ color: "red" }}>{error}</p>
           </Box>
         )}
 
-        {/* Load More Button */}
         {hasMore && (
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
             <Button style={{backgroundColor:"#4c79f8",color:"white"}}
               variant="outlined"
               onClick={handleLoadMore}
-              disabled={loading} // Disable button while loading
+              disabled={loading} 
             >
               {loading ? "Loading..." : "Load More"}
             </Button>
@@ -236,3 +189,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

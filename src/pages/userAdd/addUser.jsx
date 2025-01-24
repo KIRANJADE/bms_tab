@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import {
   Modal,
   Box,
@@ -13,25 +13,34 @@ import {
   FormControl,
   Grid,
 } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { createUserApi } from "../../state/redux/userApi";
-import { userCreate } from "../../state/redux/authSlice";
-import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createUserApi,
+  editUserApi,
+  getUserById,
+  userList,
+} from "../../state/redux/userApi";
+import { userCreate, userListData } from "../../state/redux/authSlice";
+import { useEffect, useState } from "react";
 
-const AddNewModal = ({ open, onClose }) => {
+const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
+  const [userById, setUserById] = useState([]);
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
+    control,
   } = useForm();
 
+  const {addUser,editUser} = useSelector((state) => state.auth);
+  console.log(editUser, "editUser");
+  
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (userById) {
-      fetchUsersById();
-    }
+    fetchUsersById();
     console.log(userById, "userById");
   }, [cardsUserId]);
 
@@ -149,11 +158,9 @@ const AddNewModal = ({ open, onClose }) => {
   }, [userById, setValue]);
 
   const fetchUsersById = async () => {
-    if (cardsUserId) {
-      const response = await getUserById(cardsUserId);
-      console.log(response, "myresss");
-      setUserById(response?.data);
-    }
+    const response = await getUserById(cardsUserId);
+    console.log(response, "myresss");
+    setUserById(response?.data);
   };
 
   const getTenderTypes = async () => {
@@ -169,38 +176,6 @@ const AddNewModal = ({ open, onClose }) => {
 
   const onSubmit = async (data) => {
     console.log("Form Data:", data);
-    // let payload = {
-    //   isAdministrator: false,
-    //   isChitCommitteeMember: false,
-    //   profile: {
-    //     firstname: data.firstName,
-    //     lastname: data.lastName,
-    //     phoneno: data.phoneNumber,
-    //     fathername: data.fatherName,
-    //     mothername: data.motherName,
-    //     gender: data.gender,
-    //     address: data.address,
-    //     dob: data.dob,
-    //   },
-    //   memberdetails: {
-    //     memberType: data?.memberType,
-    //     joiningDate: data.joiningDate,
-    //     rejoiningDate: data.rejoiningDate,
-    //     userType: data?.type,
-    //     userTypeChangedDate: data.userTypeChangedDate,
-    //   },
-    //   otherdetails: {
-    //     identityProof: data.identityProof,
-    //     identityProofNo: data.identityProofNo,
-    //   },
-    //   role: data.role,
-    //   status: data.status,
-    //   statusChangedDate: data.statusChangedDate,
-    //   position: data.position,
-    // };
-
-
-
     let payload = {
       profile: {
         firstname: data.firstName,
@@ -216,9 +191,10 @@ const AddNewModal = ({ open, onClose }) => {
       },
       isChanthaRequired: true,
       balance: data?.balance,
-      isAdministrator: data?.isAdministrator,
+      isAdministrator: data?.isAdministrator === "yes" ? true : false,
       position: data?.position,
-      isChitCommitteeMember: data?.isChitCommitteeMember,
+      isChitCommitteeMember:
+        data?.isChitCommitteeMember === "yes" ? true : false,
       chitCommitteePosition: data?.chitCommitteePosition,
       role: data?.role,
       status: data?.status,
@@ -240,18 +216,62 @@ const AddNewModal = ({ open, onClose }) => {
         jobDetails: data?.jobDetails,
         jobProfessional: data?.jobProfessional,
       },
-      remark:   data?.remarks,
+      remark: data?.remarks,
     };
-
-    const response = await createUserApi(payload);
-    console.log("Payload:", response);
-
-    if (response.status === 201) {
-      dispatch(userCreate(response.data));
+    if (userById && isEditUsers) {
+      const response = await editUserApi(cardsUserId, payload);
+      console.log("Payload:", response);
+      if (response?.status) {
+		console.log(response, "responseresponse");
+		
+        fetchUserList();
+        onClose();
+      }
+    } else {
+      const response = await createUserApi(payload);
+      console.log("Payload:", response);
     }
-    reset(); // Reset form fields after submission
-    onClose(); // Close the modal
+    if (response.status) {
+      dispatch(userCreate(response.data));
+      getTenderTypes();
+    }
+
+    onClose();
   };
+
+  const fetchUserList = async () => {
+    try {
+      const response = await userList(1, 8, {
+        status: "active",
+        "memberdetails.memberType": "a-class",
+        "memberdetails.userType": "full",
+      });
+	  alert("fetchUserList")
+
+      if (response.status) {
+	alert("fetchUserfsdfsdfList")
+
+        dispatch(userListData(response.userDetails));
+        // setTotalPages(response.totalPages);
+      }
+    } catch (error) {
+      console.log("Failed to fetch user data");
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  const onCloseReset = () => {
+    reset();
+    onClose();
+  };
+
+//   useEffect(() => {
+// 	if (editUser) {
+// 		fetchUserList()
+// 	}
+//   }, [editUser])
+  
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="add-new-modal-title">
@@ -290,7 +310,12 @@ const AddNewModal = ({ open, onClose }) => {
                 fullWidth
                 label="First Name"
                 margin="normal"
-                {...register("firstName", { required: "First name is required", })}
+                {...register("firstName", {
+                  required: "First name is required",
+                })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.firstName}
                 helperText={errors.firstName?.message}
               />
@@ -301,6 +326,9 @@ const AddNewModal = ({ open, onClose }) => {
                 label="Last Name"
                 margin="normal"
                 {...register("lastName", { required: "Last name is required" })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.lastName}
                 helperText={errors.lastName?.message}
               />
@@ -332,10 +360,16 @@ const AddNewModal = ({ open, onClose }) => {
                 fullWidth
                 label="Phone Number"
                 margin="normal"
-                {...register("phoneNumber", {  required: "Phone number is required",
+                {...register("phoneNumber", {
+                  required: "Phone number is required",
                   pattern: {
                     value: /^[0-9]{10}$/,
-                    message: "Enter a valid 10-digit phone number",   },  })}
+                    message: "Enter a valid 10-digit phone number",
+                  },
+                })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.phoneNumber}
                 helperText={errors.phoneNumber?.message}
               />
@@ -356,9 +390,7 @@ const AddNewModal = ({ open, onClose }) => {
                   />
                 </RadioGroup>
                 {errors.gender && (
-                  <Typography variant="caption" color="error">
-                    Please select a gender.
-                  </Typography>
+                  <FormHelperText>{errors.gender.message}</FormHelperText>
                 )}
               </FormControl>
               </Grid>
@@ -427,6 +459,9 @@ const AddNewModal = ({ open, onClose }) => {
                 label="Position"
                 margin="normal"
                 {...register("position", { required: "Position is required" })}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 error={!!errors.position}
                 helperText={errors.position?.message}
               />
@@ -557,6 +592,9 @@ const AddNewModal = ({ open, onClose }) => {
                 label="Qualification"
                 margin="normal"
                 {...register("qualification")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -565,6 +603,9 @@ const AddNewModal = ({ open, onClose }) => {
                 label="Job Type"
                 margin="normal"
                 {...register("jobType")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -573,6 +614,9 @@ const AddNewModal = ({ open, onClose }) => {
                 label="Job Portal"
                 margin="normal"
                 {...register("jobPortal")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -581,6 +625,9 @@ const AddNewModal = ({ open, onClose }) => {
                 label="Job Details"
                 margin="normal"
                 {...register("jobDetails")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -589,6 +636,9 @@ const AddNewModal = ({ open, onClose }) => {
                 label="Job Professional"
                 margin="normal"
                 {...register("jobProfessional")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -597,18 +647,27 @@ const AddNewModal = ({ open, onClose }) => {
                 label="Remarks"
                 margin="normal"
                 {...register("remarks")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
               </Grid>
           </Grid>
 
           {/* Buttons */}
           <Box mt={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button onClick={onClose} sx={{ marginRight: 1 }}>
+            <Button onClick={() => onCloseReset()} sx={{ marginRight: 1 }}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained">
-              Add
-            </Button>
+            {cardsUserId ? (
+              <Button type="submit" variant="contained">
+                Update
+              </Button>
+            ) : (
+              <Button type="submit" variant="contained">
+                Add
+              </Button>
+            )}
           </Box>
         </form>
       </Box>
