@@ -72,9 +72,9 @@ const AddNewModal = ({ open, onClose }) => {
         avatar: "avatar_url_here",
         address: data.address,
         dob: data.dob,
-    
-        isChanthaRequired: true,
+        maritalStatus:data.maritalStatus
       },
+      isChanthaRequired: true,
       balance: data?.balance,
       isAdministrator: data?.isAdministrator,
       position: data?.position,
@@ -144,11 +144,9 @@ const AddNewModal = ({ open, onClose }) => {
           style={{ flex: 1, overflow: "auto" }}
         >
           <Grid container spacing={3}>
-            {" "}
             {/* Added spacing to ensure consistent gaps between fields */}
-            {/* Column 1 */}
             <Grid item xs={12} sm={3}>
-              <TextField
+            <TextField
                 fullWidth
                 label="First Name"
                 margin="normal"
@@ -156,6 +154,8 @@ const AddNewModal = ({ open, onClose }) => {
                 error={!!errors.firstName}
                 helperText={errors.firstName?.message}
               />
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Last Name"
@@ -164,6 +164,30 @@ const AddNewModal = ({ open, onClose }) => {
                 error={!!errors.lastName}
                 helperText={errors.lastName?.message}
               />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+              <TextField
+                fullWidth
+                label="Father's Name"
+                margin="normal"
+                {...register("fatherName", {  required: "Father's name is required", })}
+                error={!!errors.fatherName}
+                helperText={errors.fatherName?.message}
+              />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+              <TextField
+                fullWidth
+                label="Mother's Name"
+                margin="normal"
+                {...register("motherName", {
+                  required: "Mother's name is required",
+                })}
+                error={!!errors.motherName}
+                helperText={errors.motherName?.message}
+              />
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Phone Number"
@@ -175,45 +199,8 @@ const AddNewModal = ({ open, onClose }) => {
                 error={!!errors.phoneNumber}
                 helperText={errors.phoneNumber?.message}
               />
-              <TextField
-                fullWidth
-                label="Father's Name"
-                margin="normal"
-                {...register("fatherName", {  required: "Father's name is required", })}
-                error={!!errors.fatherName}
-                helperText={errors.fatherName?.message}
-              />
-              <TextField
-                fullWidth
-                label="Mother's Name"
-                margin="normal"
-                {...register("motherName", {
-                  required: "Mother's name is required",
-                })}
-                error={!!errors.motherName}
-                helperText={errors.motherName?.message}
-              />
-              <TextField
-                fullWidth
-                label="Address"
-                margin="normal"
-                {...register("address", { required: "Address is required" })}
-                error={!!errors.address}
-                helperText={errors.address?.message}
-              />
-              <TextField
-                fullWidth
-                label="Joining Date"
-                type="date"
-                margin="normal"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                {...register("dob", { required: "Joining date is required" })}
-                error={!!errors.dob}
-                helperText={errors.dob?.message}
-              />
-              {/* Gender */}
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <FormControl margin="normal">
                 <FormLabel>Gender</FormLabel>
                 <RadioGroup row {...register("gender", { required: true })}>
@@ -234,21 +221,50 @@ const AddNewModal = ({ open, onClose }) => {
                   </Typography>
                 )}
               </FormControl>
-            </Grid>
-            {/* Column 2 */}
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+              <FormControl margin="normal">
+                <FormLabel>Marital Status</FormLabel>
+                <RadioGroup row {...register("maritalStatus", { required: true })}>
+                  <FormControlLabel
+                    value="sinle"
+                    control={<Radio />}
+                    label="Single"
+                  />
+                  <FormControlLabel
+                    value="married"
+                    control={<Radio />}
+                    label="Married"
+                  />
+                  <FormControlLabel
+                    value="widowed"
+                    control={<Radio />}
+                    label="Widowed"
+                  />
+                </RadioGroup>
+                {errors.maritalStatus && (
+                  <Typography variant="caption" color="error">
+                    Please select a marital status.
+                  </Typography>
+                )}
+              </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
-                label="Balance"
+                label="Address"
                 margin="normal"
-                {...register("balance", { required: "Balance is required" })}
-                error={!!errors.balance}
-                helperText={errors.balance?.message}
+                {...register("address", { required: "Address is required" })}
+                error={!!errors.address}
+                helperText={errors.address?.message}
               />
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <FormControl margin="normal" className="mb-0">
                 <FormLabel>Is Administrator</FormLabel>
                 <RadioGroup
                   row
+                   defaultValue="no"
                   {...register("isAdministrator", { required: true })}
                 >
                   <FormControlLabel
@@ -264,7 +280,8 @@ const AddNewModal = ({ open, onClose }) => {
                   </Typography>
                 )}
               </FormControl>
-
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Position"
@@ -273,7 +290,9 @@ const AddNewModal = ({ open, onClose }) => {
                 error={!!errors.position}
                 helperText={errors.position?.message}
               />
-
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                
 <FormControl margin="normal" className="mb-0">
   <FormLabel>Is Chit Committee Member</FormLabel>
   <RadioGroup
@@ -290,52 +309,36 @@ const AddNewModal = ({ open, onClose }) => {
     </Typography>
   )}
 </FormControl>
-
-
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
-                label="Role"
+                label="Chit Committee Position"
                 margin="normal"
-                {...register("role", { required: "Role is required" })}
-                error={!!errors.role}
-                helperText={errors.role?.message}
+                {...register("position",)}
+                error={!!errors.position}
+                helperText={errors.position?.message}
               />
-
-              <TextField
-                fullWidth
-                label="Status"
-                margin="normal"
-                {...register("status", { required: "Status is required" })}
-                error={!!errors.status}
-                helperText={errors.status?.message}
-              />
-
-              <TextField
-                fullWidth
-                label="Status Changed Date"
-                type="date"
-                margin="normal"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                {...register("statusChangedDate", {
-                  required: "Status changed date is required",
-                })}
-                error={!!errors.statusChangedDate}
-                helperText={errors.statusChangedDate?.message}
-              />
+              </Grid>
+              
+              <Grid item xs={12} sm={3}>
               <FormControl margin="normal">
                 <FormLabel>Member Type</FormLabel>
                 <RadioGroup row {...register("memberType", { required: true })}>
                   <FormControlLabel
-                    value="A-type"
+                    value="a-class"
                     control={<Radio />}
-                    label="A-type"
+                    label="A-Class"
                   />
                   <FormControlLabel
-                    value="B-type"
+                    value="b-class"
                     control={<Radio />}
-                    label="B-type"
+                    label="B-Class"
+                  />
+                  <FormControlLabel
+                    value="c-class"
+                    control={<Radio />}
+                    label="C-Class"
                   />
                 </RadioGroup>
                 {errors.memberType && (
@@ -344,18 +347,31 @@ const AddNewModal = ({ open, onClose }) => {
                   </Typography>
                 )}
               </FormControl>
-            </Grid>
-            {/* Column 3 */}
-            <Grid item xs={12} sm={3}>
-              <TextField
-                fullWidth
-                label="User Type"
-                margin="normal"
-                {...register("userType", { required: "User type is required" })}
-                error={!!errors.userType}
-                helperText={errors.userType?.message}
-              />
+              </Grid>
 
+              <Grid item xs={12} sm={3}>
+              <FormControl margin="normal">
+                <FormLabel>User Type</FormLabel>
+                <RadioGroup row {...register("userType", { required: true })}>
+                  <FormControlLabel
+                    value="full"
+                    control={<Radio />}
+                    label="Full"
+                  />
+                  <FormControlLabel
+                    value="Half"
+                    control={<Radio />}
+                    label="half"
+                  />
+                </RadioGroup>
+                {errors.userType && (
+                  <Typography variant="caption" color="error">
+                    Please select a user type.
+                  </Typography>
+                )}
+              </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Joining Date"
@@ -364,107 +380,85 @@ const AddNewModal = ({ open, onClose }) => {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                {...register("joiningDate", {
-                  required: "Joining date is required",
-                })}
-                error={!!errors.joiningDate}
-                helperText={errors.joiningDate?.message}
+                {...register("dob", { required: "Joining date is required" })}
+                error={!!errors.dob}
+                helperText={errors.dob?.message}
               />
-
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
-                label="Rejoining Date"
-                type="date"
+                label="Status"
                 margin="normal"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                {...register("rejoiningDate")}
+                {...register("status", { required: "Status is required" })}
+                error={!!errors.status}
+                helperText={errors.status?.message}
               />
-
-              <TextField
-                fullWidth
-                label="User Type Changed Date"
-                type="date"
-                margin="normal"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                {...register("userTypeChangedDate")}
-              />
-
-              <TextField
-                fullWidth
-                label="B Class to A Class Change Date"
-                type="date"
-                margin="normal"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                {...register("bClassToAClassChangeDate")}
-              />
-
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Identity Proof"
                 margin="normal"
-                {...register("identityProof", {
-                  required: "Identity proof is required",
-                })}
-                error={!!errors.identityProof}
-                helperText={errors.identityProof?.message}
+                {...register("identityProof")}
               />
-
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Identity Proof No"
                 margin="normal"
-                {...register("identityProofNo", {
-                  required: "Identity proof number is required",
-                })}
-                error={!!errors.identityProofNo}
-                helperText={errors.identityProofNo?.message}
+                {...register("identityProofNo")}
               />
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Qualification"
                 margin="normal"
                 {...register("qualification")}
               />
-            </Grid>
-            {/* Column 4 */}
-            <Grid item xs={12} sm={3}>
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Job Type"
                 margin="normal"
                 {...register("jobType")}
               />
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Job Portal"
                 margin="normal"
                 {...register("jobPortal")}
               />
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Job Details"
                 margin="normal"
                 {...register("jobDetails")}
               />
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Job Professional"
                 margin="normal"
                 {...register("jobProfessional")}
               />
+              </Grid>
+              <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Remarks"
                 margin="normal"
                 {...register("remarks")}
               />
-            </Grid>
+              </Grid>
           </Grid>
 
           {/* Buttons */}

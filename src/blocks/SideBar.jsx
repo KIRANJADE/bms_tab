@@ -149,7 +149,7 @@ const SideBar = ({ addTab }) => {
       <div
         style={{
           marginLeft: isSmallScreen ? 0 : 250,
-          padding: 20,
+          padding: 0,
           transition: "margin-left 0.3s",
         }}
       >
