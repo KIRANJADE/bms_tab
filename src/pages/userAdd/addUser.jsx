@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Modal,
   Box,
@@ -13,30 +13,18 @@ import {
   FormControl,
   Grid,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  createUserApi,
-  editUserApi,
-  getUserById,
-  userList,
-} from "../../state/redux/userApi";
-import { userCreate, userListData } from "../../state/redux/authSlice";
-import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { createUserApi } from "../../state/redux/userApi";
+import { userCreate } from "../../state/redux/authSlice";
 
-const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
-  const [userById, setUserById] = useState([]);
+const AddNewModal = ({ open, onClose }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
-    control,
   } = useForm();
 
-  const {addUser,editUser} = useSelector((state) => state.auth);
-  console.log(editUser, "editUser");
-  
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -180,6 +168,38 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
 
   const onSubmit = async (data) => {
     console.log("Form Data:", data);
+    // let payload = {
+    //   isAdministrator: false,
+    //   isChitCommitteeMember: false,
+    //   profile: {
+    //     firstname: data.firstName,
+    //     lastname: data.lastName,
+    //     phoneno: data.phoneNumber,
+    //     fathername: data.fatherName,
+    //     mothername: data.motherName,
+    //     gender: data.gender,
+    //     address: data.address,
+    //     dob: data.dob,
+    //   },
+    //   memberdetails: {
+    //     memberType: data?.memberType,
+    //     joiningDate: data.joiningDate,
+    //     rejoiningDate: data.rejoiningDate,
+    //     userType: data?.type,
+    //     userTypeChangedDate: data.userTypeChangedDate,
+    //   },
+    //   otherdetails: {
+    //     identityProof: data.identityProof,
+    //     identityProofNo: data.identityProofNo,
+    //   },
+    //   role: data.role,
+    //   status: data.status,
+    //   statusChangedDate: data.statusChangedDate,
+    //   position: data.position,
+    // };
+
+
+
     let payload = {
       profile: {
         firstname: data.firstName,
@@ -195,10 +215,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       },
       isChanthaRequired: true,
       balance: data?.balance,
-      isAdministrator: data?.isAdministrator === "yes" ? true : false,
+      isAdministrator: data?.isAdministrator,
       position: data?.position,
-      isChitCommitteeMember:
-        data?.isChitCommitteeMember === "yes" ? true : false,
+      isChitCommitteeMember: data?.isChitCommitteeMember,
       chitCommitteePosition: data?.chitCommitteePosition,
       role: data?.role,
       status: data?.status,
@@ -220,62 +239,18 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
         jobDetails: data?.jobDetails,
         jobProfessional: data?.jobProfessional,
       },
-      remark: data?.remarks,
+      remark:   data?.remarks,
     };
-    if (userById && isEditUsers) {
-      const response = await editUserApi(cardsUserId, payload);
-      console.log("Payload:", response);
-      if (response?.status) {
-		console.log(response, "responseresponse");
-		
-        fetchUserList();
-        onClose();
-      }
-    } else {
-      const response = await createUserApi(payload);
-      console.log("Payload:", response);
-    }
-    if (response.status) {
+
+    const response = await createUserApi(payload);
+    console.log("Payload:", response);
+
+    if (response.status === 201) {
       dispatch(userCreate(response.data));
-      getTenderTypes();
     }
-
-    onClose();
+    reset(); // Reset form fields after submission
+    onClose(); // Close the modal
   };
-
-  const fetchUserList = async () => {
-    try {
-      const response = await userList(1, 8, {
-        status: "active",
-        "memberdetails.memberType": "a-class",
-        "memberdetails.userType": "full",
-      });
-	  alert("fetchUserList")
-
-      if (response.status) {
-	alert("fetchUserfsdfsdfList")
-
-        dispatch(userListData(response.userDetails));
-        // setTotalPages(response.totalPages);
-      }
-    } catch (error) {
-      console.log("Failed to fetch user data");
-    } finally {
-      // setLoading(false);
-    }
-  };
-
-  const onCloseReset = () => {
-    reset();
-    onClose();
-  };
-
-//   useEffect(() => {
-// 	if (editUser) {
-// 		fetchUserList()
-// 	}
-//   }, [editUser])
-  
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="add-new-modal-title">
@@ -314,12 +289,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 fullWidth
                 label="First Name"
                 margin="normal"
-                {...register("firstName", {
-                  required: "First name is required",
-                })}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                {...register("firstName", { required: "First name is required", })}
                 error={!!errors.firstName}
                 helperText={errors.firstName?.message}
               />
@@ -330,9 +300,6 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Last Name"
                 margin="normal"
                 {...register("lastName", { required: "Last name is required" })}
-                InputLabelProps={{
-                  shrink: true,
-                }}
                 error={!!errors.lastName}
                 helperText={errors.lastName?.message}
               />
@@ -364,16 +331,10 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 fullWidth
                 label="Phone Number"
                 margin="normal"
-                {...register("phoneNumber", {
-                  required: "Phone number is required",
+                {...register("phoneNumber", {  required: "Phone number is required",
                   pattern: {
                     value: /^[0-9]{10}$/,
-                    message: "Enter a valid 10-digit phone number",
-                  },
-                })}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                    message: "Enter a valid 10-digit phone number",   },  })}
                 error={!!errors.phoneNumber}
                 helperText={errors.phoneNumber?.message}
               />
@@ -394,7 +355,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   />
                 </RadioGroup>
                 {errors.gender && (
-                  <FormHelperText>{errors.gender.message}</FormHelperText>
+                  <Typography variant="caption" color="error">
+                    Please select a gender.
+                  </Typography>
                 )}
               </FormControl>
               </Grid>
@@ -463,9 +426,6 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Position"
                 margin="normal"
                 {...register("position", { required: "Position is required" })}
-                InputLabelProps={{
-                  shrink: true,
-                }}
                 error={!!errors.position}
                 helperText={errors.position?.message}
               />
@@ -596,9 +556,6 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Qualification"
                 margin="normal"
                 {...register("qualification")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
               />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -607,9 +564,6 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Job Type"
                 margin="normal"
                 {...register("jobType")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
               />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -618,9 +572,6 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Job Portal"
                 margin="normal"
                 {...register("jobPortal")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
               />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -629,9 +580,6 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Job Details"
                 margin="normal"
                 {...register("jobDetails")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
               />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -640,9 +588,6 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Job Professional"
                 margin="normal"
                 {...register("jobProfessional")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
               />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -651,27 +596,18 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 label="Remarks"
                 margin="normal"
                 {...register("remarks")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
               />
               </Grid>
           </Grid>
 
           {/* Buttons */}
           <Box mt={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button onClick={() => onCloseReset()} sx={{ marginRight: 1 }}>
+            <Button onClick={onClose} sx={{ marginRight: 1 }}>
               Cancel
             </Button>
-            {cardsUserId ? (
-              <Button type="submit" variant="contained">
-                Update
-              </Button>
-            ) : (
-              <Button type="submit" variant="contained">
-                Add
-              </Button>
-            )}
+            <Button type="submit" variant="contained">
+              Add
+            </Button>
           </Box>
         </form>
       </Box>
