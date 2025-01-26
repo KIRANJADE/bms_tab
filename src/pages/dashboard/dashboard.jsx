@@ -60,8 +60,10 @@ const Dashboard = () => {
   
 
   const handleModalOpen = () => setIsModalOpen(true);
+  
   const handleModalClose = () => {
 	  setIsModalOpen(false);
+    setIsEditMode(false)
 	  reset();
   }
 
@@ -69,7 +71,8 @@ const Dashboard = () => {
     setcardsUserId(card?._id);
     setEditingCard(card);
     setIsModalOpen(true);
-	setIsEditMode(true)
+	  setIsEditMode(true);
+    
   };
 
   const handleDelete = () => setEditingCard(null);
@@ -82,10 +85,11 @@ const Dashboard = () => {
   const handleExpandClick = () => {
     setIsExpanded(!isExpanded);
   };
+
   return (
     <>
       <AddNewModal open={isModalOpen} onClose={handleModalClose}  cardsUserId={cardsUserId}  isEditUsers={isEditUsers}/>
-      <div className="">
+      <div >
       <Box
         sx={{
           display: "flex",
@@ -161,12 +165,13 @@ const Dashboard = () => {
         <Grid container spacing={1} style={{height:460,overflowY:"scroll"}}>
           {users.map((user, index) => (
             <Grid className="mb-3" item xs={12} sm={6} md={3} key={index}>
-              <ActionCard
+              <ActionCard 
                 users={user}
                 profile={user?.profile}
                 onEdit={() => handleEdit(user)}
                 onDelete={handleDelete}
                 isEdit={editingCard}
+                
               />
             </Grid>
           ))}

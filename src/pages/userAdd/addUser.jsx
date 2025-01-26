@@ -23,7 +23,7 @@ import {
 import { userCreate, userListData } from "../../state/redux/authSlice";
 import { useEffect, useState } from "react";
 
-const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
+const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
   const {
     register,
     handleSubmit,
@@ -32,21 +32,27 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
     setValue,
   } = useForm();
 
-  const {addUser,editUser} = useSelector((state) => state.auth);
+  const [userById, setUserById] = useState([]);
+
+  const { addUser, editUser } = useSelector((state) => state.auth);
   console.log(editUser, "editUser");
-  
+
   const dispatch = useDispatch();
 
   useEffect(() => {
     fetchUsersById();
-    console.log(userById, "userById");
+    console.log(userById, "isEditUslklklers", cardsUserId, isEditUsers);
   }, [cardsUserId]);
 
   console.log(cardsUserId, "cardsUserId");
-
+  
   // Set values on form load
   useEffect(() => {
-    if (isEditUsers && userById) {
+	  console.log(cardsUserId, "cardsUserId");
+    console.log(isEditUsers, "isEditUsers",userById);
+
+    if (isEditUsers && userById || cardsUserId) {
+      console.log(isEditUsers, "isEditUsers");
       setValue("firstName", userById?.profile?.firstname);
       setValue("lastName", userById?.profile?.lastname);
       setValue("phoneNumber", userById?.profile?.phoneno);
@@ -100,7 +106,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
     }
 
     console.log("userById", userById);
-  }, [userById, setValue, isEditUsers]);
+  }, [userById, setValue, isEditUsers,cardsUserId]);
 
   useEffect(() => {
     if (userById?.memberdetails?.joiningDate) {
@@ -220,8 +226,6 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
       const response = await editUserApi(cardsUserId, payload);
       console.log("Payload:", response);
       if (response?.status) {
-		console.log(response, "responseresponse");
-		
         fetchUserList();
         onClose();
       }
@@ -231,7 +235,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
     }
     if (response.status) {
       dispatch(userCreate(response.data));
-      getTenderTypes();
+      fetchUserList();
     }
 
     onClose();
@@ -244,11 +248,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
         "memberdetails.memberType": "a-class",
         "memberdetails.userType": "full",
       });
-	  alert("fetchUserList")
-
       if (response.status) {
-	alert("fetchUserfsdfsdfList")
-
         dispatch(userListData(response.userDetails));
         // setTotalPages(response.totalPages);
       }
@@ -259,17 +259,17 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
     }
   };
 
-  const onCloseReset = () => {
-    reset();
-    onClose();
-  };
+//   const onCloseReset = () => {
+//     reset();
+//     onClose();
+	
+//   };
 
-//   useEffect(() => {
-// 	if (editUser) {
-// 		fetchUserList()
-// 	}
-//   }, [editUser])
-  
+  //   useEffect(() => {
+  // 	if (editUser) {
+  // 		fetchUserList()
+  // 	}
+  //   }, [editUser])
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="add-new-modal-title">
@@ -312,9 +312,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 {...register("firstName", {
                   required: "First name is required",
                 })}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.firstName}
                 helperText={errors.firstName?.message}
               />
@@ -326,9 +324,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("lastName", { required: "Last name is required" })}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.lastName}
                 helperText={errors.lastName?.message}
               />
@@ -342,6 +338,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 {...register("fatherName", {
                   required: "Father's name is required",
                 })}
+                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.fatherName}
                 helperText={errors.fatherName?.message}
               />
@@ -355,6 +352,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 {...register("motherName", {
                   required: "Mother's name is required",
                 })}
+                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.motherName}
                 helperText={errors.motherName?.message}
               />
@@ -371,9 +369,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                     message: "Enter a valid 10-digit phone number",
                   },
                 })}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.phoneNumber}
                 helperText={errors.phoneNumber?.message}
               />
@@ -446,37 +442,41 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("address", { required: "Address is required" })}
+                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.address}
                 helperText={errors.address?.message}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
-  <FormControl margin="dense" component="fieldset">
-    <FormLabel style={{ fontSize: "0.9rem" }}>Is Administrator</FormLabel> {/* Smaller font size */}
-    <RadioGroup
-      row
-      defaultValue="no"
-      {...register("isAdministrator", { required: true })}
-      style={{ gap: "10px" }} // Reduce spacing between radio buttons
-    >
-      <FormControlLabel
-        value="yes"
-        control={<Radio size="small" />} // Smaller radio button
-        label={<Typography variant="body2">Yes</Typography>} // Smaller label
-      />
-      <FormControlLabel
-        value="no"
-        control={<Radio size="small" />} // Smaller radio button
-        label={<Typography variant="body2">No</Typography>} // Smaller label
-      />
-    </RadioGroup>
-    {errors.isAdministrator && (
-      <Typography variant="caption" color="error">
-        Please select an option.
-      </Typography>
-    )}
-  </FormControl>
-</Grid>
+              <FormControl margin="dense" component="fieldset">
+                <FormLabel style={{ fontSize: "0.9rem" }}>
+                  Is Administrator
+                </FormLabel>{" "}
+                {/* Smaller font size */}
+                <RadioGroup
+                  row
+                  defaultValue="no"
+                  {...register("isAdministrator", { required: true })}
+                  style={{ gap: "10px" }} // Reduce spacing between radio buttons
+                >
+                  <FormControlLabel
+                    value="yes"
+                    control={<Radio size="small" />} // Smaller radio button
+                    label={<Typography variant="body2">Yes</Typography>} // Smaller label
+                  />
+                  <FormControlLabel
+                    value="no"
+                    control={<Radio size="small" />} // Smaller radio button
+                    label={<Typography variant="body2">No</Typography>} // Smaller label
+                  />
+                </RadioGroup>
+                {errors.isAdministrator && (
+                  <Typography variant="caption" color="error">
+                    Please select an option.
+                  </Typography>
+                )}
+              </FormControl>
+            </Grid>
 
             <Grid item xs={12} sm={3}>
               <TextField
@@ -485,42 +485,43 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("position", { required: "Position is required" })}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.position}
                 helperText={errors.position?.message}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
-  <FormControl margin="dense" component="fieldset">
-    <FormLabel style={{ fontSize: "0.9rem" }}>Is Chit Committee Member</FormLabel> {/* Smaller font size */}
-    <RadioGroup
-      row
-      defaultValue="no" // Set default value (can be 'yes' or 'no')
-      {...register("isChitCommitteeMember", {
-        required: "Please select an option.",
-      })}
-      style={{ gap: "10px" }} // Reduce spacing between radio buttons
-    >
-      <FormControlLabel
-        value="yes"
-        control={<Radio size="small" />} // Smaller radio button
-        label={<Typography variant="body2">Yes</Typography>} // Smaller label
-      />
-      <FormControlLabel
-        value="no"
-        control={<Radio size="small" />} // Smaller radio button
-        label={<Typography variant="body2">No</Typography>} // Smaller label
-      />
-    </RadioGroup>
-    {errors.isChitCommitteeMember && (
-      <Typography variant="caption" color="error">
-        {errors.isChitCommitteeMember.message}
-      </Typography>
-    )}
-  </FormControl>
-</Grid>
+              <FormControl margin="dense" component="fieldset">
+                <FormLabel style={{ fontSize: "0.9rem" }}>
+                  Is Chit Committee Member
+                </FormLabel>{" "}
+                {/* Smaller font size */}
+                <RadioGroup
+                  row
+                  defaultValue="no" // Set default value (can be 'yes' or 'no')
+                  {...register("isChitCommitteeMember", {
+                    required: "Please select an option.",
+                  })}
+                  style={{ gap: "10px" }} // Reduce spacing between radio buttons
+                >
+                  <FormControlLabel
+                    value="yes"
+                    control={<Radio size="small" />} // Smaller radio button
+                    label={<Typography variant="body2">Yes</Typography>} // Smaller label
+                  />
+                  <FormControlLabel
+                    value="no"
+                    control={<Radio size="small" />} // Smaller radio button
+                    label={<Typography variant="body2">No</Typography>} // Smaller label
+                  />
+                </RadioGroup>
+                {errors.isChitCommitteeMember && (
+                  <Typography variant="caption" color="error">
+                    {errors.isChitCommitteeMember.message}
+                  </Typography>
+                )}
+              </FormControl>
+            </Grid>
 
             <Grid item xs={12} sm={3}>
               <TextField
@@ -529,70 +530,74 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("position")}
+                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.position}
                 helperText={errors.position?.message}
               />
             </Grid>
 
             <Grid item xs={12} sm={3}>
-  <FormControl margin="dense" component="fieldset">
-    <FormLabel style={{ fontSize: "0.9rem" }}>Member Type</FormLabel> {/* Smaller font size */}
-    <RadioGroup
-      row
-      {...register("memberType", { required: true })}
-      style={{ gap: "10px" }} // Reduce spacing between radio buttons
-    >
-      <FormControlLabel
-        value="a-class"
-        control={<Radio size="small" />} // Smaller radio button
-        label={<Typography variant="body2">A-Class</Typography>} // Smaller label
-      />
-      <FormControlLabel
-        value="b-class"
-        control={<Radio size="small" />} // Smaller radio button
-        label={<Typography variant="body2">B-Class</Typography>} // Smaller label
-      />
-      <FormControlLabel
-        value="c-class"
-        control={<Radio size="small" />} // Smaller radio button
-        label={<Typography variant="body2">C-Class</Typography>} // Smaller label
-      />
-    </RadioGroup>
-    {errors.memberType && (
-      <Typography variant="caption" color="error">
-        Please select a member type.
-      </Typography>
-    )}
-  </FormControl>
-</Grid>
+              <FormControl margin="dense" component="fieldset">
+                <FormLabel style={{ fontSize: "0.9rem" }}>
+                  Member Type
+                </FormLabel>{" "}
+                {/* Smaller font size */}
+                <RadioGroup
+                  row
+                  {...register("memberType", { required: true })}
+                  style={{ gap: "10px" }} // Reduce spacing between radio buttons
+                >
+                  <FormControlLabel
+                    value="a-class"
+                    control={<Radio size="small" />} // Smaller radio button
+                    label={<Typography variant="body2">A-Class</Typography>} // Smaller label
+                  />
+                  <FormControlLabel
+                    value="b-class"
+                    control={<Radio size="small" />} // Smaller radio button
+                    label={<Typography variant="body2">B-Class</Typography>} // Smaller label
+                  />
+                  <FormControlLabel
+                    value="c-class"
+                    control={<Radio size="small" />} // Smaller radio button
+                    label={<Typography variant="body2">C-Class</Typography>} // Smaller label
+                  />
+                </RadioGroup>
+                {errors.memberType && (
+                  <Typography variant="caption" color="error">
+                    Please select a member type.
+                  </Typography>
+                )}
+              </FormControl>
+            </Grid>
 
-
-<Grid item xs={12} sm={3}>
-  <FormControl margin="dense" component="fieldset">
-    <FormLabel style={{ fontSize: "0.9rem" }}>User Type</FormLabel> {/* Smaller font size */}
-    <RadioGroup
-      row
-      {...register("userType", { required: true })}
-      style={{ gap: "10px" }} // Reduce spacing between radio buttons
-    >
-      <FormControlLabel
-        value="full"
-        control={<Radio size="small" />} // Smaller radio button
-        label={<Typography variant="body2">Full</Typography>} // Smaller label
-      />
-      <FormControlLabel
-        value="half"
-        control={<Radio size="small" />} // Smaller radio button
-        label={<Typography variant="body2">Half</Typography>} // Smaller label
-      />
-    </RadioGroup>
-    {errors.userType && (
-      <Typography variant="caption" color="error">
-        Please select a user type.
-      </Typography>
-    )}
-  </FormControl>
-</Grid>
+            <Grid item xs={12} sm={3}>
+              <FormControl margin="dense" component="fieldset">
+                <FormLabel style={{ fontSize: "0.9rem" }}>User Type</FormLabel>{" "}
+                {/* Smaller font size */}
+                <RadioGroup
+                  row
+                  {...register("userType", { required: true })}
+                  style={{ gap: "10px" }} // Reduce spacing between radio buttons
+                >
+                  <FormControlLabel
+                    value="full"
+                    control={<Radio size="small" />} // Smaller radio button
+                    label={<Typography variant="body2">Full</Typography>} // Smaller label
+                  />
+                  <FormControlLabel
+                    value="half"
+                    control={<Radio size="small" />} // Smaller radio button
+                    label={<Typography variant="body2">Half</Typography>} // Smaller label
+                  />
+                </RadioGroup>
+                {errors.userType && (
+                  <Typography variant="caption" color="error">
+                    Please select a user type.
+                  </Typography>
+                )}
+              </FormControl>
+            </Grid>
 
             <Grid item xs={12} sm={3}>
               <TextField
@@ -601,9 +606,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 type="date"
                 margin="normal"
                 size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
                 {...register("dob", { required: "Joining date is required" })}
                 error={!!errors.dob}
                 helperText={errors.dob?.message}
@@ -616,6 +619,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("status", { required: "Status is required" })}
+                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.status}
                 helperText={errors.status?.message}
               />
@@ -645,9 +649,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("qualification")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -657,9 +659,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("jobType")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -669,9 +669,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("jobPortal")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -681,9 +679,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("jobDetails")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -693,9 +689,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("jobProfessional")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -705,19 +699,19 @@ const AddNewModal = ({ open, onClose, cardsUserId, userById, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("remarks")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
               />
             </Grid>
           </Grid>
 
           {/* Buttons */}
           <Box mt={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button onClick={() => onCloseReset()} sx={{ marginRight: 1 }}>
+            <Button onClick={() => onClose()} sx={{ marginRight: 1 }}>
               Cancel
             </Button>
-            {cardsUserId ? (
+			{console.log(isEditUsers,"isEditUsersisEditUsers")}
+			
+            {isEditUsers ? (
               <Button type="submit" variant="contained">
                 Update
               </Button>
