@@ -9,6 +9,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Button,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PersonIcon from "@mui/icons-material/Person";
@@ -73,7 +74,7 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
             // boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
           }}
         >
-          <IconButton
+          {/* <IconButton
             sx={{ position: "absolute", top: 8, right: 8 }}
             onClick={handleMenuClick}
           >
@@ -88,7 +89,7 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
               Edit
             </MenuItem>
             <MenuItem onClick={() => handleDelete(userDetails?._id)}>Delete</MenuItem>
-          </Menu>
+          </Menu> */}
 
           <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>
             {userDetails?.profile?.firstname} {userDetails?.profile?.lastname}
@@ -160,6 +161,9 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
 
           <Grid item xs={12}>
             <Divider />
+          </Grid>
+          <Grid item xs={12}>
+            <Button variant="contained" onClick={() => handleEditUsers()} fullWidth>Edit User</Button>
           </Grid>
         </Grid>
       </Box>
