@@ -12,6 +12,7 @@ import {
   FormLabel,
   FormControl,
   Grid,
+  FormHelperText,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -22,6 +23,7 @@ import {
 } from "../../state/redux/userApi";
 import { userCreate, userListData } from "../../state/redux/authSlice";
 import { useEffect, useState } from "react";
+import { use } from "react";
 
 const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
   const {
@@ -30,7 +32,23 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     formState: { errors },
     reset,
     setValue,
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
+      fatherName: "",
+      motherName: "",
+      gender: "",
+      dob: "",
+      address: "",
+      maritalStatus: "",
+      position: "",
+      isAdministrator: "no",
+      memberType: "",
+      userType: "",
+      remarks: "",
+    }});
 
   const [userById, setUserById] = useState([]);
 
@@ -40,19 +58,18 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    fetchUsersById();
-    console.log(userById, "isEditUslklklers", cardsUserId, isEditUsers);
-  }, [cardsUserId]);
+    if (cardsUserId && isEditUsers) {
+      fetchUsersById();
+    } else {
+      reset(); // Reset the form for adding a new user
+    }
+  }, [cardsUserId, isEditUsers, reset]);
 
   console.log(cardsUserId, "cardsUserId");
-  
+
   // Set values on form load
   useEffect(() => {
-	  console.log(cardsUserId, "cardsUserId");
-    console.log(isEditUsers, "isEditUsers",userById);
-
-    if (isEditUsers && userById || cardsUserId) {
-      console.log(isEditUsers, "isEditUsers");
+    if ((isEditUsers && userById) || cardsUserId) {
       setValue("firstName", userById?.profile?.firstname);
       setValue("lastName", userById?.profile?.lastname);
       setValue("phoneNumber", userById?.profile?.phoneno);
@@ -106,7 +123,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     }
 
     console.log("userById", userById);
-  }, [userById, setValue, isEditUsers,cardsUserId]);
+  }, [userById, setValue, isEditUsers, cardsUserId]);
 
   useEffect(() => {
     if (userById?.memberdetails?.joiningDate) {
@@ -161,21 +178,21 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     }
   }, [userById, setValue]);
 
+  useEffect(() => {
+    if (isEditUsers === false) {
+      reset();
+    }
+  }, []);
+console.log(isEditUsers,"isEditUsers");
   const fetchUsersById = async () => {
     const response = await getUserById(cardsUserId);
     console.log(response, "myresss");
     setUserById(response?.data);
   };
 
-  const getTenderTypes = async () => {
-    try {
-      const response = await userList();
-      if (response) {
-        console.log(response, "response");
-      }
-    } catch (error) {
-      throw error;
-    }
+  const cancelUserForm = () => {
+    reset();
+    onClose();
   };
 
   const onSubmit = async (data) => {
@@ -228,6 +245,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       if (response?.status) {
         fetchUserList();
         onClose();
+        reset();
       }
     } else {
       const response = await createUserApi(payload);
@@ -236,9 +254,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     if (response.status) {
       dispatch(userCreate(response.data));
       fetchUserList();
+      onClose();
+      reset();
     }
-
-    onClose();
   };
 
   const fetchUserList = async () => {
@@ -259,17 +277,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     }
   };
 
-//   const onCloseReset = () => {
-//     reset();
-//     onClose();
-	
-//   };
-
-  //   useEffect(() => {
-  // 	if (editUser) {
-  // 		fetchUserList()
-  // 	}
-  //   }, [editUser])
+  console.log(isEditUsers, "isEditUsers");
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="add-new-modal-title">
@@ -279,23 +287,17 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: "90%", // Adjust width as needed
-
-          height: "auto", // Let the height adjust based on content
-          maxHeight: "90vh", // Optional: to limit the height and make it scrollable if content overflows
+          width: "90%",
+          height: "auto",
+          maxHeight: "90vh",
           bgcolor: "background.paper",
-          borderRadius: 2, // Adds rounded corners
+          borderRadius: 2,
           boxShadow: 24,
           p: 3,
-          overflowY: "auto", //
+          overflowY: "auto",
         }}
       >
-        <Typography
-          id="add-new-modal-title"
-          variant="h6"
-          component="h2"
-          mb={3} // Increased margin-bottom to ensure heading doesn't overlap
-        >
+        <Typography id="add-new-modal-title" variant="h6" component="h2" mb={3}>
           Add / Edit User
         </Typography>
         <form
@@ -303,11 +305,11 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
           style={{ flex: 1, overflow: "auto" }}
         >
           <Grid container spacing={3}>
-            {/* Added spacing to ensure consistent gaps between fields */}
             <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="First Name"
+                 size="small"
                 margin="normal"
                 {...register("firstName", {
                   required: "First name is required",
@@ -362,6 +364,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 fullWidth
                 label="Phone Number"
                 margin="normal"
+                 size="small"
                 {...register("phoneNumber", {
                   required: "Phone number is required",
                   pattern: {
@@ -377,21 +380,20 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
             <Grid item xs={12} sm={3}>
               <FormControl margin="dense" component="fieldset">
                 <FormLabel style={{ fontSize: "0.9rem" }}>Gender</FormLabel>{" "}
-                {/* Smaller font size */}
                 <RadioGroup
                   row
                   {...register("gender", { required: true })}
-                  style={{ gap: "10px" }} // Reduce spacing between radio buttons
+                  style={{ gap: "10px" }}
                 >
                   <FormControlLabel
                     value="male"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">Male</Typography>} // Smaller label
+                    control={<Radio size="small" />}
+                    label={<Typography variant="body2">Male</Typography>}
                   />
                   <FormControlLabel
                     value="female"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">Female</Typography>} // Smaller label
+                    control={<Radio size="small" />}
+                    label={<Typography variant="body2">Female</Typography>}
                   />
                 </RadioGroup>
                 {errors.gender && (
@@ -405,26 +407,25 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 <FormLabel style={{ fontSize: "0.9rem" }}>
                   Marital Status
                 </FormLabel>{" "}
-                {/* Smaller font size */}
                 <RadioGroup
                   row
                   {...register("maritalStatus", { required: true })}
-                  style={{ gap: "10px" }} // Reduce spacing between radio buttons
+                  style={{ gap: "10px" }}
                 >
                   <FormControlLabel
                     value="single"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">Single</Typography>} // Smaller label
+                    control={<Radio size="small" />}
+                    label={<Typography variant="body2">Single</Typography>}
                   />
                   <FormControlLabel
                     value="married"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">Married</Typography>} // Smaller label
+                    control={<Radio size="small" />}
+                    label={<Typography variant="body2">Married</Typography>}
                   />
                   <FormControlLabel
                     value="widowed"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">Widowed</Typography>} // Smaller label
+                    control={<Radio size="small" />}
+                    label={<Typography variant="body2">Widowed</Typography>}
                   />
                 </RadioGroup>
                 {errors.maritalStatus && (
@@ -631,6 +632,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("identityProof")}
+                slotProps={{ inputLabel: { shrink: true } }}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -640,6 +642,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 margin="normal"
                 size="small"
                 {...register("identityProofNo")}
+                slotProps={{ inputLabel: { shrink: true } }}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -706,11 +709,11 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
 
           {/* Buttons */}
           <Box mt={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button onClick={() => onClose()} sx={{ marginRight: 1 }}>
+            <Button onClick={() => cancelUserForm()} sx={{ marginRight: 1 }}>
               Cancel
             </Button>
-			{console.log(isEditUsers,"isEditUsersisEditUsers")}
-			
+            {console.log(isEditUsers, "isEditUsersisEditUsers")}
+
             {isEditUsers ? (
               <Button type="submit" variant="contained">
                 Update

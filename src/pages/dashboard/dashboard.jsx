@@ -88,7 +88,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <AddNewModal open={isModalOpen} onClose={handleModalClose}  cardsUserId={cardsUserId}  isEditUsers={isEditUsers}/>
+     { isModalOpen && <AddNewModal open={isModalOpen} onClose={handleModalClose}  cardsUserId={cardsUserId}  isEditUsers={isEditUsers}/>}
       <div >
       <Box
         sx={{
