@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import ActionCard from "../../components/cardList/card";
-import { Box, Button,IconButton, Grid,  Collapse ,TextField ,Select, MenuItem, FormControl, InputLabel} from "@mui/material";
+import { Box, Button,IconButton, Grid,  Collapse ,TextField ,Select, MenuItem, FormControl, InputLabel,OutlinedInput,InputAdornment,} from "@mui/material";
 import AddNewModal from "../userAdd/addUser";
 import { useSelector, useDispatch } from "react-redux";
 import { userList } from "../../state/redux/userApi";
 import { userListData } from "../../state/redux/authSlice";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { useForm } from "react-hook-form";
+import SearchIcon from "@mui/icons-material/Search";
+import CloseSharpIcon from '@mui/icons-material/CloseSharp';
 
 const ITEMS_PER_PAGE =12;
 
@@ -85,10 +87,15 @@ const Dashboard = () => {
   const handleExpandClick = () => {
     setIsExpanded(!isExpanded);
   };
+  const handleSearchToggle = () => {
+    setShowSearch(!showSearch);
+    setSearchValue("");
+  };
+
 
   return (
     <>
-     { isModalOpen && <AddNewModal open={isModalOpen} onClose={handleModalClose}  cardsUserId={cardsUserId}  isEditUsers={isEditUsers}/>}
+      <AddNewModal open={isModalOpen} onClose={handleModalClose}  cardsUserId={cardsUserId}  isEditUsers={isEditUsers}/>
       <div >
       <Box
         sx={{
@@ -109,6 +116,34 @@ const Dashboard = () => {
 
         <Box sx={{ flexGrow: 1 }} /> {/* Added to push the icon to the right */}
 
+        {showSearch && (
+          <OutlinedInput
+            size="small"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            placeholder="Search..."
+            sx={{
+              maxWidth: "250px",
+              transition: "max-width 0.3s ease-in-out",
+              marginRight: 1,
+            }}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton onClick={() => console.log("Searching:", searchValue)}>
+                <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            }
+          />
+        )}
+
+        <IconButton
+          onClick={handleSearchToggle}
+          aria-label="toggle search"
+          sx={{ alignItems: "center", marginRight: 1 }}
+        >
+          {showSearch ? <CloseSharpIcon /> :  <SearchIcon />}
+        </IconButton>
         <IconButton
           onClick={handleExpandClick}
           aria-expanded={isExpanded}
@@ -121,6 +156,20 @@ const Dashboard = () => {
       <Collapse in={isExpanded} timeout="auto" unmountOnExit>
         <Box sx={{ marginTop: 2,marginBottom: 2 }}>
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel id="Status-label">Status</InputLabel>
+              <Select
+                labelId="Status-label"
+                label="Status"
+              >
+                <MenuItem value=""><em>Select Status</em></MenuItem>
+                <MenuItem value={'active'}>Active</MenuItem>
+                <MenuItem value={'death'}>Death</MenuItem>
+                <MenuItem value={'dismiss'}>Dismiss</MenuItem>
+                <MenuItem value={'suspend'}>Suspend</MenuItem>
+                <MenuItem value={'VRS'}>VRS</MenuItem>
+              </Select>
+            </FormControl>
             <FormControl variant="outlined" fullWidth>
               <InputLabel id="memberType-label">Member Type</InputLabel>
               <Select
@@ -168,6 +217,7 @@ const Dashboard = () => {
               <ActionCard 
                 users={user}
                 profile={user?.profile}
+                memberTypeHistory={user?.memberTypeHistory}
                 onEdit={() => handleEdit(user)}
                 onDelete={handleDelete}
                 isEdit={editingCard}

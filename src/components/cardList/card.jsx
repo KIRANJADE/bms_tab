@@ -10,18 +10,21 @@ import {
   Menu,
   MenuItem,
   Avatar,
+  Tooltip,
+  CardContent,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import classNames from "classnames";
 import "../../components/cardList/cards.less";
 import { deleteUser } from "../../state/redux/authSlice";
 import CardDetailPopUp from "../../components/cardDetailsModal/index";
-const ActionCard = ({ users, profile, onEdit }) => {
+const ActionCard = ({ users, profile, onEdit,memberTypeHistory = [] }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [open, setOpen] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   const dispatch = useDispatch();
 
   const handleClick = (event) => {
@@ -64,63 +67,83 @@ const ActionCard = ({ users, profile, onEdit }) => {
       )}
       <Card
         className={classNames("action-card")}
-        onClick={() => handlePopUpClick()}
+        
       >
-        {/* Header Section */}
-        <Box className="action-card-header">
-          <Box className="d-flex align-items-center">
-            <Avatar
-              src={users?.image}
-              alt={users?.title}
-              className="action-card-avatar"
-            />
-            <Box className="action-card-details">
-              <Typography variant="subtitle1" className="action-card-name">
-                {profile?.lastname} {profile?.firstname}
-              </Typography>
-              <Typography variant="body2" className="action-card-id">
-                {users?.memberdetails?.memberId
-                  ? users?.memberdetails?.memberId
-                  : "No Member ID"}
-              </Typography>
+        <Box className={users?.isEdit ? "editcard" : "disabledCard"} onClick={ users?.isEdit ?() => handlePopUpClick() : ""}>
+          <Box className="action-card-header">
+            <Box className="d-flex align-items-center">
+              <Avatar
+                src={users?.image}
+                alt={users?.title}
+                className="action-card-avatar"
+              />
+              <Box className="action-card-details">
+                <Typography variant="subtitle1" className="action-card-name">
+                  {profile?.lastname} {profile?.firstname}
+                </Typography>
+                <Typography variant="body2" className="action-card-id">
+                  {users?.memberdetails?.memberId
+                    ? users?.memberdetails?.memberId
+                    : "No Member ID"}
+                </Typography>
+              </Box>
             </Box>
+            {!users?.isEdit && (
+              <Tooltip
+                open={tooltipOpen}
+                onClose={() => setTooltipOpen(false)}
+                onOpen={() => setTooltipOpen(true)}
+                title={
+                  <Card sx={{ maxWidth: 300 }}>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        Member Type History
+                      </Typography>
+                      {memberTypeHistory.length > 0 ? (
+                        memberTypeHistory.map((history, index) => (
+                          <Box key={index} sx={{ mb: 1 }}>
+                            <Typography variant="body2">
+                              <strong>Type:</strong> {history.memberType}
+                            </Typography>
+                            <Typography variant="body2">
+                              <strong>ID:</strong> {history.memberId}
+                            </Typography>
+                            <Typography variant="body2">
+                              <strong>Joined:</strong> {history.joiningDate}
+                            </Typography>
+                          </Box>
+                        ))
+                      ) : (
+                        <Typography variant="body2" color="textSecondary">
+                          No history available.
+                        </Typography>
+                      )}
+                    </CardContent>
+                  </Card>
+                }
+                arrow
+              >
+                <IconButton>
+                  <ErrorOutlineIcon style={{ color: "red" }} />
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
-          {/* <Box>
-          <IconButton onClick={handleClick} className="action-card-options">
-            <MoreVertIcon />
-          </IconButton>
-        </Box> */}
         </Box>
-        {/* <Divider sx={{borderColor:"2px solid red"}}/> */}
-        {/* Details Section */}
-        {/* <Box className="action-card-details-item">
-        <AdminPanelSettingsOutlinedIcon fontSize="small" color="success" />
-        <Typography variant="body2" className="action-card-role">
-          {users?.position.charAt(0).toUpperCase() + users?.position.slice(1)}
-        </Typography>
-      </Box> */}
-
-        <Box className="action-card-details-item">
-          <LocalPhoneOutlinedIcon fontSize="small" color="action" />
-          <Typography variant="body2" className="action-card-memberId">
-            {profile?.phoneno}
-          </Typography>
+        <Box className={users?.isEdit ? "editcard" : "disabledCard"}>
+          <Box className="action-card-details-item">
+            <LocalPhoneOutlinedIcon fontSize="small" color="action" />
+            <Typography variant="body2" className="action-card-memberId">
+              {profile?.phoneno}
+            </Typography>
+          </Box>
+          <Box className="action-card-details-item">
+            <CurrencyRupeeIcon fontSize="small" color="action" />
+            <Typography variant="body2" className="action-card-balance">
+              {users?.balance}
+            </Typography>
+          </Box>
         </Box>
-
-        <Box className="action-card-details-item">
-          <CurrencyRupeeIcon fontSize="small" color="action" />
-          <Typography variant="body2" className="action-card-balance">
-            {users?.balance}
-          </Typography>
-        </Box>
-
-        {/* Context Menu */}
-        {/* <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        <MenuItem onClick={() => console.log("Edit action for", users?._id)}>
-          Edit
-        </MenuItem>
-        <MenuItem onClick={() => handleDelete(users?._id)}>Delete</MenuItem>
-      </Menu> */}
       </Card>
     </>
   );
