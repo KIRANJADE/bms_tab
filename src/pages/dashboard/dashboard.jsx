@@ -48,20 +48,21 @@ const Dashboard = () => {
   const { reset } = useForm();
 
   const fetchUserList = async (currentPage, filterParams = {}) => {
-    console.log(currentPage, "currentPage",filterParams, "filterParams");
-    
     setLoading(true);
     setError("");
     try {
-      const payload = {
-        ...filterParams, // Include additional filters like status
+      // Combine default parameters with any additional filterParams
+      const params = {
+        ...filterParams,
       };
-  
-      const response = await userList(currentPage, ITEMS_PER_PAGE, payload);
-  
+
+      const payload = {}
+
+      const response = await userList(currentPage, ITEMS_PER_PAGE, params, payload);
+
       if (response.status) {
         dispatch(userListData([...users, ...response.userDetails]));
-  
+
         if (currentPage >= response.totalPages) {
           setHasMore(false);
         }
@@ -74,7 +75,6 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     console.log(cardsUserId, "cardsUserId");
