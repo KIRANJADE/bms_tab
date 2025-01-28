@@ -23,14 +23,11 @@ export const createUserLogin = async (params) => {
 export const userList = async (page = 1, limit = 10, payload = {}) => {
   try {
     const authToken = JSON.parse(localStorage.getItem("authToken"));
-
     const headers = {
       "x-access-token": `${authToken}`,
       "Content-Type": "application/json",
     };
-
     const queryParams = new URLSearchParams({ page, limit, ...payload });
-
     const response = await axios.get(`${BASE_URL}/api/users?${queryParams}`, {
       headers,
     });
@@ -57,16 +54,20 @@ export const createUserApi = async (params) => {
   }
 };
 
-export const editUserApi = async (id,requestParams) => {
+export const editUserApi = async (id, requestParams) => {
   try {
     const authToken = JSON.parse(localStorage.getItem("authToken"));
     const headers = {
       "x-access-token": `${authToken}`,
       "Content-Type": "application/json",
     };
-    const response = await axios.put(`${BASE_URL}/api/users/${id}`,requestParams, {
-      headers,
-    });
+    const response = await axios.put(
+      `${BASE_URL}/api/users/${id}`,
+      requestParams,
+      {
+        headers,
+      }
+    );
     return response;
   } catch (error) {
     throw error;
@@ -80,45 +81,38 @@ export const deleteUserApi = async (id) => {
       "x-access-token": `${authToken}`,
       "Content-Type": "application/json",
     };
-	const response = await axios.delete(`${BASE_URL}/api/users/${id}`, {
-		headers,
-	  });
-  
-	  return response;
-	} catch (error) {
-	  throw error;
-	}
-  };
+    const response = await axios.delete(`${BASE_URL}/api/users/${id}`, {
+      headers,
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const getUserById = async (id) => {
-    try {
-      const authToken = JSON.parse(localStorage.getItem("authToken"));
-      const headers = {
-        "x-access-token": `${authToken}`,
-        "Content-Type": "application/json",
-      };
-  
-      const response = await axios.get(`${BASE_URL}/api/users/${id}`, {
-        headers,
-      });
-  
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  };
-
- 
-
-export const CommitteeList = async (page = 1, limit = 10, payload = {}) => {
   try {
     const authToken = JSON.parse(localStorage.getItem("authToken"));
-
     const headers = {
       "x-access-token": `${authToken}`,
       "Content-Type": "application/json",
     };
+    const response = await axios.get(`${BASE_URL}/api/users/${id}`, {
+      headers,
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
+export const CommitteeList = async (page = 1, limit = 10, payload = {}) => {
+  try {
+    const authToken = JSON.parse(localStorage.getItem("authToken"));
+    const headers = {
+      "x-access-token": `${authToken}`,
+      "Content-Type": "application/json",
+    };
     const response = await axios.get(`${BASE_URL}/api/committeemeeting/`, {
       headers,
     });
@@ -128,3 +122,89 @@ export const CommitteeList = async (page = 1, limit = 10, payload = {}) => {
     throw error;
   }
 };
+
+export const administratorsList = async () => {
+  try {
+    const authToken = JSON.parse(localStorage.getItem("authToken"));
+    const headers = {
+      "x-access-token": `${authToken}`,
+      "Content-Type": "application/json",
+    };
+    const response = await axios.get(`${BASE_URL}/api/users/admininstratorlist`, {
+      headers,
+    });
+    return response.data;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createCommitteMeeting = async (requestParams) => {
+	try {
+	  const authToken = JSON.parse(localStorage.getItem("authToken"));
+	  const headers = {
+		"x-access-token": `${authToken}`,
+		"Content-Type": "application/json",
+	  };
+	  const response = await axios.get(`${BASE_URL}/api/committeemeeting/`,requestParams, {
+		headers,
+	  });
+	  return response.data;
+  
+	} catch (error) {
+	  throw error;
+	}
+  };
+
+  export const deleteCommiteeMeeting = async (id,requestParams) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};
+		const response = await axios.delete(`${BASE_URL}/api/committeemeeting/${id}`,requestParams, {
+		  headers,
+		});
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const getCommiteeMeetingDetailsById = async (id) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};
+		const response = await axios.get(`${BASE_URL}/api/committeemeeting/${id}`, {
+		  headers,
+		});
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const updateCommiteeMeetingDetails = async (id,requestParams) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};
+		const response = await axios.put(`${BASE_URL}/api/committeemeeting/${id}`,requestParams, {
+		  headers,
+		});
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+  

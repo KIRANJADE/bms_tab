@@ -1,16 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination,
-  Paper, Chip,
+  Paper, TextField,
 } from '@mui/material';
+import { useSelector } from 'react-redux';
 
+export default function AdministratorTable() {
+  const [filter, setFilter] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  // Retrieve adminData from Redux store
+  const adminData = useSelector((state) => state.auth?.adminData);
 
-export default function administratorTable(props) {
-  const [filter, setFilter] = React.useState('');
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  // Handle filtering logic
+  const filteredData = adminData?.filter((row) =>
+    Object.values(row).some((value) =>
+      value?.toString().toLowerCase().includes(filter.toLowerCase())
+    )
+  ) || [];
 
+  console.log(filteredData,"filetredData");
+  
+
+  // Pagination logic
+  const paginatedData = filteredData.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   const handleChangePage = (event, newPage) => setPage(newPage);
 
@@ -19,34 +36,20 @@ export default function administratorTable(props) {
     setPage(0);
   };
 
-  // eslint-disable-next-line react/prop-types
-  const filteredData = props?.data.filter((row) =>
-    Object.values(row).some((value) =>
-      value.toString().toLowerCase().includes(filter)
-    )
-  );
-
-  const paginatedData = filteredData.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
-
   return (
     <Paper>
+      <TextField
+        label="Search"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+      />
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell
-                sx={{
-                  backgroundColor: '#f5f5f5', // Light grey background
-                  color: '#333333', // Dark text color
-                  fontWeight: 'bold',
-                  fontSize: '14px',
-                }}
-              >
-                Member Id
-              </TableCell>
               <TableCell
                 sx={{
                   backgroundColor: '#f5f5f5',
@@ -55,7 +58,7 @@ export default function administratorTable(props) {
                   fontSize: '14px',
                 }}
               >
-                Last Name
+                Member Id
               </TableCell>
               <TableCell
                 sx={{
@@ -75,7 +78,7 @@ export default function administratorTable(props) {
                   fontSize: '14px',
                 }}
               >
-                Position
+                Last Name
               </TableCell>
               <TableCell
                 sx={{
@@ -85,31 +88,47 @@ export default function administratorTable(props) {
                   fontSize: '14px',
                 }}
               >
-                Phone No.
+                Phone No
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: '#f5f5f5',
+                  color: '#333333',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                }}
+              >
+                Role
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {paginatedData.map((row) => (
-              <TableRow key={row.memberId}>
-                <TableCell>{row.memberId}</TableCell>
-                <TableCell>{row.lastname}</TableCell>
-                <TableCell>{row.firstname}</TableCell>
-                <TableCell>{row.position}</TableCell>
-                <TableCell>{row.phoneno}</TableCell>
+              <TableRow key={row._id}>
+                <TableCell>{row.memberdetails.memberId}</TableCell>
+                <TableCell>{row.profile.firstname}</TableCell>
+                <TableCell>{row.profile.lastname}</TableCell>
+                <TableCell>{row.profile.phoneno}</TableCell>
+                <TableCell>{row.role}</TableCell>
               </TableRow>
             ))}
+            {paginatedData.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  No records found
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
         component="div"
         count={filteredData.length}
+        rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
-        rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        rowsPerPageOptions={[5, 10, 15]}
       />
     </Paper>
   );
