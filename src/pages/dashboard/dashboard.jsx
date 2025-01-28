@@ -106,7 +106,7 @@ const Dashboard = () => {
     const filterParams = {
       ...(status && { status }),
       ...(memberType && { "memberdetails.memberType": memberType }),
-      ...(gender && { "memberdetails.gender": gender }),
+      ...(gender && { "profile.gender": gender }),
       ...(userType && { "memberdetails.userType": userType }),
     };
 
