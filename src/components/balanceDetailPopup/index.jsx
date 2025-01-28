@@ -83,10 +83,6 @@ console.log(userDetails, "userDetails")
             <Divider />
           </Grid>
 
-       
-
-        
-
           <Grid item xs={12} sm={12}>
             <Box display="flex" alignItems="center" style={{justifyContent : "center"}} gap={1}>
               <AccountBalanceWalletIcon color="success" />

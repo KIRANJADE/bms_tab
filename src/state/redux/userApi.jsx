@@ -29,17 +29,24 @@ export const userList = async (page = 1, limit = 10, payload = {}) => {
       "Content-Type": "application/json",
     };
 
-    const queryParams = new URLSearchParams({ page, limit, ...payload });
+    // Construct query parameters for pagination
+    const queryParams = new URLSearchParams({
+      page,
+      limit,
+    });
 
-    const response = await axios.get(`${BASE_URL}/api/users?${queryParams}`, {
+    // Use POST to include payload
+    const response = await axios.post(`${BASE_URL}/api/users/?${queryParams}`, payload, {
       headers,
     });
+
     return response.data;
   } catch (error) {
     console.error("Error fetching user list:", error);
     throw error;
   }
 };
+
 
 export const createUserApi = async (params) => {
   try {
