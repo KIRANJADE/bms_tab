@@ -119,8 +119,6 @@ export const CommitteeList = async (page = 1, limit = 10, payload = {}) => {
       "Content-Type": "application/json",
     };
 
-    const queryParams = new URLSearchParams({ page, limit, ...payload });
-
     const response = await axios.get(`${BASE_URL}/api/committeemeeting/`, {
       headers,
     });
