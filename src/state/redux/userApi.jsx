@@ -20,7 +20,7 @@ export const createUserLogin = async (params) => {
   }
 };
 
-export const userList = async (page = 1, limit = 10, payload) => {
+export const userList = async ( payload) => {
   try {
     const authToken = JSON.parse(localStorage.getItem("authToken"));
     const headers = {
@@ -28,9 +28,9 @@ export const userList = async (page = 1, limit = 10, payload) => {
       "Content-Type": "application/json",
     };
 
-    const queryParams = new URLSearchParams({ page, limit, ...payload });
+    // const queryParams = new URLSearchParams({ page, limit,  });
 
-    const response = await axios.get(`${BASE_URL}/api/users?${queryParams}`, {
+    const response = await axios.post(`${BASE_URL}/api/users/getall`,payload, {
       headers,
     });
     return response.data;

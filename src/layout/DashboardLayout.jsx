@@ -13,13 +13,15 @@ import { userListData, committeeListData } from "../state/redux/authSlice";
 import { Pagination, Stack } from "@mui/material";
 import Home from "../pages/homePage";
 const DashboardLayout = () => {
-  const [activeTabs, setActiveTabs] = useState([{ id: "tab1", label:"Dashboard" }]);
+  const [activeTabs, setActiveTabs] = useState([
+    { id: "tab1", label: "Dashboard" },
+  ]);
   const [activeTab, setActiveTab] = useState("tab1");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(12); 
+  const [limit, setLimit] = useState(12);
   const [totalPages, setTotalPages] = useState(0);
 
   const dispatch = useDispatch();
@@ -27,8 +29,9 @@ const DashboardLayout = () => {
   const fetchUserList = async () => {
     setLoading(true);
     try {
-      const response = await userList(page, limit, {
-        status: "active",
+      const response = await userList({
+        page: 1,
+        limit: 12,
       });
 
       if (response.status) {
@@ -107,11 +110,12 @@ const DashboardLayout = () => {
         isOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}
       />
-      <div style={{
+      <div
+        style={{
           flex: 1,
           marginLeft: isSidebarOpen ? 0 : 50,
           transition: "margin-left 0.3s ease-in-out",
-        //   overflow: "auto", // Ensure only card container scrolls
+          //   overflow: "auto", // Ensure only card container scrolls
         }}
       >
         <TabsPanel
