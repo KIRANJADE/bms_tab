@@ -21,9 +21,12 @@ import classNames from "classnames";
 import "../../components/cardList/cards.less";
 import { deleteUser } from "../../state/redux/authSlice";
 import CardDetailPopUp from "../../components/cardDetailsModal/index";
+import BalanceDetailPopup from "../../components/balanceDetailPopup/index";
+
 const ActionCard = ({ users, profile, onEdit,memberTypeHistory = [] }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [open, setOpen] = useState(false);
+  const [openBalancePopup, setBalancePopup] = useState(false);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const dispatch = useDispatch();
 
@@ -51,6 +54,15 @@ const ActionCard = ({ users, profile, onEdit,memberTypeHistory = [] }) => {
     setOpen(true);
   };
 
+  const handleBalancePopUpClick = () => {
+    console.log("Hiiii", users);
+    setBalancePopup(true);
+  };
+
+  const onBalanceClose = () => {
+    setBalancePopup(false);
+  };
+
   const onClose = () => {
     setOpen(false);
   };
@@ -63,6 +75,13 @@ const ActionCard = ({ users, profile, onEdit,memberTypeHistory = [] }) => {
           onClose={onClose}
           userDetails={users}
           onEdit={onEdit}
+        />
+      )}
+        {openBalancePopup && (
+        <BalanceDetailPopup
+          open={openBalancePopup}
+          onClose={onBalanceClose}
+          userDetails={users}
         />
       )}
       <Card
@@ -130,7 +149,7 @@ const ActionCard = ({ users, profile, onEdit,memberTypeHistory = [] }) => {
             )}
           </Box>
         </Box>
-        <Box className={users?.isEdit ? "editcard" : "disabledCard"}>
+        <Box onClick={ users?.isEdit ?() => handleBalancePopUpClick() : ""}  className={users?.isEdit ? "editcard" : "disabledCard"}>
           <Box className="action-card-details-item">
             <LocalPhoneOutlinedIcon fontSize="small" color="action" />
             <Typography variant="body2" className="action-card-memberId">
