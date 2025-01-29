@@ -3,6 +3,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination,
   Paper, TextField,
 } from '@mui/material';
+import EmptyState from "../../pages/common/EmptyState"
 
 export default function AdministratorTable(props) {
   const [filter, setFilter] = useState('');
@@ -39,6 +40,7 @@ export default function AdministratorTable(props) {
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
       />}
+	  {paginatedData?.length > 0 ? 
       <TableContainer>
         <Table>
           <TableHead>
@@ -95,7 +97,9 @@ export default function AdministratorTable(props) {
               </TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
+			
             {paginatedData.map((row) => (
               <TableRow key={row._id}>
                 <TableCell>{row.memberdetails.memberId}</TableCell>
@@ -105,16 +109,18 @@ export default function AdministratorTable(props) {
                 <TableCell>{row.position}</TableCell>
               </TableRow>
             ))}
-            {paginatedData.length === 0 && (
+            {/* {paginatedData.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} align="center">
                   No records found
                 </TableCell>
               </TableRow>
-            )}
+            )} */}
           </TableBody>
+		   
         </Table>
       </TableContainer>
+	: <EmptyState />  }
       <TablePagination
         component="div"
         count={filteredData.length}

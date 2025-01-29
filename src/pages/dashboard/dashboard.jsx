@@ -22,7 +22,7 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useForm } from "react-hook-form";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseSharpIcon from "@mui/icons-material/CloseSharp";
-
+import EmptyState from "../../pages/common/EmptyState"
 const ITEMS_PER_PAGE = 12;
 
 const Dashboard = () => {
@@ -272,24 +272,13 @@ const Dashboard = () => {
           </Box>
         </Collapse>
         <div className="mb-3 d-flex justify-content-end ">Total Count : {users?.totalRecords}</div>
-        <Grid
-          container
-          spacing={1}
-          style={{ height: 460, overflowY: "scroll" }}
-        >
-          {users?.userDetails?.map((user, index) => (
-            <Grid className="mb-3" item xs={12} sm={6} md={3} key={index}>
-              <ActionCard
-                users={user}
-                profile={user?.profile}
-                memberTypeHistory={user?.memberTypeHistory}
-                onEdit={() => handleEdit(user)}
-                onDelete={handleDelete}
-                isEdit={editingCard}
-              />
-            </Grid>
-          ))}
-        </Grid>
+		{users?.userDetails?.length > 0 ? 
+
+<EmptyState />
+: <>
+		<EmptyState />
+		</>
+		}
 
         {hasMore && (
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
