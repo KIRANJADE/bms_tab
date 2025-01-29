@@ -6,7 +6,8 @@ const INTIAL_STATE = {
     addUser : false,
     userDelete : false,
     committeeData : [],
-    adminData : []
+    adminData : [],
+    committeData : []
 }
 
   export const loginSlice = createSlice({
@@ -30,9 +31,12 @@ const INTIAL_STATE = {
             },
             administratorData : (state,action) => {
                 state.adminData = action.payload
-            }
+            },
+            committeCommonData : (state,action) => {
+                state.committeData = action.payload
+            },
         }
   })
 
-export const {adminLogin,userListData,userCreate,deleteUser, committeeListData,administratorData} = loginSlice.actions;
+export const {adminLogin,userListData,userCreate,deleteUser, committeeListData,administratorData,committeCommonData} = loginSlice.actions;
 export default loginSlice.reducer

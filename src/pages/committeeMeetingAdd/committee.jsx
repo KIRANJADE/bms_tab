@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   TextField,
@@ -13,6 +13,9 @@ import {
   Autocomplete,
 } from "@mui/material";
 import axios from "axios";
+import { getAttendanceMembersList } from "../../state/redux/userApi";
+import { useDispatch, useSelector } from "react-redux";
+import { committeCommonData } from "../../state/redux/authSlice";
 
 const defaultValues = {
   isAddAttendance: true,
@@ -39,8 +42,30 @@ const defaultValues = {
   ],
 };
 
-const AttendanceForm = ({ open, handleClose }) => {
+const AttendanceForm = ({ open, onClose }) => {
   const { handleSubmit, control } = useForm({ defaultValues });
+
+  const committeData = useSelector((state) => state.auth.committeData)
+console.log(committeData?.userDetails,"committeData");
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+	fetchAttendanceCommonmembers()
+  }, [])
+
+  const fetchAttendanceCommonmembers = async () => {
+	try {
+		const response = await getAttendanceMembersList();
+		console.log(response);
+		if (response?.status) {
+			dispatch(committeCommonData(response))
+		}
+	} catch (error) {
+		throw error
+	}
+  }
+  
 
   const onSubmit = async (data) => {
     const payload = {
@@ -53,14 +78,14 @@ const AttendanceForm = ({ open, handleClose }) => {
     try {
       const response = await axios.post("/api/attendance", payload);
       console.log("API Response:", response.data);
-      handleClose();
+      onClose();
     } catch (error) {
       console.error("API Error:", error);
     }
   };
 
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={onClose}>
       <Box
         sx={{
           position: "absolute",
@@ -127,7 +152,7 @@ const AttendanceForm = ({ open, handleClose }) => {
               />
             </Grid>
             <Grid item xs={12} display="flex" justifyContent="space-between">
-              <Button variant="outlined" color="secondary" onClick={handleClose}>
+              <Button variant="outlined" color="secondary" onClick={onClose}>
                 Cancel
               </Button>
               <Button type="submit" variant="contained" color="primary">

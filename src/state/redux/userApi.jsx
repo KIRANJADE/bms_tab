@@ -209,4 +209,25 @@ export const createCommitteMeeting = async (requestParams) => {
 		throw error;
 	  }
 	};
+
+  export const getAttendanceMembersList = async () => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.get(`${BASE_URL}/api/common/getattendancemembers`, {
+		  headers,
+		});
+    console.log(response,"hghghgh");
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
   

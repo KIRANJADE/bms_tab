@@ -44,8 +44,6 @@ const User = () => {
     }
   }, [committeeData]);
   
-console.log(tableData, "tableData")
-
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
