@@ -17,6 +17,7 @@ import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import MenuIcon from "@mui/icons-material/Menu";
+import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 import { useNavigate } from "react-router-dom";
 
 const pages = [
@@ -24,7 +25,7 @@ const pages = [
     id: "tab1",
     label: "Dashboard",
     path: "/home",
-    icon: <SupervisorAccountIcon />,
+    icon: <DashboardCustomizeIcon />,
   },
   {
     id: "tab2",

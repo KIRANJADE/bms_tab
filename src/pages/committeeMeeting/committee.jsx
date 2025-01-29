@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import ActionCard from "../../components/cardList/card";
 import { Grid, Box, Button } from "@mui/material";
-import AddNewModal from "../userAdd/addUser";
+import CommitteePopup from "../committeeMeetingAdd/committee";
 import { useSelector } from "react-redux";
 import CustomizedTables from "../../components/tableView/table"; 
 
@@ -59,8 +59,10 @@ console.log(tableData, "tableData")
   };
   return (
     <>
-      {<AddNewModal open={isModalOpen} onClose={handleModalClose} />}
+      {<CommitteePopup open={isModalOpen} onClose={handleModalClose} />}
       <div >
+      <h4>Committee Meeting List</h4>
+
         <Box
           sx={{
             display: "flex",
@@ -76,7 +78,6 @@ console.log(tableData, "tableData")
             + Add New
           </Button>
         </Box>
-        <h4>Committee Meeting List</h4>
         <Grid container spacing={1}>
           {/* {cards.map((card, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
