@@ -33,7 +33,7 @@ const User = () => {
         id: item?.committeemeetingId,
         attendance: item?.isAddAttendance,
         name: item.meetingtitle,
-        date: item.meetingDate ? new Date(item.meetingDate).toLocaleDateString() : "Date Not Available",  // Updated fallback value
+        date: item.meetingDate,
         amount: item.fineAmount,
         status: item.status,
       }));
