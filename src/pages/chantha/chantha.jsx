@@ -19,7 +19,7 @@ const ParentComponent = () => {
   return (
     <div>
       <h4>Data Table</h4>
-      <CustomizedTables data={ordersData} /> {/* Pass the rows data as a prop */}
+      {/* <CustomizedTables data={ordersData} /> */}
     </div>
   );
 };
