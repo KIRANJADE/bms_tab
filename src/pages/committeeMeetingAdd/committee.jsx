@@ -13,7 +13,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import axios from "axios";
-import { getAttendanceMembersList } from "../../state/redux/userApi";
+import { createCommitteMeeting, getAttendanceMembersList, userList } from "../../state/redux/userApi";
 import { useDispatch, useSelector } from "react-redux";
 import { committeCommonData } from "../../state/redux/authSlice";
 
@@ -74,22 +74,59 @@ const AttendanceForm = ({ open, onClose }) => {
     }
   };
 
+    const fetchUserList = async () => {
+	  try {
+		const response = await userList({
+		  page: 1,
+		  limit: 12,
+		});
+  
+		if (response.status) {
+		  dispatch(userListData(response.userDetails));
+		}
+	  } catch (error) {
+		setError("Failed to fetch user data");
+	  } finally {
+		setLoading(false);
+	  }
+	};
+
   const onSubmit = async (data) => {
-    const payload = {
-      ...data,
-      userDetails: data.userDetails.map((user) => ({
-        _id: user._id,
-        attendance: user.attendance === "true",
-      })),
-    };
-    try {
-      const response = await axios.post("/api/attendance", payload);
-      console.log("API Response:", response.data);
-      onClose();
-    } catch (error) {
-      console.error("API Error:", error);
-    }
+	const payload = {
+	  isAddAttendance: true,
+	  meetingtitle: data.meetingtitle,
+	  meetingDate: data.meetingDate,
+	  fineAmount: data.fineAmount,
+	  status: "active",
+	  userDetails: data.userDetails.map((user) => ({
+		_id: user._id,
+		profile: {
+		  firstname: user.profile.firstname,
+		  lastname: user.profile.lastname,
+		  gender: user.profile.gender,
+		},
+		status: user.status,
+		memberdetails: {
+		  memberType: user.memberdetails.memberType,
+		  memberId: user.memberdetails.memberId,
+		  userType: user.memberdetails.userType,
+		},
+		attendance: Boolean(user.attendance), 
+	  })),
+	};
+  
+	try {
+	  const response = await createCommitteMeeting(payload);
+	  console.log(response);
+	  if (response?.status) {
+		fetchUserList()
+	  }
+	  onClose();
+	} catch (error) {
+		throw error
+	}
   };
+  
 
   return (
     <Modal open={open} onClose={onClose}>

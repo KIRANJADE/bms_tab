@@ -149,7 +149,7 @@ export const createCommitteMeeting = async (requestParams) => {
 		"x-access-token": `${authToken}`,
 		"Content-Type": "application/json",
 	  };
-	  const response = await axios.get(`${BASE_URL}/api/committeemeeting/`,requestParams, {
+	  const response = await axios.post(`${BASE_URL}/api/committeemeeting/`,requestParams, {
 		headers,
 	  });
 	  return response.data;
