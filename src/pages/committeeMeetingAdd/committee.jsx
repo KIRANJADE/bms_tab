@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   TextField,
@@ -13,45 +13,47 @@ import {
   Autocomplete,
 } from "@mui/material";
 import axios from "axios";
-import { createCommitteMeeting, getAttendanceMembersList, userList } from "../../state/redux/userApi";
+import { createCommitteMeeting, getAttendanceMembersList, CommitteeList } from "../../state/redux/userApi";
 import { useDispatch, useSelector } from "react-redux";
-import { committeCommonData } from "../../state/redux/authSlice";
+import { committeCommonData, committeeListData } from "../../state/redux/authSlice";
 
-const defaultValues = {
-  isAddAttendance: true,
-  meetingtitle: "pothu kulu kuttam",
-  meetingDate: "13-11-2024",
-  fineAmount: "10",
-  status: "active",
-  administrator: "", // Added administrator field
-  userDetails: [
-    {
-      _id: "676bc769f9eaeb1e39ce6006",
-      profile: { firstname: "நவாப்நாதன்", lastname: "செ", gender: "male" },
-      status: "active",
-      memberdetails: {
-        memberType: "a-class",
-        memberId: "A0001",
-        userType: "full",
-      },
-      attendance: false,
-    },
-    {
-      _id: "676bc769f9eaeb1e39ce6007",
-      profile: { firstname: "துரைபாண்டியன்", lastname: "கி", gender: "male" },
-      status: "active",
-      memberdetails: {
-        memberType: "a-class",
-        memberId: "A0002",
-        userType: "full",
-      },
-      attendance: true,
-    },
-  ],
-};
+// const defaultValues = {
+//   isAddAttendance: true,
+//   meetingtitle: "pothu kulu kuttam",
+//   meetingDate: "13-11-2024",
+//   fineAmount: "10",
+//   status: "active",
+//   administrator: "", // Added administrator field
+//   userDetails: [
+//     {
+//       _id: "676bc769f9eaeb1e39ce6006",
+//       profile: { firstname: "நவாப்நாதன்", lastname: "செ", gender: "male" },
+//       status: "active",
+//       memberdetails: {
+//         memberType: "a-class",
+//         memberId: "A0001",
+//         userType: "full",
+//       },
+//       attendance: false,
+//     },
+//     {
+//       _id: "676bc769f9eaeb1e39ce6007",
+//       profile: { firstname: "துரைபாண்டியன்", lastname: "கி", gender: "male" },
+//       status: "active",
+//       memberdetails: {
+//         memberType: "a-class",
+//         memberId: "A0002",
+//         userType: "full",
+//       },
+//       attendance: true,
+//     },
+//   ],
+// };
 
 const AttendanceForm = ({ open, onClose }) => {
-  const { handleSubmit, control } = useForm({ defaultValues });
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(12);
+  const { handleSubmit, control } = useForm({  });
 
   const committeData = useSelector((state) => state.auth.committeData);
   console.log(committeData?.userDetails, "committeData");
@@ -74,57 +76,61 @@ const AttendanceForm = ({ open, onClose }) => {
     }
   };
 
-    const fetchUserList = async () => {
-	  try {
-		const response = await userList({
-		  page: 1,
-		  limit: 12,
-		});
+  const fetchCommitteeList = async () => {
+    setLoading(true);
+    try {
+      const response = await CommitteeList(page, limit, {
+        status: "active",
+      });
   
-		if (response.status) {
-		  dispatch(userListData(response.userDetails));
-		}
-	  } catch (error) {
-		setError("Failed to fetch user data");
-	  } finally {
-		setLoading(false);
-	  }
-	};
-
+      if (response.status) {
+        dispatch(committeeListData(response.userDetails));
+        // setTotalPages(response.totalPages);
+      }
+    } catch (error) {
+      setError("Failed to fetch user data");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   const onSubmit = async (data) => {
-	const payload = {
-	  isAddAttendance: true,
-	  meetingtitle: data.meetingtitle,
-	  meetingDate: data.meetingDate,
-	  fineAmount: data.fineAmount,
-	  status: "active",
-	  userDetails: data.userDetails.map((user) => ({
-		_id: user._id,
-		profile: {
-		  firstname: user.profile.firstname,
-		  lastname: user.profile.lastname,
-		  gender: user.profile.gender,
-		},
-		status: user.status,
-		memberdetails: {
-		  memberType: user.memberdetails.memberType,
-		  memberId: user.memberdetails.memberId,
-		  userType: user.memberdetails.userType,
-		},
-		attendance: Boolean(user.attendance), 
-	  })),
-	};
+    const payload = {
+      isAddAttendance: true,
+      meetingtitle: data.meetingtitle,
+      meetingDate: data.meetingDate,
+      fineAmount: data.fineAmount,
+      status: "active",
+      userDetails: data.userDetails.map((user) => ({
+        _id: user._id,
+        profile: {
+          firstname: user.profile.firstname,
+          lastname: user.profile.lastname,
+          gender: user.profile.gender,
+        },
+        status: user.status,
+        memberdetails: {
+          memberType: user.memberdetails.memberType,
+          memberId: user.memberdetails.memberId,
+          userType: user.memberdetails.userType,
+        },
+        attendance: Boolean(user.attendance),
+      })),
+    };
   
-	try {
-	  const response = await createCommitteMeeting(payload);
-	  console.log(response);
-	  if (response?.status) {
-		fetchUserList()
-	  }
-	  onClose();
-	} catch (error) {
-		throw error
-	}
+    try {
+      const response = await createCommitteMeeting(payload);
+      console.log(response, "response");
+      if (response?.status) {
+        // Ensure the fetchCommitteeList is awaited before proceeding
+        await fetchCommitteeList();
+        alert("Meeting created successfully");
+      }
+      onClose();
+    } catch (error) {
+      console.error("Error creating meeting:", error);
+      alert("Failed to create meeting");
+    }
   };
   
 
@@ -152,17 +158,20 @@ const AttendanceForm = ({ open, onClose }) => {
               <Controller
                 name="meetingtitle"
                 control={control}
+                slotProps={{ inputLabel: { shrink: true } }}
                 render={({ field }) => (
                   <TextField {...field} label="Meeting Title" fullWidth />
+                  
                 )}
               />
             </Grid>
             <Grid item xs={6}>
               <Controller
                 name="meetingDate"
+                slotProps={{ inputLabel: { shrink: true } }}
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="Meeting Date" fullWidth />
+                  <TextField {...field}  type="date" label="Meeting Date" fullWidth />
                 )}
               />
             </Grid>
