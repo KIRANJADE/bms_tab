@@ -29,14 +29,22 @@ const defaultValues = {
       _id: "676bc769f9eaeb1e39ce6006",
       profile: { firstname: "நவாப்நாதன்", lastname: "செ", gender: "male" },
       status: "active",
-      memberdetails: { memberType: "a-class", memberId: "A0001", userType: "full" },
+      memberdetails: {
+        memberType: "a-class",
+        memberId: "A0001",
+        userType: "full",
+      },
       attendance: false,
     },
     {
       _id: "676bc769f9eaeb1e39ce6007",
       profile: { firstname: "துரைபாண்டியன்", lastname: "கி", gender: "male" },
       status: "active",
-      memberdetails: { memberType: "a-class", memberId: "A0002", userType: "full" },
+      memberdetails: {
+        memberType: "a-class",
+        memberId: "A0002",
+        userType: "full",
+      },
       attendance: true,
     },
   ],
@@ -45,27 +53,26 @@ const defaultValues = {
 const AttendanceForm = ({ open, onClose }) => {
   const { handleSubmit, control } = useForm({ defaultValues });
 
-  const committeData = useSelector((state) => state.auth.committeData)
-console.log(committeData?.userDetails,"committeData");
+  const committeData = useSelector((state) => state.auth.committeData);
+  console.log(committeData?.userDetails, "committeData");
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-	fetchAttendanceCommonmembers()
-  }, [])
+    fetchAttendanceCommonmembers();
+  }, []);
 
   const fetchAttendanceCommonmembers = async () => {
-	try {
-		const response = await getAttendanceMembersList();
-		console.log(response);
-		if (response?.status) {
-			dispatch(committeCommonData(response))
-		}
-	} catch (error) {
-		throw error
-	}
-  }
-  
+    try {
+      const response = await getAttendanceMembersList();
+      console.log(response);
+      if (response?.status) {
+        dispatch(committeCommonData(response));
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
 
   const onSubmit = async (data) => {
     const payload = {
@@ -108,34 +115,46 @@ console.log(committeData?.userDetails,"committeData");
               <Controller
                 name="meetingtitle"
                 control={control}
-                render={({ field }) => <TextField {...field} label="Meeting Title" fullWidth />}
+                render={({ field }) => (
+                  <TextField {...field} label="Meeting Title" fullWidth />
+                )}
               />
             </Grid>
             <Grid item xs={6}>
               <Controller
                 name="meetingDate"
                 control={control}
-                render={({ field }) => <TextField {...field} label="Meeting Date" fullWidth />}
+                render={({ field }) => (
+                  <TextField {...field} label="Meeting Date" fullWidth />
+                )}
               />
             </Grid>
             <Grid item xs={6}>
               <Controller
                 name="fineAmount"
                 control={control}
-                render={({ field }) => <TextField {...field} label="Fine Amount" fullWidth />}
+                render={({ field }) => (
+                  <TextField {...field} label="Fine Amount" fullWidth />
+                )}
               />
             </Grid>
             <Grid item xs={6}>
               <Controller
                 name="administrator"
                 control={control}
-                render={({ field }) => <TextField {...field} label="Administrator" fullWidth />}
+                render={({ field }) => (
+                  <TextField {...field} label="Administrator" fullWidth />
+                )}
               />
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">User Details</Typography>
             </Grid>
             <Grid item xs={12}>
+              {console.log(
+                committeData?.userDetails,
+                "committeData?.userDetails"
+              )}
               <Controller
                 name="userDetails"
                 control={control}
@@ -143,14 +162,26 @@ console.log(committeData?.userDetails,"committeData");
                   <Autocomplete
                     {...field}
                     multiple
-                    options={defaultValues?.userDetails}
-                    getOptionLabel={(option) => `${option?.profile?.firstname} ${option?.profile?.lastname}`}
-                    renderInput={(params) => <TextField {...params} label="Select Users" fullWidth />}
+                    options={
+                      Array.isArray(committeData?.userDetails)
+                        ? committeData?.userDetails // Pass the whole array, not just the profile
+                        : [] // Ensure it's an array
+                    }
+                    getOptionLabel={
+                      (option) =>
+                        `${option?.profile?.firstname || ""} ${
+                          option?.profile?.lastname || ""
+                        }` // Access profile correctly
+                    }
+                    renderInput={(params) => (
+                      <TextField {...params} label="Select Users" fullWidth />
+                    )}
                     onChange={(_, value) => field.onChange(value)}
                   />
                 )}
               />
             </Grid>
+
             <Grid item xs={12} display="flex" justifyContent="space-between">
               <Button variant="outlined" color="secondary" onClick={onClose}>
                 Cancel
