@@ -274,8 +274,24 @@ const Dashboard = () => {
         <div className="mb-3 d-flex justify-content-end ">Total Count : {users?.totalRecords}</div>
 		{users?.userDetails?.length > 0 ? 
 
-<EmptyState />
-: <>
+        <Grid
+          container
+          spacing={1}
+          style={{ height: 460, overflowY: "scroll" }}
+        >
+          {users?.userDetails?.map((user, index) => (
+            <Grid className="mb-3" item xs={12} sm={6} md={3} key={index}>
+              <ActionCard
+                users={user}
+                profile={user?.profile}
+                memberTypeHistory={user?.memberTypeHistory}
+                onEdit={() => handleEdit(user)}
+                onDelete={handleDelete}
+                isEdit={editingCard}
+              />
+            </Grid>
+          ))}
+        </Grid> : <>
 		<EmptyState />
 		</>
 		}
