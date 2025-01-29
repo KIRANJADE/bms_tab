@@ -31,14 +31,14 @@ export default function AdministratorTable(props) {
 
   return (
     <Paper>
-      <TextField
+    {props?.search === true &&  <TextField
         label="Search"
         variant="outlined"
         fullWidth
         margin="normal"
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-      />
+      />}
       <TableContainer>
         <Table>
           <TableHead>
@@ -91,7 +91,7 @@ export default function AdministratorTable(props) {
                   fontSize: '14px',
                 }}
               >
-                Role
+                Position
               </TableCell>
             </TableRow>
           </TableHead>
@@ -102,7 +102,7 @@ export default function AdministratorTable(props) {
                 <TableCell>{row.profile.firstname}</TableCell>
                 <TableCell>{row.profile.lastname}</TableCell>
                 <TableCell>{row.profile.phoneno}</TableCell>
-                <TableCell>{row.role}</TableCell>
+                <TableCell>{row.position}</TableCell>
               </TableRow>
             ))}
             {paginatedData.length === 0 && (

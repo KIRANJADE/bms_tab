@@ -52,12 +52,12 @@ const Dashboard = () => {
       const response = await userList({
         page: currentPage,
         limit: ITEMS_PER_PAGE,
-        ...filterParams
+        ...filterParams,
       });
 
       if (response.status) {
         // Append new users data to the existing list
-        dispatch(userListData(response.userDetails)); // Ensure this updates the users list correctly
+        dispatch(userListData(response)); // Ensure this updates the users list correctly
         setHasMore(currentPage < response.totalPages); // Update hasMore based on totalPages
       }
     } catch (error) {
@@ -134,7 +134,13 @@ const Dashboard = () => {
         isEditUsers={editingCard}
       />
       <div>
-        <Box sx={{ display: "flex", justifyContent: "flex-start", marginBottom: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            marginBottom: 3,
+          }}
+        >
           <Button
             style={{ backgroundColor: "#4C79F8", width: "180px" }}
             variant="contained"
@@ -150,20 +156,34 @@ const Dashboard = () => {
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Search..."
-              sx={{ maxWidth: "250px", transition: "max-width 0.3s ease-in-out", marginRight: 1 }}
+              sx={{
+                maxWidth: "250px",
+                transition: "max-width 0.3s ease-in-out",
+                marginRight: 1,
+              }}
               endAdornment={
                 <InputAdornment position="end">
-                  <IconButton onClick={() => console.log("Searching:", searchValue)}>
+                  <IconButton
+                    onClick={() => console.log("Searching:", searchValue)}
+                  >
                     <SearchIcon />
                   </IconButton>
                 </InputAdornment>
               }
             />
           )}
-          <IconButton onClick={handleSearchToggle} aria-label="toggle search" sx={{ marginRight: 1 }}>
+          <IconButton
+            onClick={handleSearchToggle}
+            aria-label="toggle search"
+            sx={{ marginRight: 1 }}
+          >
             {showSearch ? <CloseSharpIcon /> : <SearchIcon />}
           </IconButton>
-          <IconButton onClick={handleExpandClick} aria-expanded={isExpanded} aria-label="show more">
+          <IconButton
+            onClick={handleExpandClick}
+            aria-expanded={isExpanded}
+            aria-label="show more"
+          >
             <FilterAltIcon />
           </IconButton>
         </Box>
@@ -234,18 +254,30 @@ const Dashboard = () => {
                   <MenuItem value="half">Half</MenuItem>
                 </Select>
               </FormControl>
-              <Button variant="contained" onClick={handleFilter} color="primary">
+              <Button
+                variant="contained"
+                onClick={handleFilter}
+                color="primary"
+              >
                 Filter
               </Button>
-              <Button variant="outlined" onClick={handleReset} color="secondary">
+              <Button
+                variant="contained"
+                onClick={handleReset}
+                color="primary"
+              >
                 Reset
               </Button>
             </Box>
           </Box>
         </Collapse>
-
-        <Grid container spacing={1} style={{ height: 460, overflowY: "scroll" }}>
-          {users.map((user, index) => (
+        <div className="mb-3 d-flex justify-content-end ">Total Count : {users?.totalRecords}</div>
+        <Grid
+          container
+          spacing={1}
+          style={{ height: 460, overflowY: "scroll" }}
+        >
+          {users?.userDetails?.map((user, index) => (
             <Grid className="mb-3" item xs={12} sm={6} md={3} key={index}>
               <ActionCard
                 users={user}

@@ -18,7 +18,7 @@ const ordersData = [
 const ParentComponent = () => {
   return (
     <div>
-      <h1>Data Table</h1>
+      <h4>Data Table</h4>
       <CustomizedTables data={ordersData} /> {/* Pass the rows data as a prop */}
     </div>
   );
