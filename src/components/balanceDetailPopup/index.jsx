@@ -19,12 +19,20 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
+import CustomizedTables from "../../components/tableView/table"; 
+
 
 const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isresetCancelEditFlag, setIsResetCancelEditFlag] = useState(false);
 
 
+  const ordersData = [
+    { id: '#1002', date: '11 Feb, 2024', customer: 'Wade Warren', payment: 'Pending', total: '$20.00', delivery: 'N/A', items: '2 items', fulfillment: 'Unfulfilled' },
+    { id: '#1004', date: '13 Feb, 2024', customer: 'Esther Howard', payment: 'Success', total: '$22.00', delivery: 'N/A', items: '3 items', fulfillment: 'Fulfilled' },
+    { id: '#1007', date: '15 Feb, 2024', customer: 'Jenny Wilson', payment: 'Pending', total: '$25.00', delivery: 'N/A', items: '2 items', fulfillment: 'Unfulfilled' },
+   
+  ];
 
   const handleEditUsers = () => {
     onClose();
@@ -46,8 +54,8 @@ console.log(userDetails, "userDetails")
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: "90%",
-          maxWidth: 500,
+          width: "70%",
+          // maxWidth: 800,
           bgcolor: "background.paper",
           borderRadius: 4,
           boxShadow: 24,
@@ -84,12 +92,13 @@ console.log(userDetails, "userDetails")
           </Grid>
 
           <Grid item xs={12} sm={12}>
-            <Box display="flex" alignItems="center" style={{justifyContent : "center"}} gap={1}>
+            <Box display="flex" className="mb-1" alignItems="center" style={{justifyContent : "center"}} gap={1}>
               <AccountBalanceWalletIcon color="success" />
               <Typography variant="body1">
                 <strong>Balance:</strong> ₹{userDetails?.balance ? userDetails?.balance : "0"}
               </Typography>
             </Box>
+            <CustomizedTables data={ordersData} search={false}/>
           </Grid>
 
 

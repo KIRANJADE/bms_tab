@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-import CustomizedTables from "../../components/tableView/administratorTable"; // Import the CustomizedTables component
+import CustomizedTables from "../../components/tableView/administratorTable"; 
 import { administratorsList } from "../../state/redux/userApi";
 import { useDispatch, useSelector } from "react-redux";
 import { administratorData } from "../../state/redux/authSlice";

@@ -1,76 +1,50 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ActionCard from "../../components/cardList/card";
 import { Grid, Box, Button } from "@mui/material";
 import AddNewModal from "../userAdd/addUser";
 import { useSelector } from "react-redux";
+import CustomizedTables from "../../components/tableView/table"; 
 
-const cards = [
-  {
-    id: 1,
-    title: "user1",
-    description: "9865656565",
-    image: "https://via.placeholder.com/300x200?text=Plants",
-  },
-  {
-    id: 2,
-    title: "user2",
-    description: "9865656565",
-    image: "https://via.placeholder.com/300x200?text=Animals",
-  },
-  {
-    id: 3,
-    title: "user3",
-    description: "9865656565",
-    image: "https://via.placeholder.com/300x200?text=Humans",
-  },
-  {
-    id: 1,
-    title: "user4",
-    description: "9865656565",
-    image: "https://via.placeholder.com/300x200?text=Plants",
-  },
-  {
-    id: 2,
-    title: "karthik",
-    description: "9865656565",
-    image: "https://via.placeholder.com/300x200?text=Animals",
-  },
-  {
-    id: 3,
-    title: "abisha",
-    description: "9865656565",
-    image: "https://via.placeholder.com/300x200?text=Humans",
-  },
-  {
-    id: 1,
-    title: "Abi",
-    description: "9865656565",
-    image: "https://via.placeholder.com/300x200?text=Plants",
-  },
-  {
-    id: 2,
-    title: "Ananth",
-    description: "9865656565",
-    image: "https://via.placeholder.com/300x200?text=Animals",
-  },
-  {
-    id: 3,
-    title: "Kamala",
-    description: "9865656565",
-    image: "https://via.placeholder.com/300x200?text=Humans",
-  },
-];
+
 
 const User = () => {
   const [editingCard, setEditingCard] = React.useState(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false); // Modal open state
+  const [tableData, setTableData] = React.useState([]);
   const committeeData = useSelector((state) => state.auth?.committeeData || []);
 
-  console.log(committeeData, "committeeData")
+  const headers = [
+    { key: 'id', label: 'Meeting Id' },
+    { key: 'attandance', label: 'Attendance' },  // Fixed key
+    { key: 'name', label: 'Meeting Title' },
+    { key: 'date', label: 'Meeting Date' },  // Changed from 'payment' to 'date'
+    { key: 'amount', label: 'Fine Amount' },
+    { key: 'status', label: 'Status' },
+  ];
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
   };
+
+  useEffect(() => {
+    console.log("Committee Data:", committeeData);
+    if (committeeData && committeeData.length > 0) {
+      const formattedData = committeeData.map((item) => ({
+        id: item?.committeemeetingId,
+        attendance: item?.isAddAttendance,
+        name: item.meetingtitle,
+        date: item.meetingDate ? new Date(item.meetingDate).toLocaleDateString() : "Date Not Available",  // Updated fallback value
+        amount: item.fineAmount,
+        status: item.status,
+      }));
+      
+  
+      console.log("Formatted Table Data:", formattedData);
+      setTableData(formattedData);
+    }
+  }, [committeeData]);
+  
+console.log(tableData, "tableData")
 
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -104,7 +78,7 @@ const User = () => {
         </Box>
 
         <Grid container spacing={1}>
-          {cards.map((card, index) => (
+          {/* {cards.map((card, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
               <ActionCard
                 card={card}
@@ -113,7 +87,8 @@ const User = () => {
                 isEdit={editingCard}
               />
             </Grid>
-          ))}
+          ))} */}
+                <CustomizedTables data={tableData} search={false} headers={headers}/>
         </Grid>
       </div>
     </>
