@@ -23,8 +23,8 @@ const ordersData = [
 const index = () => {
   const dispatch = useDispatch();
 
-//   const adminData = useSelector((state) => state.auth?.adminData);
-//   console.log(adminData,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+  const adminData = useSelector((state) => state.auth?.adminData);
+  console.log(adminData,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
   
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const index = () => {
   return (
     <div>
       <h1>Administrator List</h1>
-      <CustomizedTables data={ordersData} />
+      <CustomizedTables data={adminData} />
     </div>
   );
 };

@@ -3,25 +3,18 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination,
   Paper, TextField,
 } from '@mui/material';
-import { useSelector } from 'react-redux';
 
-export default function AdministratorTable() {
+export default function AdministratorTable(props) {
   const [filter, setFilter] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // Retrieve adminData from Redux store
-  const adminData = useSelector((state) => state.auth?.adminData);
-
   // Handle filtering logic
-  const filteredData = adminData?.filter((row) =>
+  const filteredData = props?.data?.filter((row) =>
     Object.values(row).some((value) =>
       value?.toString().toLowerCase().includes(filter.toLowerCase())
     )
   ) || [];
-
-  console.log(filteredData,"filetredData");
-  
 
   // Pagination logic
   const paginatedData = filteredData.slice(
