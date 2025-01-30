@@ -62,6 +62,7 @@ import {
 //   ],
 // };
 
+console.log()
 const AttendanceForm = ({ open, onClose }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
@@ -269,46 +270,48 @@ const AttendanceForm = ({ open, onClose }) => {
                 )}
               /> */}
               <Controller
-                name="userDetails"
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    {...field}
-                    multiple
-                    options={
-                      Array.isArray(committeData?.userDetails)
-                        ? committeData?.userDetails
-                        : []
-                    }
-                    disableCloseOnSelect
-                    getOptionLabel={(option) =>
-                      `${option?.profile?.firstname || ""} ${
-                        option?.profile?.lastname || ""
-                      }`
-                    }
-                    renderOption={(props, option, { selected }) => (
-                      <li {...props}>
-                        <Checkbox
-                          icon={<CheckBoxOutlineBlankIcon />}
-                          checkedIcon={<CheckBoxIcon />}
-                          checked={selected}
-                        />
-                        {`${option?.profile?.firstname || ""} ${
-                          option?.profile?.lastname || ""
-                        }`}
-                      </li>
-                    )}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Select Users" fullWidth />
-                    )}
-                    onChange={(_, value) => field.onChange(value)}
-                  />
-                )}
-              />
+  name="userDetails"
+  control={control}
+  render={({ field }) => (
+    <Autocomplete
+      {...field}
+      multiple
+      options={
+        Array.isArray(committeData?.userDetails)
+          ? committeData?.userDetails
+          : []
+      }
+      disableCloseOnSelect
+      getOptionLabel={(option) =>
+        `${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`
+      }
+      renderOption={(props, option, { selected }) => (
+        <li {...props}>
+          <Checkbox
+            icon={<CheckBoxOutlineBlankIcon />}
+            checkedIcon={<CheckBoxIcon />}
+            checked={selected}
+          />
+          {`${option?.profile?.firstname || ""} ${
+            option?.profile?.lastname || ""
+          }`}
+        </li>
+      )}
+      renderInput={(params) => (
+        <TextField {...params} label="Select Users" fullWidth />
+      )}
+      onChange={(_, value) => field.onChange(value)}
+    />
+  )}
+/>
             </Grid>
 
             <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2}>
-              <Button variant="outlined" color="primary" onClick={handleCancel}>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleCancel}
+              >
                 Cancel
               </Button>
               <Button type="submit" variant="contained" color="primary">

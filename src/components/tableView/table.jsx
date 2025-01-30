@@ -15,11 +15,6 @@ export default function OrdersTable({ data, headers,handleModalOpen }) {
     setPage(0);
   };
 
-  const handleEditClick = (id) => {
-    console.log(id);
-    handleModalOpen()
-  }
-
   return (
     <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Paper sx={{ flex: 1 }}>
@@ -54,9 +49,6 @@ export default function OrdersTable({ data, headers,handleModalOpen }) {
                     </TableCell>
                     </>
                   ))}
-                     <Button variant="contained" color="primary" onClick={() => handleEditClick(row?.id)}>
-                     Edit
-                   </Button>
                 </TableRow>
               ))}
             </TableBody>
