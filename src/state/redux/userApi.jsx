@@ -125,6 +125,57 @@ export const CommitteeList = async (page = 1, limit = 10, payload = {}) => {
   }
 };
 
+export const deleteCommiteeDetails = async (id,requestParams) => {
+  try {
+    const authToken = JSON.parse(localStorage.getItem("authToken"));
+    const headers = {
+      "x-access-token": `${authToken}`,
+      "Content-Type": "application/json",
+    };
+    const response = await axios.delete(`${BASE_URL}/api/committeemeeting/${id}`,requestParams, {
+      headers,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user list:", error);
+    throw error;
+  }
+};
+
+export const getCommiteemeetingDetailsById = async (id) => {
+  try {
+    const authToken = JSON.parse(localStorage.getItem("authToken"));
+    const headers = {
+      "x-access-token": `${authToken}`,
+      "Content-Type": "application/json",
+    };
+    const response = await axios.get(`${BASE_URL}/api/committeemeeting/${id}`, {
+      headers,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user list:", error);
+    throw error;
+  }
+};
+
+export const editCommiteeMeeting = async (id,requestParams) => {
+  try {
+    const authToken = JSON.parse(localStorage.getItem("authToken"));
+    const headers = {
+      "x-access-token": `${authToken}`,
+      "Content-Type": "application/json",
+    };
+    const response = await axios.put(`${BASE_URL}/api/committeemeeting/${id}`,requestParams, {
+      headers,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user list:", error);
+    throw error;
+  }
+};
+
 export const administratorsList = async () => {
   try {
     const authToken = JSON.parse(localStorage.getItem("authToken"));
