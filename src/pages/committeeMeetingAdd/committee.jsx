@@ -22,6 +22,7 @@ import {
   createCommitteMeeting,
   getAttendanceMembersList,
   CommitteeList,
+  editCommiteeMeeting,
 } from "../../state/redux/userApi";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -63,7 +64,7 @@ import {
 // };
 
 console.log()
-const AttendanceForm = ({ open, onClose }) => {
+const AttendanceForm = ({ open, onClose,editDatas }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const { handleSubmit, control, reset } = useForm();
@@ -106,6 +107,8 @@ const AttendanceForm = ({ open, onClose }) => {
       // setLoading(false);
     }
   };
+  
+console.log(editDatas,"editDatas");
 
   const onSubmit = async (data) => {
     const payload = {
@@ -132,6 +135,18 @@ const AttendanceForm = ({ open, onClose }) => {
     };
 
     try {
+      if(editDatas){
+        const response = await editCommiteeMeeting(editDatas?._id,payload)
+        if (response?.status || response?.ok) {
+          if (response?.status || response?.ok) {
+            await fetchCommitteeList();
+            onClose();
+            reset();
+          } else {
+            throw new Error("Unexpected response format");
+          }
+        }
+      }
       const response = await createCommitteMeeting(payload);
       if (response?.status || response?.ok) {
         await fetchCommitteeList();

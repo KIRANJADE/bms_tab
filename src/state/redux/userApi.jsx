@@ -125,14 +125,14 @@ export const CommitteeList = async (page = 1, limit = 10, payload = {}) => {
   }
 };
 
-export const deleteCommiteeDetails = async (id,requestParams) => {
+export const deleteCommiteeDetails = async (id) => {
   try {
     const authToken = JSON.parse(localStorage.getItem("authToken"));
     const headers = {
       "x-access-token": `${authToken}`,
       "Content-Type": "application/json",
     };
-    const response = await axios.delete(`${BASE_URL}/api/committeemeeting/${id}`,requestParams, {
+    const response = await axios.delete(`${BASE_URL}/api/committeemeeting/${id}`, {
       headers,
     });
     return response.data;
