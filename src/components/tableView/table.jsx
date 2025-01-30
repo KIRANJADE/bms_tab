@@ -1,10 +1,11 @@
 import React from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination,
-  Paper, Box
+  Paper, Box,
+  Button
 } from '@mui/material';
 
-export default function OrdersTable({ data, headers }) {
+export default function OrdersTable({ data, headers,handleModalOpen }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -13,6 +14,11 @@ export default function OrdersTable({ data, headers }) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const handleEditClick = (id) => {
+    console.log(id);
+    handleModalOpen()
+  }
 
   return (
     <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -40,10 +46,17 @@ export default function OrdersTable({ data, headers }) {
               {data.map((row, rowIndex) => (
                 <TableRow key={rowIndex}>
                   {headers.map((header) => (
+                    <>
+                  {  console.log(row,"oioioioioi")}
+                    
                     <TableCell key={header.key}>
                       {row[header.key] ? row[header.key] : 'N/A'}
                     </TableCell>
+                    </>
                   ))}
+                     <Button variant="contained" color="primary" onClick={() => handleEditClick(row?.id)}>
+                     Edit
+                   </Button>
                 </TableRow>
               ))}
             </TableBody>
