@@ -11,11 +11,20 @@ import {
   Modal,
   Box,
   Autocomplete,
+  FormControl,
+  FormLabel,
 } from "@mui/material";
 import axios from "axios";
-import { createCommitteMeeting, getAttendanceMembersList, CommitteeList } from "../../state/redux/userApi";
+import {
+  createCommitteMeeting,
+  getAttendanceMembersList,
+  CommitteeList,
+} from "../../state/redux/userApi";
 import { useDispatch, useSelector } from "react-redux";
-import { committeCommonData, committeeListData } from "../../state/redux/authSlice";
+import {
+  committeCommonData,
+  committeeListData,
+} from "../../state/redux/authSlice";
 
 // const defaultValues = {
 //   isAddAttendance: true,
@@ -51,9 +60,9 @@ import { committeCommonData, committeeListData } from "../../state/redux/authSli
 // };
 
 const AttendanceForm = ({ open, onClose }) => {
-    const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(12);
-  const { handleSubmit, control } = useForm({  });
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(12);
+  const { handleSubmit, control, reset } = useForm({});
 
   const committeData = useSelector((state) => state.auth.committeData);
   console.log(committeData?.userDetails, "committeData");
@@ -77,12 +86,12 @@ const AttendanceForm = ({ open, onClose }) => {
   };
 
   const fetchCommitteeList = async () => {
-    setLoading(true);
+    // setLoading(true);
     try {
       const response = await CommitteeList(page, limit, {
         status: "active",
       });
-  
+
       if (response.status) {
         dispatch(committeeListData(response.userDetails));
         // setTotalPages(response.totalPages);
@@ -90,10 +99,10 @@ const AttendanceForm = ({ open, onClose }) => {
     } catch (error) {
       setError("Failed to fetch user data");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
-  
+
   const onSubmit = async (data) => {
     const payload = {
       isAddAttendance: true,
@@ -117,22 +126,25 @@ const AttendanceForm = ({ open, onClose }) => {
         attendance: Boolean(user.attendance),
       })),
     };
-  
+
     try {
       const response = await createCommitteMeeting(payload);
-      console.log(response, "response");
-      if (response?.status) {
-        // Ensure the fetchCommitteeList is awaited before proceeding
+      if (response?.status || response?.ok) {
         await fetchCommitteeList();
-        alert("Meeting created successfully");
+        onClose();
+        reset();
+      } else {
+        throw new Error("Unexpected response format");
       }
-      onClose();
     } catch (error) {
       console.error("Error creating meeting:", error);
-      alert("Failed to create meeting");
     }
   };
-  
+
+  const handleCancel = (event, value) => {
+    reset();
+    onClose();
+  };
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -161,20 +173,25 @@ const AttendanceForm = ({ open, onClose }) => {
                 slotProps={{ inputLabel: { shrink: true } }}
                 render={({ field }) => (
                   <TextField {...field} label="Meeting Title" fullWidth />
-                  
                 )}
               />
             </Grid>
             <Grid item xs={6}>
               <Controller
                 name="meetingDate"
-                slotProps={{ inputLabel: { shrink: true } }}
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field}  type="date" label="Meeting Date" fullWidth />
+                  <TextField
+                    {...field}
+                    type="date"
+                    label="Meeting Date"
+                    fullWidth
+                    InputLabelProps={{ shrink: true }} // Fixes label overlap
+                  />
                 )}
               />
             </Grid>
+
             <Grid item xs={6}>
               <Controller
                 name="fineAmount"
@@ -189,10 +206,32 @@ const AttendanceForm = ({ open, onClose }) => {
                 name="administrator"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="Administrator" fullWidth />
+                  <FormControl component="fieldset">
+                    <FormLabel component="legend">Administrator</FormLabel>
+                    <RadioGroup
+                      row
+                      {...field}
+                      value={field.value ?? false} // Ensure default value
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "true")
+                      }
+                    >
+                      <FormControlLabel
+                        value={true}
+                        control={<Radio />}
+                        label="True"
+                      />
+                      <FormControlLabel
+                        value={false}
+                        control={<Radio />}
+                        label="False"
+                      />
+                    </RadioGroup>
+                  </FormControl>
                 )}
               />
             </Grid>
+
             <Grid item xs={12}>
               <Typography variant="h6">User Details</Typography>
             </Grid>
@@ -229,7 +268,7 @@ const AttendanceForm = ({ open, onClose }) => {
             </Grid>
 
             <Grid item xs={12} display="flex" justifyContent="space-between">
-              <Button variant="outlined" color="secondary" onClick={onClose}>
+              <Button variant="outlined" color="secondary" onClick={handleCancel()}>
                 Cancel
               </Button>
               <Button type="submit" variant="contained" color="primary">
