@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   TextField,
@@ -62,7 +62,7 @@ import {
 const AttendanceForm = ({ open, onClose }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
-  const { handleSubmit, control, reset } = useForm({});
+  const { handleSubmit, control, reset } = useForm();
 
   const committeData = useSelector((state) => state.auth.committeData);
   console.log(committeData?.userDetails, "committeData");
@@ -141,10 +141,11 @@ const AttendanceForm = ({ open, onClose }) => {
     }
   };
 
-  const handleCancel = (event, value) => {
-    reset();
-    onClose();
-  };
+  const handleCancel = useCallback(() => {
+    reset(); // Reset form values
+    onClose(); // Close the modal or form
+  }, [reset, onClose]); // Dependencies ensure this function is stable
+  
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -268,7 +269,7 @@ const AttendanceForm = ({ open, onClose }) => {
             </Grid>
 
             <Grid item xs={12} display="flex" justifyContent="space-between">
-              <Button variant="outlined" color="secondary" onClick={handleCancel()}>
+              <Button variant="outlined" color="secondary" onClick={handleCancel}>
                 Cancel
               </Button>
               <Button type="submit" variant="contained" color="primary">
