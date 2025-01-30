@@ -98,9 +98,14 @@ const Dashboard = () => {
   };
 
   const handleSearchToggle = () => {
+	console.log("hhhhh");
+	
     setShowSearch(!showSearch);
     setSearchValue("");
   };
+
+  console.log(searchValue,"showSearch");
+  
 
   const handleFilter = () => {
     const filterParams = {
