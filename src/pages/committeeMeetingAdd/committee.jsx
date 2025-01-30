@@ -148,7 +148,6 @@ const AttendanceForm = ({ open, onClose }) => {
     reset(); // Reset form values
     onClose(); // Close the modal or form
   }, [reset, onClose]); // Dependencies ensure this function is stable
-  
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -215,7 +214,7 @@ const AttendanceForm = ({ open, onClose }) => {
                     <RadioGroup
                       row
                       {...field}
-                      value={field.value ?? false} // Ensure default value
+                      value={field.value ?? ""} // Ensure default value
                       onChange={(e) =>
                         field.onChange(e.target.value === "true")
                       }
@@ -306,8 +305,12 @@ const AttendanceForm = ({ open, onClose }) => {
 />
             </Grid>
 
-            <Grid item xs={12} display="flex" justifyContent="space-between">
-              <Button variant="outlined" color="secondary" onClick={handleCancel}>
+            <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2}>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleCancel}
+              >
                 Cancel
               </Button>
               <Button type="submit" variant="contained" color="primary">
