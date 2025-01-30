@@ -13,7 +13,10 @@ import {
   Autocomplete,
   FormControl,
   FormLabel,
+  Checkbox,
 } from "@mui/material";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import axios from "axios";
 import {
   createCommitteMeeting,
@@ -241,7 +244,7 @@ const AttendanceForm = ({ open, onClose }) => {
                 committeData?.userDetails,
                 "committeData?.userDetails"
               )}
-              <Controller
+              {/* <Controller
                 name="userDetails"
                 control={control}
                 render={({ field }) => (
@@ -265,7 +268,42 @@ const AttendanceForm = ({ open, onClose }) => {
                     onChange={(_, value) => field.onChange(value)}
                   />
                 )}
-              />
+              /> */}
+              <Controller
+  name="userDetails"
+  control={control}
+  render={({ field }) => (
+    <Autocomplete
+      {...field}
+      multiple
+      options={
+        Array.isArray(committeData?.userDetails)
+          ? committeData?.userDetails
+          : []
+      }
+      disableCloseOnSelect
+      getOptionLabel={(option) =>
+        `${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`
+      }
+      renderOption={(props, option, { selected }) => (
+        <li {...props}>
+          <Checkbox
+            icon={<CheckBoxOutlineBlankIcon />}
+            checkedIcon={<CheckBoxIcon />}
+            checked={selected}
+          />
+          {`${option?.profile?.firstname || ""} ${
+            option?.profile?.lastname || ""
+          }`}
+        </li>
+      )}
+      renderInput={(params) => (
+        <TextField {...params} label="Select Users" fullWidth />
+      )}
+      onChange={(_, value) => field.onChange(value)}
+    />
+  )}
+/>
             </Grid>
 
             <Grid item xs={12} display="flex" justifyContent="space-between">
