@@ -13,6 +13,9 @@ import {
   FormControl,
   Grid,
   FormHelperText,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -32,6 +35,8 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     formState: { errors },
     reset,
     setValue,
+    control,
+    watch
   } = useForm({});
 
   const [userById, setUserById] = useState([]);
@@ -49,7 +54,25 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     }
   }, [cardsUserId, isEditUsers, reset]);
 
-  console.log(cardsUserId, "cardsUserId");
+  const positionOptions = [
+    "தலைவர்",
+    "துணைத்தலைவர்",
+    "பொருளாளர்",
+    "கணக்கர்",
+    "செயலாளர்",
+  ];
+
+  const chitCommitteePositionOptions = ["தலைவர்", "பொருளாளர்", "கணக்கர்"];
+  const statusOptions = ["Active", "Death", "Dismiss", "Suspend", "VRS"];
+  const identityProofOptions = [
+    "Driving License",
+    "PAN Card",
+    "Aadhaar",
+    "Passport",
+  ];
+  const jobTypeOptions = ["Govt", "Private", "Self", "Un Employee"];
+  const jobPortalOptions = ["Central Govt", "State Govt"];
+  const jobProfessionalOptions = ["Working", "Retired"];
 
   // Set values on form load
   useEffect(() => {
@@ -104,7 +127,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       setValue("jobProfessional", userById?.otherdetails?.jobProfessional);
 
       setValue("remarks", userById?.remark);
-    } 
+    }
 
     console.log("userById", userById);
   }, [userById, setValue, isEditUsers, cardsUserId]);
@@ -147,14 +170,15 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     }
     if (userById?.profile?.dob) {
       const dob = new Date(userById?.profile?.dob);
-      if (!isNaN(dob.getTime())) { // Check if the date is valid
+      if (!isNaN(dob.getTime())) {
+        // Check if the date is valid
         const formattedDob = dob.toISOString().split("T")[0]; // Ensure the date is in YYYY-MM-DD format
         setValue("dob", formattedDob);
       } else {
         console.error("Invalid date value:", userById?.profile?.dob);
       }
     }
-    
+
     // if (userById?.profile?.gender) {
     //   setValue("gender", userById?.profile?.gender);
     // }
@@ -171,7 +195,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       reset();
     }
   }, []);
-console.log(isEditUsers,"isEditUsers");
+  console.log(isEditUsers, "isEditUsers");
   const fetchUsersById = async () => {
     const response = await getUserById(cardsUserId);
     console.log(response, "myresss");
@@ -231,39 +255,38 @@ console.log(isEditUsers,"isEditUsers");
       const response = await editUserApi(cardsUserId, payload);
       console.log("Payload:", response);
       if (response?.status) {
-        fetchUserList();
+        fetchUserList(1);
         onClose();
         reset();
       }
     } else {
       const response = await createUserApi(payload);
       console.log("Payload:", response);
-    }
-    if (response.status) {
+  
+    if (response?.status) {
       dispatch(userCreate(response.data));
-      fetchUserList();
+      fetchUserList(1);
       onClose();
       reset();
     }
+  }
   };
 
-  const fetchUserList = async () => {
-    try {
-      const response = await userList(1, 8, {
-        status: "active",
-        "memberdetails.memberType": "a-class",
-        "memberdetails.userType": "full",
-      });
-      if (response.status) {
-        dispatch(userListData(response.userDetails));
-        // setTotalPages(response.totalPages);
+  const ITEMS_PER_PAGE = 12;
+
+   const fetchUserList = async () => {
+      try {
+        const response = await userList({
+          page: 1,
+          limit: 12,
+        });
+      } catch (error) {
+        setError("Failed to fetch user data");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.log("Failed to fetch user data");
-    } finally {
-      // setLoading(false);
-    }
-  };
+    };
+ 
 
   console.log(isEditUsers, "isEditUsers");
 
@@ -297,7 +320,7 @@ console.log(isEditUsers,"isEditUsers");
               <TextField
                 fullWidth
                 label="First Name"
-                 size="small"
+                size="small"
                 margin="normal"
                 {...register("firstName", {
                   required: "First name is required",
@@ -352,7 +375,7 @@ console.log(isEditUsers,"isEditUsers");
                 fullWidth
                 label="Phone Number"
                 margin="normal"
-                 size="small"
+                size="small"
                 {...register("phoneNumber", {
                   required: "Phone number is required",
                   pattern: {
@@ -372,7 +395,13 @@ console.log(isEditUsers,"isEditUsers");
                   row
                   {...register("gender", { required: true })}
                   style={{ gap: "10px" }}
-                  defaultValue={userById ? userById?.profile?.gender === "male" ? "male" : "female" : "male"}
+                  defaultValue={
+                    userById
+                      ? userById?.profile?.gender === "male"
+                        ? "male"
+                        : "female"
+                      : "male"
+                  }
                 >
                   <FormControlLabel
                     value="male"
@@ -467,18 +496,33 @@ console.log(isEditUsers,"isEditUsers");
                 )}
               </FormControl>
             </Grid>
-
             <Grid item xs={12} sm={3}>
-              <TextField
+              <FormControl
                 fullWidth
-                label="Position"
                 margin="normal"
                 size="small"
-                {...register("position", { required: "Position is required" })}
-                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.position}
-                helperText={errors.position?.message}
-              />
+              >
+                <InputLabel>Position</InputLabel>
+                <Controller
+                  name="position"
+                  control={control}
+                  rules={{ required: "Position is required" }}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Select {...field} label="Position">
+                      {positionOptions.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                {errors.position && (
+                  <FormHelperText>{errors.position?.message}</FormHelperText>
+                )}
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={3}>
               <FormControl margin="dense" component="fieldset">
@@ -514,16 +558,33 @@ console.log(isEditUsers,"isEditUsers");
             </Grid>
 
             <Grid item xs={12} sm={3}>
-              <TextField
+              <FormControl
                 fullWidth
-                label="Chit Committee Position"
                 margin="normal"
                 size="small"
-                {...register("position")}
-                slotProps={{ inputLabel: { shrink: true } }}
-                error={!!errors.position}
-                helperText={errors.position?.message}
-              />
+                error={!!errors.chitCommitteePosition}
+              >
+                <InputLabel>Chit Committee Position</InputLabel>
+                <Controller
+                  name="chitCommitteePosition"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Select {...field} label="Chit Committee Position">
+                      {chitCommitteePositionOptions.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                {errors.chitCommitteePosition && (
+                  <FormHelperText>
+                    {errors.chitCommitteePosition?.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
             </Grid>
 
             <Grid item xs={12} sm={3}>
@@ -603,26 +664,60 @@ console.log(isEditUsers,"isEditUsers");
               />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField
+              <FormControl
                 fullWidth
-                label="Status"
                 margin="normal"
                 size="small"
-                {...register("status", { required: "Status is required" })}
-                slotProps={{ inputLabel: { shrink: true } }}
                 error={!!errors.status}
-                helperText={errors.status?.message}
-              />
+              >
+                <InputLabel>Status</InputLabel>
+                <Controller
+                  name="status"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Select {...field} label="Status">
+                      {statusOptions.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                {errors.status && (
+                  <FormHelperText>{errors.status?.message}</FormHelperText>
+                )}
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField
+              <FormControl
                 fullWidth
-                label="Identity Proof"
                 margin="normal"
                 size="small"
-                {...register("identityProof")}
-                slotProps={{ inputLabel: { shrink: true } }}
-              />
+                error={!!errors.identityProof}
+              >
+                <InputLabel>Identity Proof</InputLabel>
+                <Controller
+                  name="identityProof"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Select {...field} label="Identity Proof">
+                      {identityProofOptions.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                {errors.identityProof && (
+                  <FormHelperText>
+                    {errors.identityProof?.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
@@ -645,25 +740,61 @@ console.log(isEditUsers,"isEditUsers");
               />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField
+              <FormControl
                 fullWidth
-                label="Job Type"
                 margin="normal"
                 size="small"
-                {...register("jobType")}
-                slotProps={{ inputLabel: { shrink: true } }}
-              />
+                error={!!errors.jobType}
+              >
+                <InputLabel>Job Type</InputLabel>
+                <Controller
+                  name="jobType"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Select {...field} label="Job Type">
+                      {jobTypeOptions.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                {errors.jobType && (
+                  <FormHelperText>{errors.jobType?.message}</FormHelperText>
+                )}
+              </FormControl>
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                fullWidth
-                label="Job Portal"
-                margin="normal"
-                size="small"
-                {...register("jobPortal")}
-                slotProps={{ inputLabel: { shrink: true } }}
-              />
-            </Grid>
+            {watch("jobType") === "Govt" && (
+              <Grid item xs={12} sm={3}>
+                <FormControl
+                  fullWidth
+                  margin="normal"
+                  size="small"
+                  error={!!errors.jobPortal}
+                >
+                  <InputLabel>Job Portal</InputLabel>
+                  <Controller
+                    name="jobPortal"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <Select {...field} label="Job Portal">
+                        {jobPortalOptions.map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                  {errors.jobPortal && (
+                    <FormHelperText>{errors.jobPortal?.message}</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+            )}
             <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
@@ -674,16 +805,37 @@ console.log(isEditUsers,"isEditUsers");
                 slotProps={{ inputLabel: { shrink: true } }}
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                fullWidth
-                label="Job Professional"
-                margin="normal"
-                size="small"
-                {...register("jobProfessional")}
-                slotProps={{ inputLabel: { shrink: true } }}
-              />
-            </Grid>
+            {watch("jobType") === "Govt" && (
+              <Grid item xs={12} sm={3}>
+                <FormControl
+                  fullWidth
+                  margin="normal"
+                  size="small"
+                  error={!!errors.jobProfessional}
+                >
+                  <InputLabel>Job Professional</InputLabel>
+                  <Controller
+                    name="jobProfessional"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <Select {...field} label="Job Professional">
+                        {jobProfessionalOptions.map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                  {errors.jobProfessional && (
+                    <FormHelperText>
+                      {errors.jobProfessional?.message}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+            )}
             <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
