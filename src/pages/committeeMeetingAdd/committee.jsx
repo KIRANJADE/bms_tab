@@ -63,11 +63,11 @@ import {
 //   ],
 // };
 
-console.log()
-const AttendanceForm = ({ open, onClose,editDatas }) => {
+console.log();
+const AttendanceForm = ({ open, onClose, editDatas }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
-  const { handleSubmit, control, reset } = useForm();
+  const { handleSubmit, control, reset, setValue } = useForm();
 
   const committeData = useSelector((state) => state.auth.committeData);
   console.log(committeData?.userDetails, "committeData");
@@ -107,17 +107,39 @@ const AttendanceForm = ({ open, onClose,editDatas }) => {
       // setLoading(false);
     }
   };
-  
-console.log(editDatas,"editDatas");
+
+  useEffect(() => {
+    if (editDatas) {
+      setValue("meetingtitle", editDatas?.meetingtitle || "");
+      const parsedDate = new Date(editDatas.meetingDate);
+
+      // Check if it's a valid date
+      if (!isNaN(parsedDate)) {
+        const formattedDate = parsedDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+        console.log(formattedDate, "formattedDateformattedDate");
+        setValue("meetingDate", formattedDate); // Populate the meetingDate
+      } else {
+        console.error("Invalid date:", editDatas.meetingDate);
+      }
+      setValue("fineAmount", editDatas?.fineAmount || "");
+      setValue(
+        "administrator",
+        editDatas.administrator === "true" ? true : false
+      );
+      setValue("userDetails", editDatas?.userDetails || []);
+    }
+  }, [editDatas, setValue]);
+
+  console.log(editDatas, "editDatas");
 
   const onSubmit = async (data) => {
-    const payload = {
-      isAddAttendance: true,
-      meetingtitle: data.meetingtitle,
-      meetingDate: data.meetingDate,
-      fineAmount: data.fineAmount,
-      status: "active",
-      userDetails: data.userDetails.map((user) => ({
+    const updatedUserDetails = committeData?.userDetails.map((user) => {
+      // Check if the user is selected in the dropdown
+      const isSelected = data.userDetails.some(
+        (selectedUser) => selectedUser._id === user._id
+      );
+  
+      return {
         _id: user._id,
         profile: {
           firstname: user.profile.firstname,
@@ -130,33 +152,42 @@ console.log(editDatas,"editDatas");
           memberId: user.memberdetails.memberId,
           userType: user.memberdetails.userType,
         },
-        attendance: Boolean(user.attendance),
-      })),
+        attendance: isSelected, // Set attendance to true if selected, else false
+      };
+    });
+
+    const payload = {
+      isAddAttendance: true,
+      meetingtitle: data.meetingtitle,
+      meetingDate: data.meetingDate,
+      fineAmount: data.fineAmount,
+      status: "active",
+      // _id: editDatas?._id,
+      userDetails: updatedUserDetails,
     };
 
     try {
-      if(editDatas){
-        const response = await editCommiteeMeeting(editDatas?._id,payload)
+      if (editDatas && editDatas._id ) {
+        // Edit existing committee meeting
+        const response = await editCommiteeMeeting(editDatas?._id, payload);
         if (response?.status || response?.ok) {
-          if (response?.status || response?.ok) {
-            await fetchCommitteeList();
-            onClose();
-            reset();
-          } else {
-            throw new Error("Unexpected response format");
-          }
+          await fetchCommitteeList();
+          handleCancel()
+        } else {
+          throw new Error("Unexpected response format while editing.");
+        }
+      } else {
+        // Create new committee meeting
+        const response = await createCommitteMeeting(payload);
+        if (response?.status || response?.ok) {
+          await fetchCommitteeList();
+          handleCancel()
+        } else {
+          throw new Error("Unexpected response format while creating.");
         }
       }
-      const response = await createCommitteMeeting(payload);
-      if (response?.status || response?.ok) {
-        await fetchCommitteeList();
-        onClose();
-        reset();
-      } else {
-        throw new Error("Unexpected response format");
-      }
     } catch (error) {
-      console.error("Error creating meeting:", error);
+      console.error("Error in add/edit committee meeting:", error);
     }
   };
 
@@ -164,6 +195,8 @@ console.log(editDatas,"editDatas");
     reset(); // Reset form values
     onClose(); // Close the modal or form
   }, [reset, onClose]); // Dependencies ensure this function is stable
+
+  console.log(editDatas.length , "editDatas")
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -259,7 +292,8 @@ console.log(editDatas,"editDatas");
                 committeData?.userDetails,
                 "committeData?.userDetails"
               )}
-              {/* <Controller
+             
+              <Controller
                 name="userDetails"
                 control={control}
                 render={({ field }) => (
@@ -268,65 +302,38 @@ console.log(editDatas,"editDatas");
                     multiple
                     options={
                       Array.isArray(committeData?.userDetails)
-                        ? committeData?.userDetails // Pass the whole array, not just the profile
-                        : [] // Ensure it's an array
+                        ? committeData?.userDetails
+                        : []
                     }
-                    getOptionLabel={
-                      (option) =>
-                        `${option?.profile?.firstname || ""} ${
+                    disableCloseOnSelect
+                    getOptionLabel={(option) =>
+                      `${option?.profile?.firstname || ""} ${
+                        option?.profile?.lastname || ""
+                      }`
+                    }
+                    renderOption={(props, option, { selected }) => (
+                      <li {...props}>
+                        <Checkbox
+                          icon={<CheckBoxOutlineBlankIcon />}
+                          checkedIcon={<CheckBoxIcon />}
+                          checked={selected}
+                        />
+                        {`${option?.profile?.firstname || ""} ${
                           option?.profile?.lastname || ""
-                        }` // Access profile correctly
-                    }
+                        }`}
+                      </li>
+                    )}
                     renderInput={(params) => (
                       <TextField {...params} label="Select Users" fullWidth />
                     )}
                     onChange={(_, value) => field.onChange(value)}
                   />
                 )}
-              /> */}
-              <Controller
-  name="userDetails"
-  control={control}
-  render={({ field }) => (
-    <Autocomplete
-      {...field}
-      multiple
-      options={
-        Array.isArray(committeData?.userDetails)
-          ? committeData?.userDetails
-          : []
-      }
-      disableCloseOnSelect
-      getOptionLabel={(option) =>
-        `${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`
-      }
-      renderOption={(props, option, { selected }) => (
-        <li {...props}>
-          <Checkbox
-            icon={<CheckBoxOutlineBlankIcon />}
-            checkedIcon={<CheckBoxIcon />}
-            checked={selected}
-          />
-          {`${option?.profile?.firstname || ""} ${
-            option?.profile?.lastname || ""
-          }`}
-        </li>
-      )}
-      renderInput={(params) => (
-        <TextField {...params} label="Select Users" fullWidth />
-      )}
-      onChange={(_, value) => field.onChange(value)}
-    />
-  )}
-/>
+              />
             </Grid>
 
             <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2}>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={handleCancel}
-              >
+              <Button variant="outlined" color="primary" onClick={handleCancel}>
                 Cancel
               </Button>
               <Button type="submit" variant="contained" color="primary">

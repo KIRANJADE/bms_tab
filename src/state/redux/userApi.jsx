@@ -40,6 +40,22 @@ export const userList = async (payload) => {
   }
 };
 
+export const userSearch = async (val, limit = 12, page = 1) => {
+  try {
+    const authToken = JSON.parse(localStorage.getItem("authToken"));
+    const headers = {
+      "x-access-token": `${authToken}`,
+      "Content-Type": "application/json",
+    };
+    const response = await axios.get(`${BASE_URL}/api/users/search?val=${val}&limit=${limit}&page=${page}`, {
+      headers,
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const createUserApi = async (params) => {
   try {
     const authToken = JSON.parse(localStorage.getItem("authToken"));
@@ -278,48 +294,28 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
   }
 };
 
-export const getAttendanceMembersList = async () => {
-  try {
-    const authToken = JSON.parse(localStorage.getItem("authToken"));
-    const headers = {
-      "x-access-token": `${authToken}`,
-      "Content-Type": "application/json",
-    };
-    console.log(headers, "headerssss");
+  export const getAttendanceMembersList = async () => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.get(`${BASE_URL}/api/common/getattendancemembers`, {
+		  headers,
+		});
+    console.log(response,"hghghgh");
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
 
-    const response = await axios.get(
-      `${BASE_URL}/api/common/getattendancemembers`,
-      {
-        headers,
-      }
-    );
-    console.log(response, "hghghgh");
 
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
 
-export const searchUsersList = async (page = 1, limit = 10,) => {
-  try {
-    const authToken = JSON.parse(localStorage.getItem("authToken"));
-    const headers = {
-      "x-access-token": `${authToken}`,
-      "Content-Type": "application/json",
-    };
-    console.log(headers, "headerssss");
-
-    const response = await axios.get(
-      `${BASE_URL}/api/userssearch/`,
-      {
-        headers,
-      }
-    );
-    console.log(response, "hghghgh");
-
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
+  
+  

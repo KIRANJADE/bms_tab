@@ -7,7 +7,7 @@ import CustomizedTables from "../../components/tableView/table";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { set } from "react-hook-form";
-import { CommitteeList } from "../../state/redux/userApi";
+import { CommitteeList, deleteCommiteeDetails } from "../../state/redux/userApi";
 import { committeeListData } from "../../state/redux/authSlice";
 
 const User = () => {
@@ -54,7 +54,7 @@ const User = () => {
             <IconButton
               color="error"
               size="small"
-              onClick={() => handleDelete(item.committeemeetingId)}
+              onClick={() => handleDelete(item?._id)}
             >
               <DeleteIcon fontSize="small" />
             </IconButton>
@@ -99,12 +99,17 @@ const User = () => {
     setIsModalOpen(true);
   };
 
+  const handleAddOpen = () => {
+    handleModalOpen();
+    setEditData([]);
+  };
+
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
 
   const handleDelete = async (id) => {
-    console.log(id);
+    console.log(id, "wghgdwhgd");
     try {
       const response = await deleteCommiteeDetails(id);
       if (response?.status) {
@@ -113,9 +118,11 @@ const User = () => {
     } catch (error) {}
     setEditingCard(null);
   };
+
+
   return (
     <>
-      {
+      {isModalOpen &&
         <CommitteePopup
           open={isModalOpen}
           editDatas={isEditData}
@@ -136,7 +143,7 @@ const User = () => {
             style={{ backgroundColor: "#4c79f8" }}
             variant="contained"
             color="primary"
-            onClick={handleModalOpen}
+            onClick={handleAddOpen}
           >
             + Add New
           </Button>
