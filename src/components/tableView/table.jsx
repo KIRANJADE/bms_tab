@@ -22,7 +22,7 @@ export default function OrdersTable({ data, headers,handleModalOpen }) {
           <Table sx={{ minWidth: 650 }}>
             <TableHead>
               <TableRow>
-                {headers.map((header) => (
+                {headers?.map((header) => (
                   <TableCell
                     key={header.key}
                     sx={{
@@ -38,11 +38,10 @@ export default function OrdersTable({ data, headers,handleModalOpen }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((row, rowIndex) => (
+              {data?.map((row, rowIndex) => (
                 <TableRow key={rowIndex}>
-                  {headers.map((header) => (
+                  {headers?.map((header) => (
                     <>
-                  {  console.log(row,"oioioioioi")}
                     
                     <TableCell key={header.key}>
                       {row[header.key] ? row[header.key] : 'N/A'}

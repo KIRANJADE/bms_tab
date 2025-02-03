@@ -63,11 +63,11 @@ import {
 //   ],
 // };
 
-console.log()
-const AttendanceForm = ({ open, onClose,editDatas }) => {
+console.log();
+const AttendanceForm = ({ open, onClose, editDatas }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
-  const { handleSubmit, control, reset } = useForm();
+  const { handleSubmit, control, reset, setValue } = useForm();
 
   const committeData = useSelector((state) => state.auth.committeData);
   console.log(committeData?.userDetails, "committeData");
@@ -107,8 +107,30 @@ const AttendanceForm = ({ open, onClose,editDatas }) => {
       // setLoading(false);
     }
   };
-  
-console.log(editDatas,"editDatas");
+
+  useEffect(() => {
+    if (editDatas) {
+      setValue("meetingtitle", editDatas?.meetingtitle || "");
+      const parsedDate = new Date(editDatas.meetingDate);
+
+      // Check if it's a valid date
+      if (!isNaN(parsedDate)) {
+        const formattedDate = parsedDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+        console.log(formattedDate, "formattedDateformattedDate");
+        setValue("meetingDate", formattedDate); // Populate the meetingDate
+      } else {
+        console.error("Invalid date:", editDatas.meetingDate);
+      }
+      setValue("fineAmount", editDatas?.fineAmount || "");
+      setValue(
+        "administrator",
+        editDatas.administrator === "true" ? true : false
+      );
+      setValue("userDetails", editDatas?.userDetails || []);
+    }
+  }, [editDatas, setValue]);
+
+  console.log(editDatas, "editDatas");
 
   const onSubmit = async (data) => {
     const payload = {
@@ -117,6 +139,7 @@ console.log(editDatas,"editDatas");
       meetingDate: data.meetingDate,
       fineAmount: data.fineAmount,
       status: "active",
+      _id: editDatas?._id,
       userDetails: data.userDetails.map((user) => ({
         _id: user._id,
         profile: {
@@ -135,8 +158,8 @@ console.log(editDatas,"editDatas");
     };
 
     try {
-      if(editDatas){
-        const response = await editCommiteeMeeting(editDatas?._id,payload)
+      if (editDatas) {
+        const response = await editCommiteeMeeting(editDatas?._id, payload);
         if (response?.status || response?.ok) {
           if (response?.status || response?.ok) {
             await fetchCommitteeList();
@@ -285,48 +308,46 @@ console.log(editDatas,"editDatas");
                 )}
               /> */}
               <Controller
-  name="userDetails"
-  control={control}
-  render={({ field }) => (
-    <Autocomplete
-      {...field}
-      multiple
-      options={
-        Array.isArray(committeData?.userDetails)
-          ? committeData?.userDetails
-          : []
-      }
-      disableCloseOnSelect
-      getOptionLabel={(option) =>
-        `${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`
-      }
-      renderOption={(props, option, { selected }) => (
-        <li {...props}>
-          <Checkbox
-            icon={<CheckBoxOutlineBlankIcon />}
-            checkedIcon={<CheckBoxIcon />}
-            checked={selected}
-          />
-          {`${option?.profile?.firstname || ""} ${
-            option?.profile?.lastname || ""
-          }`}
-        </li>
-      )}
-      renderInput={(params) => (
-        <TextField {...params} label="Select Users" fullWidth />
-      )}
-      onChange={(_, value) => field.onChange(value)}
-    />
-  )}
-/>
+                name="userDetails"
+                control={control}
+                render={({ field }) => (
+                  <Autocomplete
+                    {...field}
+                    multiple
+                    options={
+                      Array.isArray(committeData?.userDetails)
+                        ? committeData?.userDetails
+                        : []
+                    }
+                    disableCloseOnSelect
+                    getOptionLabel={(option) =>
+                      `${option?.profile?.firstname || ""} ${
+                        option?.profile?.lastname || ""
+                      }`
+                    }
+                    renderOption={(props, option, { selected }) => (
+                      <li {...props}>
+                        <Checkbox
+                          icon={<CheckBoxOutlineBlankIcon />}
+                          checkedIcon={<CheckBoxIcon />}
+                          checked={selected}
+                        />
+                        {`${option?.profile?.firstname || ""} ${
+                          option?.profile?.lastname || ""
+                        }`}
+                      </li>
+                    )}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Select Users" fullWidth />
+                    )}
+                    onChange={(_, value) => field.onChange(value)}
+                  />
+                )}
+              />
             </Grid>
 
             <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2}>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={handleCancel}
-              >
+              <Button variant="outlined" color="primary" onClick={handleCancel}>
                 Cancel
               </Button>
               <Button type="submit" variant="contained" color="primary">

@@ -98,7 +98,7 @@ console.log(userDetails, "userDetails")
                 <strong>Balance:</strong> ₹{userDetails?.balance ? userDetails?.balance : "0"}
               </Typography>
             </Box>
-            <CustomizedTables data={ordersData} search={false}/>
+            {/* <CustomizedTables data={ordersData} search={false}/> */}
           </Grid>
 
 

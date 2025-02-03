@@ -54,11 +54,14 @@ const Dashboard = () => {
         limit: ITEMS_PER_PAGE,
         ...filterParams,
       });
-
+  
       if (response.status) {
-        // Append new users data to the existing list
-        dispatch(userListData(response)); // Ensure this updates the users list correctly
-        setHasMore(currentPage < response.totalPages); // Update hasMore based on totalPages
+        dispatch(userListData({
+          userDetails: currentPage === 1 ? response.userDetails : [...users.userDetails, ...response.userDetails], // Append or replace
+          totalRecords: response.totalRecords,
+        }));
+  
+        setHasMore(currentPage * ITEMS_PER_PAGE < response.totalRecords); // Update hasMore
       }
     } catch (error) {
       setError("Failed to fetch user data");
@@ -66,7 +69,7 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchUserList(page); // Fetch data when the component mounts
   }, [page]);
@@ -103,25 +106,23 @@ const Dashboard = () => {
   };
 
   const handleFilter = () => {
-    const filterParams = {
+    setPage(1);
+    dispatch(userListData({ userDetails: [], totalRecords: 0 })); // Clear previous data
+    fetchUserList(1, {
       ...(status && { status }),
       ...(memberType && { "memberdetails.memberType": memberType }),
       ...(gender && { "profile.gender": gender }),
       ...(userType && { "memberdetails.userType": userType }),
-    };
-
-    setPage(1); // Reset to the first page
-    dispatch(userListData([])); // Clear current user list in the redux store
-    fetchUserList(1, filterParams); // Fetch filtered data
+    });
   };
-
+  
   const handleReset = () => {
     setStatus("");
     setMemberType("");
     setGender("");
     setUserType("");
-    dispatch(userListData([])); // Clear the user list
-    setPage(1); // Reset pagination
+    setPage(1);
+    dispatch(userListData({ userDetails: [], totalRecords: 0 })); // Clear previous data
     fetchUserList(1); // Fetch unfiltered data
   };
 
