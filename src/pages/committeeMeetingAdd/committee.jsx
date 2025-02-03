@@ -133,14 +133,13 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
   console.log(editDatas, "editDatas");
 
   const onSubmit = async (data) => {
-    const payload = {
-      isAddAttendance: true,
-      meetingtitle: data.meetingtitle,
-      meetingDate: data.meetingDate,
-      fineAmount: data.fineAmount,
-      status: "active",
-      _id: editDatas?._id,
-      userDetails: data.userDetails.map((user) => ({
+    const updatedUserDetails = committeData?.userDetails.map((user) => {
+      // Check if the user is selected in the dropdown
+      const isSelected = data.userDetails.some(
+        (selectedUser) => selectedUser._id === user._id
+      );
+  
+      return {
         _id: user._id,
         profile: {
           firstname: user.profile.firstname,
@@ -153,33 +152,42 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
           memberId: user.memberdetails.memberId,
           userType: user.memberdetails.userType,
         },
-        attendance: Boolean(user.attendance),
-      })),
+        attendance: isSelected, // Set attendance to true if selected, else false
+      };
+    });
+
+    const payload = {
+      isAddAttendance: true,
+      meetingtitle: data.meetingtitle,
+      meetingDate: data.meetingDate,
+      fineAmount: data.fineAmount,
+      status: "active",
+      // _id: editDatas?._id,
+      userDetails: updatedUserDetails,
     };
 
     try {
-      if (editDatas) {
+      if (editDatas && editDatas._id ) {
+        // Edit existing committee meeting
         const response = await editCommiteeMeeting(editDatas?._id, payload);
         if (response?.status || response?.ok) {
-          if (response?.status || response?.ok) {
-            await fetchCommitteeList();
-            onClose();
-            reset();
-          } else {
-            throw new Error("Unexpected response format");
-          }
+          await fetchCommitteeList();
+          handleCancel()
+        } else {
+          throw new Error("Unexpected response format while editing.");
+        }
+      } else {
+        // Create new committee meeting
+        const response = await createCommitteMeeting(payload);
+        if (response?.status || response?.ok) {
+          await fetchCommitteeList();
+          handleCancel()
+        } else {
+          throw new Error("Unexpected response format while creating.");
         }
       }
-      const response = await createCommitteMeeting(payload);
-      if (response?.status || response?.ok) {
-        await fetchCommitteeList();
-        onClose();
-        reset();
-      } else {
-        throw new Error("Unexpected response format");
-      }
     } catch (error) {
-      console.error("Error creating meeting:", error);
+      console.error("Error in add/edit committee meeting:", error);
     }
   };
 
@@ -187,6 +195,8 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
     reset(); // Reset form values
     onClose(); // Close the modal or form
   }, [reset, onClose]); // Dependencies ensure this function is stable
+
+  console.log(editDatas.length , "editDatas")
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -282,31 +292,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                 committeData?.userDetails,
                 "committeData?.userDetails"
               )}
-              {/* <Controller
-                name="userDetails"
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    {...field}
-                    multiple
-                    options={
-                      Array.isArray(committeData?.userDetails)
-                        ? committeData?.userDetails // Pass the whole array, not just the profile
-                        : [] // Ensure it's an array
-                    }
-                    getOptionLabel={
-                      (option) =>
-                        `${option?.profile?.firstname || ""} ${
-                          option?.profile?.lastname || ""
-                        }` // Access profile correctly
-                    }
-                    renderInput={(params) => (
-                      <TextField {...params} label="Select Users" fullWidth />
-                    )}
-                    onChange={(_, value) => field.onChange(value)}
-                  />
-                )}
-              /> */}
+             
               <Controller
                 name="userDetails"
                 control={control}

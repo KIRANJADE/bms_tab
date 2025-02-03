@@ -99,6 +99,11 @@ const User = () => {
     setIsModalOpen(true);
   };
 
+  const handleAddOpen = () => {
+    handleModalOpen();
+    setEditData([]);
+  };
+
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
@@ -117,7 +122,7 @@ const User = () => {
 
   return (
     <>
-      {
+      {isModalOpen &&
         <CommitteePopup
           open={isModalOpen}
           editDatas={isEditData}
@@ -138,7 +143,7 @@ const User = () => {
             style={{ backgroundColor: "#4c79f8" }}
             variant="contained"
             color="primary"
-            onClick={handleModalOpen}
+            onClick={handleAddOpen}
           >
             + Add New
           </Button>
