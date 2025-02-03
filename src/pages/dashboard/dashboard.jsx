@@ -16,13 +16,13 @@ import {
 } from "@mui/material";
 import AddNewModal from "../userAdd/addUser";
 import { useSelector, useDispatch } from "react-redux";
-import { userList } from "../../state/redux/userApi";
+import { userList, userSearch } from "../../state/redux/userApi";
 import { userListData } from "../../state/redux/authSlice";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useForm } from "react-hook-form";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseSharpIcon from "@mui/icons-material/CloseSharp";
-import EmptyState from "../../pages/common/EmptyState"
+import EmptyState from "../../pages/common/EmptyState";
 const ITEMS_PER_PAGE = 12;
 
 const Dashboard = () => {
@@ -41,6 +41,7 @@ const Dashboard = () => {
   const [memberType, setMemberType] = useState("");
   const [gender, setGender] = useState("");
   const [userType, setUserType] = useState("");
+  const [searchData, setSearchData] = useState("");
 
   const dispatch = useDispatch();
   const users = useSelector((state) => state.auth?.users || []);
@@ -54,13 +55,18 @@ const Dashboard = () => {
         limit: ITEMS_PER_PAGE,
         ...filterParams,
       });
-  
+
       if (response.status) {
-        dispatch(userListData({
-          userDetails: currentPage === 1 ? response.userDetails : [...users.userDetails, ...response.userDetails], // Append or replace
-          totalRecords: response.totalRecords,
-        }));
-  
+        dispatch(
+          userListData({
+            userDetails:
+              currentPage === 1
+                ? response.userDetails
+                : [...users.userDetails, ...response.userDetails], // Append or replace
+            totalRecords: response.totalRecords,
+          })
+        );
+
         setHasMore(currentPage * ITEMS_PER_PAGE < response.totalRecords); // Update hasMore
       }
     } catch (error) {
@@ -69,7 +75,7 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchUserList(page); // Fetch data when the component mounts
   }, [page]);
@@ -103,6 +109,22 @@ const Dashboard = () => {
   const handleSearchToggle = () => {
     setShowSearch(!showSearch);
     setSearchValue("");
+    fetchUserList(1); 
+  };
+  const handleSearch = async () => {
+    try {
+      console.log("Searching:", searchData);
+      const result = await userSearch(searchData); // Pass searchValue to API
+      dispatch(
+        userListData({
+          userDetails: result?.data?.userDetails,
+          totalRecords: result?.data?.totalRecords,
+        })
+      );
+      console.log("Search result:", result); // Handle the result (e.g., update state)
+    } catch (error) {
+      console.error("Error searching:", error);
+    }
   };
 
   const handleFilter = () => {
@@ -115,7 +137,7 @@ const Dashboard = () => {
       ...(userType && { "memberdetails.userType": userType }),
     });
   };
-  
+
   const handleReset = () => {
     setStatus("");
     setMemberType("");
@@ -154,8 +176,8 @@ const Dashboard = () => {
           {showSearch && (
             <OutlinedInput
               size="small"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              value={searchData} // Ensure this is tied to the state variable
+              onChange={(e) => setSearchData(e.target.value)} // Correctly set the state variable
               placeholder="Search..."
               sx={{
                 maxWidth: "250px",
@@ -164,9 +186,7 @@ const Dashboard = () => {
               }}
               endAdornment={
                 <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => console.log("Searching:", searchValue)}
-                  >
+                  <IconButton onClick={handleSearch}>
                     <SearchIcon />
                   </IconButton>
                 </InputAdornment>
@@ -178,7 +198,7 @@ const Dashboard = () => {
             aria-label="toggle search"
             sx={{ marginRight: 1 }}
           >
-            {showSearch ? <CloseSharpIcon /> : <SearchIcon />}
+            {showSearch ? <CloseSharpIcon  /> : <SearchIcon />}
           </IconButton>
           <IconButton
             onClick={handleExpandClick}
@@ -262,40 +282,39 @@ const Dashboard = () => {
               >
                 Filter
               </Button>
-              <Button
-                variant="contained"
-                onClick={handleReset}
-                color="primary"
-              >
+              <Button variant="contained" onClick={handleReset} color="primary">
                 Reset
               </Button>
             </Box>
           </Box>
         </Collapse>
-        <div className="mb-3 d-flex justify-content-end ">Total Count : {users?.totalRecords}</div>
-		{users?.userDetails?.length > 0 ? 
-
-        <Grid
-          container
-          spacing={1}
-          style={{ height: 460, overflowY: "scroll" }}
-        >
-          {users?.userDetails?.map((user, index) => (
-            <Grid className="mb-3" item xs={12} sm={6} md={3} key={index}>
-              <ActionCard
-                users={user}
-                profile={user?.profile}
-                memberTypeHistory={user?.memberTypeHistory}
-                onEdit={() => handleEdit(user)}
-                onDelete={handleDelete}
-                isEdit={editingCard}
-              />
-            </Grid>
-          ))}
-        </Grid> : <>
-		<EmptyState />
-		</>
-		}
+        <div className="mb-3 d-flex justify-content-end ">
+          Total Count : {users?.totalRecords}
+        </div>
+        {users?.userDetails?.length > 0 ? (
+          <Grid
+            container
+            spacing={1}
+            style={{ height: 460, overflowY: "scroll" }}
+          >
+            {users?.userDetails?.map((user, index) => (
+              <Grid className="mb-3" item xs={12} sm={6} md={3} key={index}>
+                <ActionCard
+                  users={user}
+                  profile={user?.profile}
+                  memberTypeHistory={user?.memberTypeHistory}
+                  onEdit={() => handleEdit(user)}
+                  onDelete={handleDelete}
+                  isEdit={editingCard}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        ) : (
+          <>
+            <EmptyState />
+          </>
+        )}
 
         {hasMore && (
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>

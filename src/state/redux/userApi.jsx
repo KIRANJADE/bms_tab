@@ -40,6 +40,22 @@ export const userList = async ( payload) => {
   }
 };
 
+export const userSearch = async (val, limit = 12, page = 1) => {
+  try {
+    const authToken = JSON.parse(localStorage.getItem("authToken"));
+    const headers = {
+      "x-access-token": `${authToken}`,
+      "Content-Type": "application/json",
+    };
+    const response = await axios.get(`${BASE_URL}/api/users/search?val=${val}&limit=${limit}&page=${page}`, {
+      headers,
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const createUserApi = async (params) => {
   try {
     const authToken = JSON.parse(localStorage.getItem("authToken"));
@@ -281,4 +297,8 @@ export const createCommitteMeeting = async (requestParams) => {
 		throw error;
 	  }
 	};
+
+
+
+  
   

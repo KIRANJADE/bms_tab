@@ -32,23 +32,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     formState: { errors },
     reset,
     setValue,
-  } = useForm({
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
-      fatherName: "",
-      motherName: "",
-      gender: "",
-      dob: "",
-      address: "",
-      maritalStatus: "",
-      position: "",
-      isAdministrator: "no",
-      memberType: "",
-      userType: "",
-      remarks: "",
-    }});
+  } = useForm({});
 
   const [userById, setUserById] = useState([]);
 
@@ -75,10 +59,10 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       setValue("phoneNumber", userById?.profile?.phoneno);
       setValue("fatherName", userById?.profile?.fathername);
       setValue("motherName", userById?.profile?.mothername);
-      setValue(
-        "gender",
-        userById?.profile?.gender === "male" ? "male" : "female"
-      );
+      // setValue(
+      //   "gender",
+      //   userById?.profile?.gender === "male" ? "male" : "female"
+      // );
       setValue("avatar", userById?.profile?.avatar);
       setValue("address", userById?.profile?.address);
       setValue("dob", userById?.profile?.dob);
@@ -120,7 +104,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       setValue("jobProfessional", userById?.otherdetails?.jobProfessional);
 
       setValue("remarks", userById?.remark);
-    }
+    } 
 
     console.log("userById", userById);
   }, [userById, setValue, isEditUsers, cardsUserId]);
@@ -162,14 +146,18 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       setValue("bClassToAClassChangeDate", formattedDate);
     }
     if (userById?.profile?.dob) {
-      const formattedDob = new Date(userById?.profile?.dob)
-        .toISOString()
-        .split("T")[0]; // Ensure the date is in YYYY-MM-DD format
-      setValue("dob", formattedDob);
+      const dob = new Date(userById?.profile?.dob);
+      if (!isNaN(dob.getTime())) { // Check if the date is valid
+        const formattedDob = dob.toISOString().split("T")[0]; // Ensure the date is in YYYY-MM-DD format
+        setValue("dob", formattedDob);
+      } else {
+        console.error("Invalid date value:", userById?.profile?.dob);
+      }
     }
-    if (userById?.profile?.gender) {
-      setValue("gender", userById?.profile?.gender);
-    }
+    
+    // if (userById?.profile?.gender) {
+    //   setValue("gender", userById?.profile?.gender);
+    // }
     if (userById?.statusChangedDate) {
       const formattedDate = new Date(userById?.statusChangedDate)
         .toISOString()
@@ -384,6 +372,7 @@ console.log(isEditUsers,"isEditUsers");
                   row
                   {...register("gender", { required: true })}
                   style={{ gap: "10px" }}
+                  defaultValue={userById ? userById?.profile?.gender === "male" ? "male" : "female" : "male"}
                 >
                   <FormControlLabel
                     value="male"
