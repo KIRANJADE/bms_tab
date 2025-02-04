@@ -105,23 +105,23 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
             <Divider />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+         {userDetails?.profile?.phoneno && <Grid item xs={12} sm={6}>
             <Box display="flex" alignItems="center" gap={1}>
               <PhoneIcon color="action" />
               <Typography variant="body1">
-                <strong>Phone:</strong> {userDetails?.profile?.phoneno ? userDetails?.profile?.phoneno : "Nil"}
+                <strong>Phone:</strong> {userDetails?.profile?.phoneno ? userDetails?.profile?.phoneno : ""}
               </Typography>
             </Box>
-          </Grid>
+          </Grid>}
 
-          <Grid item xs={12} sm={6}>
+        { userDetails?.profile?.dob && <Grid item xs={12} sm={6}>
             <Box display="flex" alignItems="center" gap={1}>
               <CakeIcon color="action" />
               <Typography variant="body1">
-                <strong>DOB:</strong> {userDetails?.profile?.dob ? userDetails?.profile?.dob : "Nil"}
+                <strong>DOB:</strong> {userDetails?.profile?.dob ? userDetails?.profile?.dob : ""}
               </Typography>
             </Box>
-          </Grid>
+          </Grid>}
 
           <Grid item xs={12} sm={6}>
             <Box display="flex" alignItems="center" gap={1}>
@@ -132,29 +132,29 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
             </Box>
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+        {<Grid item xs={12} sm={6}>
             <Box display="flex" alignItems="center" gap={1}>
               <AccountBalanceWalletIcon color="success" />
               <Typography variant="body1">
-                <strong>Balance:</strong> ₹{userDetails?.balance ? userDetails?.balance : "Nil"}
+                <strong>Balance:</strong> ₹{userDetails?.balance ? userDetails?.balance : "0"}
               </Typography>
             </Box>
-          </Grid>
+          </Grid>}
+
+        { userDetails?.profile?.fathername &&  <Grid item xs={12} sm={6}>
+            <Box display="flex" alignItems="center" gap={1}>
+              <FamilyRestroomIcon color="secondary" />
+              <Typography variant="body1">
+                <strong>Father's Name:</strong> {userDetails?.profile?.fathername ? userDetails?.profile?.fathername : ""}
+              </Typography>
+            </Box>
+          </Grid>}
 
           <Grid item xs={12} sm={6}>
             <Box display="flex" alignItems="center" gap={1}>
               <FamilyRestroomIcon color="secondary" />
               <Typography variant="body1">
-                <strong>Father's Name:</strong> {userDetails?.profile?.fathername ? userDetails?.profile?.fathername : "Nil"}
-              </Typography>
-            </Box>
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <Box display="flex" alignItems="center" gap={1}>
-              <FamilyRestroomIcon color="secondary" />
-              <Typography variant="body1">
-                <strong>Mother's Name:</strong> {userDetails?.profile?.mothername ? userDetails?.profile?.mothername : "Nil"}
+                <strong>Mother's Name:</strong> {userDetails?.profile?.mothername ? userDetails?.profile?.mothername : ""}
               </Typography>
             </Box>
           </Grid>
