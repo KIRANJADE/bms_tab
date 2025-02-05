@@ -18,7 +18,7 @@ const ordersData = [
 const ParentComponent = () => {
   return (
     <div>
-      <h4>Data Table</h4>
+      {/* <h4>Data Table</h4> */}
       {/* <CustomizedTables data={ordersData} /> */}
     </div>
   );

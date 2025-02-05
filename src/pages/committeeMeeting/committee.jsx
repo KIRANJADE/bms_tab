@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import ActionCard from "../../components/cardList/card";
-import { Grid, Box, Button, IconButton } from "@mui/material";
+import { Grid, Box, Button, IconButton, Modal, Typography, Divider } from "@mui/material";
 import CommitteePopup from "../committeeMeetingAdd/committee";
 import { useDispatch, useSelector } from "react-redux";
 import CustomizedTables from "../../components/tableView/table";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { set } from "react-hook-form";
 import { CommitteeList, deleteCommiteeDetails } from "../../state/redux/userApi";
 import { committeeListData } from "../../state/redux/authSlice";
+import CloseIcon from "@mui/icons-material/Close";
 
 const User = () => {
   const [editingCard, setEditingCard] = React.useState(null);
@@ -17,7 +18,8 @@ const User = () => {
   const [isEditData, setEditData] = React.useState([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
-
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewData, setViewData] = useState(null);
   const committeeData = useSelector((state) => state.auth?.committeeData || []);
   const dispatch = useDispatch();
 
@@ -32,8 +34,15 @@ const User = () => {
     { key: "status", label: "Status" },
     { key: "actions", label: "Actions" }, // Added actions column
   ];
+
+  const handleView = (data) => {
+    console.log(data, "datadatadata")
+    setViewData(data);
+    setIsViewModalOpen(true);
+  };
+
+
   useEffect(() => {
-    console.log("Committee Data:", committeeData);
     if (committeeData && committeeData.length > 0) {
       const formattedData = committeeData.map((item) => ({
         id: item?.committeemeetingId,
@@ -51,13 +60,16 @@ const User = () => {
             >
               <EditIcon fontSize="small" />
             </IconButton>
-            <IconButton
+            <IconButton color="info" size="small" onClick={() => handleView(item)}>
+              <VisibilityIcon fontSize="small" />
+            </IconButton>
+            {/* <IconButton
               color="error"
               size="small"
               onClick={() => handleDelete(item?._id)}
             >
               <DeleteIcon fontSize="small" />
-            </IconButton>
+            </IconButton> */}
           </div>
         ),
       }));
@@ -89,11 +101,6 @@ const User = () => {
     setEditData(data);
     handleModalOpen();
   };
-
-  // const handleDelete = (id) => {
-  //   console.log("Delete clicked for ID:", id);
-  //   // Add your delete logic here
-  // };
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
@@ -129,9 +136,71 @@ const User = () => {
           onClose={handleModalClose}
         />
       }
-      <div>
-        <h4>Committee Meeting List</h4>
 
+ {/* View Modal */}
+ <Modal open={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "90%",
+            maxWidth: 500,
+            bgcolor: "background.paper",
+            borderRadius: 4,
+            boxShadow: 24,
+            p: 4,
+            overflow: "hidden",
+          }}
+        >
+          {/* Modal Header */}
+          <Box
+            sx={{
+              textAlign: "center",
+              position: "relative",
+              bgcolor: "linear-gradient(to right, #4facfe, #00f2fe)",
+              borderRadius: 3,
+              p: 3,
+            }}
+          >
+            {/* Close Button */}
+            
+            <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>
+              Meeting Details
+            </Typography>
+          </Box>
+          {/* Modal Content */}
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+         
+            {viewData && (
+              <>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <Typography variant="body1"><strong>Meeting Id:</strong> {viewData.committeemeetingId}</Typography>
+                    <Typography variant="body1"><strong>Attendance:</strong> {viewData.isAddAttendance === true ? "Present" : "Absent"}</Typography>
+                    <Typography variant="body1"><strong>Meeting Title:</strong> {viewData.meetingtitle}</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="body1"><strong>Meeting Date:</strong> {viewData.meetingDate}</Typography>
+                    <Typography variant="body1"><strong>Fine Amount:</strong> ₹{viewData.fineAmount}</Typography>
+                    <Typography variant="body1"><strong>Status:</strong> {viewData.status}</Typography>
+                  </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                  <Divider />
+                </Grid>
+                <Grid item xs={12}>
+                  <Button variant="contained" onClick={() => setIsViewModalOpen(false)} fullWidth>
+                    Close
+                  </Button>
+                </Grid>
+              </>
+            )}
+          </Grid>
+        </Box>
+      </Modal>
+      <div>
         <Box
           sx={{
             display: "flex",
@@ -149,16 +218,6 @@ const User = () => {
           </Button>
         </Box>
         <Grid container spacing={1}>
-          {/* {cards.map((card, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <ActionCard
-                card={card}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                isEdit={editingCard}
-              />
-            </Grid>
-          ))} */}
           <CustomizedTables data={tableData} search={false} headers={headers} />
         </Grid>
       </div>

@@ -88,7 +88,7 @@ const ActionCard = ({ users, profile, onEdit,memberTypeHistory = [] }) => {
         className={classNames("action-card")}
         
       >
-        <Box className={users?.isEdit ? "editcard" : "disabledCard"} onClick={ users?.isEdit ?() => handlePopUpClick() : ""}>
+        <Box className={users?.isEdit ? "editcard" : "disabledCard"}  onClick={ users?.isEdit ?() => handlePopUpClick() : ""}>
           <Box className="action-card-header">
             <Box className="d-flex align-items-center">
               <Avatar
@@ -151,7 +151,7 @@ const ActionCard = ({ users, profile, onEdit,memberTypeHistory = [] }) => {
         </Box>
         <Box onClick={ users?.isEdit ?() => handleBalancePopUpClick() : ""}  className={users?.isEdit ? "editcard" : "disabledCard"}>
           <Box className="action-card-details-item">
-            <LocalPhoneOutlinedIcon fontSize="small" color="action" />
+           {profile?.phoneno && <LocalPhoneOutlinedIcon fontSize="small" color="action" />}
             <Typography variant="body2" className="action-card-memberId">
               {profile?.phoneno}
             </Typography>

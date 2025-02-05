@@ -45,7 +45,7 @@ const index = () => {
 
   return (
     <div>
-      <h4>Administrator List</h4>
+      {/* <h4>Administrator List</h4> */}
       <CustomizedTables data={adminData} search={false}/>
     </div>
   );

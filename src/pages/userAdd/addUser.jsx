@@ -36,7 +36,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     reset,
     setValue,
     control,
-    watch
+    watch,
   } = useForm({});
 
   const [userById, setUserById] = useState([]);
@@ -82,10 +82,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       setValue("phoneNumber", userById?.profile?.phoneno);
       setValue("fatherName", userById?.profile?.fathername);
       setValue("motherName", userById?.profile?.mothername);
-      // setValue(
-      //   "gender",
-      //   userById?.profile?.gender === "male" ? "male" : "female"
-      // );
+
       setValue("avatar", userById?.profile?.avatar);
       setValue("address", userById?.profile?.address);
       setValue("dob", userById?.profile?.dob);
@@ -96,16 +93,16 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
         userById?.isAdministrator === false ? "no" : "yes"
       );
       setValue("position", userById?.position);
-      setValue("isChitCommitteeMember", userById?.isChitCommitteeMember);
+      // setValue("isChitCommitteeMember", userById?.isChitCommitteeMember);
       setValue("chitCommitteePosition", userById?.chitCommitteePosition);
       setValue("role", userById?.role);
       setValue("status", userById?.status);
       setValue("statusChangedDate", userById?.statusChangedDate);
 
-      setValue(
-        "memberType",
-        userById?.memberdetails?.memberType === "b-class" ? "B-type" : "A-type"
-      );
+      // setValue(
+      //   "memberType",
+      //   userById?.memberdetails?.memberType === "b-class" ? "B-type" : "A-type"
+      // );
       setValue("userType", userById?.memberdetails?.userType);
       setValue("joiningDate", userById?.memberdetails?.joiningDate);
       setValue("rejoiningDate", userById?.memberdetails?.rejoiningDate);
@@ -179,9 +176,6 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
       }
     }
 
-    // if (userById?.profile?.gender) {
-    //   setValue("gender", userById?.profile?.gender);
-    // }
     if (userById?.statusChangedDate) {
       const formattedDate = new Date(userById?.statusChangedDate)
         .toISOString()
@@ -262,31 +256,30 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     } else {
       const response = await createUserApi(payload);
       console.log("Payload:", response);
-  
-    if (response?.status) {
-      dispatch(userCreate(response.data));
-      fetchUserList(1);
-      onClose();
-      reset();
+
+      if (response?.status) {
+        dispatch(userCreate(response.data));
+        fetchUserList(1);
+        onClose();
+        reset();
+      }
     }
-  }
   };
 
   const ITEMS_PER_PAGE = 12;
 
-   const fetchUserList = async () => {
-      try {
-        const response = await userList({
-          page: 1,
-          limit: 12,
-        });
-      } catch (error) {
-        setError("Failed to fetch user data");
-      } finally {
-        setLoading(false);
-      }
-    };
- 
+  const fetchUserList = async () => {
+    try {
+      const response = await userList({
+        page: 1,
+        limit: 12,
+      });
+    } catch (error) {
+      setError("Failed to fetch user data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   console.log(isEditUsers, "isEditUsers");
 
@@ -395,13 +388,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   row
                   {...register("gender", { required: true })}
                   style={{ gap: "10px" }}
-                  defaultValue={
-                    userById
-                      ? userById?.profile?.gender === "male"
-                        ? "male"
-                        : "female"
-                      : "male"
-                  }
+                  value={userById?.profile?.gender || "male"}
                 >
                   <FormControlLabel
                     value="male"
@@ -424,31 +411,39 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
               <FormControl margin="dense" component="fieldset">
                 <FormLabel style={{ fontSize: "0.9rem" }}>
                   Marital Status
-                </FormLabel>{" "}
-                <RadioGroup
-                  row
-                  {...register("maritalStatus", { required: true })}
-                  style={{ gap: "10px" }}
-                >
-                  <FormControlLabel
-                    value="single"
-                    control={<Radio size="small" />}
-                    label={<Typography variant="body2">Single</Typography>}
-                  />
-                  <FormControlLabel
-                    value="married"
-                    control={<Radio size="small" />}
-                    label={<Typography variant="body2">Married</Typography>}
-                  />
-                  <FormControlLabel
-                    value="widowed"
-                    control={<Radio size="small" />}
-                    label={<Typography variant="body2">Widowed</Typography>}
-                  />
-                </RadioGroup>
+                </FormLabel>
+                <Controller
+                  name="maritalStatus"
+                  control={control}
+                  defaultValue={
+                    userById && userById?.profile?.maritalStatus
+                      ? userById?.profile?.maritalStatus
+                      : "single"
+                  }
+                  rules={{ required: "Please select a marital status." }}
+                  render={({ field }) => (
+                    <RadioGroup row {...field} style={{ gap: "10px" }}>
+                      <FormControlLabel
+                        value="single"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">Single</Typography>}
+                      />
+                      <FormControlLabel
+                        value="married"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">Married</Typography>}
+                      />
+                      <FormControlLabel
+                        value="widowed"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">Widowed</Typography>}
+                      />
+                    </RadioGroup>
+                  )}
+                />
                 {errors.maritalStatus && (
                   <Typography variant="caption" color="error">
-                    Please select a marital status.
+                    {errors.maritalStatus.message}
                   </Typography>
                 )}
               </FormControl>
@@ -471,27 +466,29 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 <FormLabel style={{ fontSize: "0.9rem" }}>
                   Is Administrator
                 </FormLabel>{" "}
-                {/* Smaller font size */}
-                <RadioGroup
-                  row
+                <Controller
+                  name="isAdministrator"
+                  control={control}
                   defaultValue="no"
-                  {...register("isAdministrator", { required: true })}
-                  style={{ gap: "10px" }} // Reduce spacing between radio buttons
-                >
-                  <FormControlLabel
-                    value="yes"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">Yes</Typography>} // Smaller label
-                  />
-                  <FormControlLabel
-                    value="no"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">No</Typography>} // Smaller label
-                  />
-                </RadioGroup>
+                  rules={{ required: "Please select an option." }}
+                  render={({ field }) => (
+                    <RadioGroup row {...field} style={{ gap: "10px" }}>
+                      <FormControlLabel
+                        value="yes"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">Yes</Typography>}
+                      />
+                      <FormControlLabel
+                        value="no"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">No</Typography>}
+                      />
+                    </RadioGroup>
+                  )}
+                />
                 {errors.isAdministrator && (
                   <Typography variant="caption" color="error">
-                    Please select an option.
+                    {errors.isAdministrator.message}
                   </Typography>
                 )}
               </FormControl>
@@ -524,31 +521,34 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 )}
               </FormControl>
             </Grid>
+            {console.log(userById?.isChitCommitteeMember, "userById")}
             <Grid item xs={12} sm={3}>
               <FormControl margin="dense" component="fieldset">
                 <FormLabel style={{ fontSize: "0.9rem" }}>
                   Is Chit Committee Member
-                </FormLabel>{" "}
-                {/* Smaller font size */}
-                <RadioGroup
-                  row
-                  defaultValue="no" // Set default value (can be 'yes' or 'no')
-                  {...register("isChitCommitteeMember", {
-                    required: "Please select an option.",
-                  })}
-                  style={{ gap: "10px" }} // Reduce spacing between radio buttons
-                >
-                  <FormControlLabel
-                    value="yes"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">Yes</Typography>} // Smaller label
-                  />
-                  <FormControlLabel
-                    value="no"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">No</Typography>} // Smaller label
-                  />
-                </RadioGroup>
+                </FormLabel>
+                <Controller
+                  name="isChitCommitteeMember"
+                  control={control}
+                  defaultValue={
+                    userById?.isChitCommitteeMember === false ? "no" : "yes"
+                  } // Set default value based on user data
+                  rules={{ required: "Please select an option." }}
+                  render={({ field }) => (
+                    <RadioGroup row {...field} style={{ gap: "10px" }}>
+                      <FormControlLabel
+                        value="yes"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">Yes</Typography>}
+                      />
+                      <FormControlLabel
+                        value="no"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">No</Typography>}
+                      />
+                    </RadioGroup>
+                  )}
+                />
                 {errors.isChitCommitteeMember && (
                   <Typography variant="caption" color="error">
                     {errors.isChitCommitteeMember.message}
@@ -591,32 +591,39 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
               <FormControl margin="dense" component="fieldset">
                 <FormLabel style={{ fontSize: "0.9rem" }}>
                   Member Type
-                </FormLabel>{" "}
-                {/* Smaller font size */}
-                <RadioGroup
-                  row
-                  {...register("memberType", { required: true })}
-                  style={{ gap: "10px" }} // Reduce spacing between radio buttons
-                >
-                  <FormControlLabel
-                    value="a-class"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">A-Class</Typography>} // Smaller label
-                  />
-                  <FormControlLabel
-                    value="b-class"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">B-Class</Typography>} // Smaller label
-                  />
-                  <FormControlLabel
-                    value="c-class"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">C-Class</Typography>} // Smaller label
-                  />
-                </RadioGroup>
+                </FormLabel>
+                <Controller
+                  name="memberType"
+                  control={control}
+                  defaultValue={
+                    userById?.memberdetails?.memberType
+                      ? userById?.memberdetails?.memberType
+                      : "a-class"
+                  }
+                  rules={{ required: "Please select a member type." }}
+                  render={({ field }) => (
+                    <RadioGroup row {...field} style={{ gap: "10px" }}>
+                      <FormControlLabel
+                        value="a-class"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">A-Class</Typography>}
+                      />
+                      <FormControlLabel
+                        value="b-class"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">B-Class</Typography>}
+                      />
+                      <FormControlLabel
+                        value="c-class"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">C-Class</Typography>}
+                      />
+                    </RadioGroup>
+                  )}
+                />
                 {errors.memberType && (
                   <Typography variant="caption" color="error">
-                    Please select a member type.
+                    {errors.memberType.message}
                   </Typography>
                 )}
               </FormControl>
@@ -624,27 +631,29 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
 
             <Grid item xs={12} sm={3}>
               <FormControl margin="dense" component="fieldset">
-                <FormLabel style={{ fontSize: "0.9rem" }}>User Type</FormLabel>{" "}
-                {/* Smaller font size */}
-                <RadioGroup
-                  row
-                  {...register("userType", { required: true })}
-                  style={{ gap: "10px" }} // Reduce spacing between radio buttons
-                >
-                  <FormControlLabel
-                    value="full"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">Full</Typography>} // Smaller label
-                  />
-                  <FormControlLabel
-                    value="half"
-                    control={<Radio size="small" />} // Smaller radio button
-                    label={<Typography variant="body2">Half</Typography>} // Smaller label
-                  />
-                </RadioGroup>
+                <FormLabel style={{ fontSize: "0.9rem" }}>User Type</FormLabel>
+                <Controller
+                  name="userType"
+                  control={control}
+                  rules={{ required: "Please select a user type." }}
+                  render={({ field }) => (
+                    <RadioGroup row {...field} style={{ gap: "10px" }}>
+                      <FormControlLabel
+                        value="full"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">Full</Typography>}
+                      />
+                      <FormControlLabel
+                        value="half"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">Half</Typography>}
+                      />
+                    </RadioGroup>
+                  )}
+                />
                 {errors.userType && (
                   <Typography variant="caption" color="error">
-                    Please select a user type.
+                    {errors.userType.message}
                   </Typography>
                 )}
               </FormControl>
