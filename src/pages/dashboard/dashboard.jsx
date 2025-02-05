@@ -111,7 +111,7 @@ const Dashboard = () => {
 	
     setShowSearch(!showSearch);
     setSearchValue("");
-    fetchUserList(1); 
+    fetchUserList(1);
   };
   const handleSearch = async () => {
     try {
@@ -203,7 +203,7 @@ const Dashboard = () => {
             aria-label="toggle search"
             sx={{ marginRight: 1 }}
           >
-            {showSearch ? <CloseSharpIcon  /> : <SearchIcon />}
+            {showSearch ? <CloseSharpIcon /> : <SearchIcon />}
           </IconButton>
           <IconButton
             onClick={handleExpandClick}
@@ -321,18 +321,21 @@ const Dashboard = () => {
           </>
         )}
 
-        {hasMore  && (
-          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
-            <Button
-              style={{ backgroundColor: "#4c79f8", color: "white" }}
-              variant="outlined"
-              onClick={handleLoadMore}
-              disabled={loading}
+        {hasMore &&
+          !(status || memberType || gender || userType || searchData) && (
+            <Box
+              sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
             >
-              {loading ? "Loading..." : "Load More"}
-            </Button>
-          </Box>
-        )}
+              <Button
+                style={{ backgroundColor: "#4c79f8", color: "white" }}
+                variant="outlined"
+                onClick={handleLoadMore}
+                disabled={loading}
+              >
+                {loading ? "Loading..." : "Load More"}
+              </Button>
+            </Box>
+          )}
       </div>
     </>
   );
