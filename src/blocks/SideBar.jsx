@@ -8,6 +8,7 @@ import {
   Divider,
   IconButton,
   useMediaQuery,
+  Box,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import PersonIcon from "@mui/icons-material/Person";
@@ -142,24 +143,40 @@ const SideBar = ({ addTab }) => {
 
   return (
     <>
-      {/* Menu Icon for Small Screens */}
+      {/* Menu Icon & Logo for Small Screens */}
       {isSmallScreen && !isDrawerOpen && (
-  <IconButton
-    color="primary"
-    onClick={() => setIsDrawerOpen(true)}
-    sx={{
-      position: "fixed",
-      top: 10,
-      left: 10,
-      zIndex: 1300,
-      bgcolor: "white", // Optional: Adds background for visibility
-      boxShadow: 2, // Adds a subtle shadow
-      borderRadius: "50%",
-    }}
-  >
-    <MenuIcon />
-  </IconButton>
-)}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            position: "fixed",
+            top: 10,
+            left: 10,
+            zIndex: 1300,
+            bgcolor: "white",
+            boxShadow: 2,
+            borderRadius: "8px",
+            padding: "6px 12px",
+            cursor: "pointer",
+          }}
+        >
+          {/* Toggle Drawer Button */}
+          <IconButton
+            color="primary"
+            onClick={() => setIsDrawerOpen(true)}
+            sx={{
+              borderRadius: "50%",
+              bgcolor: "white",
+              boxShadow: 2,
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+
+          {/* Logo (Shown only in mobile view next to menu icon) */}
+          <Box sx={{ ml: 1, fontWeight: "bold", fontSize: "1.2rem" }}>LOGO</Box>
+        </Box>
+      )}
 
       {/* Sidebar Drawer */}
       <Drawer

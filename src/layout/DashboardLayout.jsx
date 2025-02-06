@@ -12,6 +12,8 @@ import { useDispatch } from "react-redux";
 import { userListData, committeeListData } from "../state/redux/authSlice";
 import { Pagination, Stack } from "@mui/material";
 import Home from "../pages/homePage";
+import { useMediaQuery } from "@mui/material";
+
 const DashboardLayout = () => {
   const [activeTabs, setActiveTabs] = useState([
     { id: "tab1", label: "Dashboard" },
@@ -23,7 +25,7 @@ const DashboardLayout = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [totalPages, setTotalPages] = useState(0);
-
+  const isSmallScreen = useMediaQuery("(max-width:1200px)");
   const dispatch = useDispatch();
 
   const fetchUserList = async () => {
@@ -115,6 +117,7 @@ const DashboardLayout = () => {
           flex: 1,
           marginLeft: isSidebarOpen ? 0 : 50,
           transition: "margin-left 0.3s ease-in-out",
+          marginTop: isSmallScreen ? "40px" : "0px",
           //   overflow: "auto", // Ensure only card container scrolls
         }}
       >
