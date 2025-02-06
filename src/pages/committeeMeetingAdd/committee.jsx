@@ -138,7 +138,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
       const isSelected = data.userDetails.some(
         (selectedUser) => selectedUser._id === user._id
       );
-  
+
       return {
         _id: user._id,
         profile: {
@@ -167,7 +167,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
     };
 
     try {
-      if (editDatas && editDatas._id ) {
+      if (editDatas && editDatas._id) {
         // Edit existing committee meeting
         const response = await editCommiteeMeeting(editDatas?._id, payload);
         if (response?.status || response?.ok) {
@@ -196,7 +196,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
     onClose(); // Close the modal or form
   }, [reset, onClose]); // Dependencies ensure this function is stable
 
-  console.log(editDatas.length , "editDatas")
+  console.log(editDatas.length, "editDatas")
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -259,7 +259,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                 control={control}
                 render={({ field }) => (
                   <FormControl component="fieldset">
-                    <FormLabel component="legend">Administrator</FormLabel>
+                    <FormLabel component="legend">isAttendance Required</FormLabel>
                     <RadioGroup
                       row
                       {...field}
@@ -292,8 +292,8 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                 committeData?.userDetails,
                 "committeData?.userDetails"
               )}
-             
-              <Controller
+
+              {/* <Controller
                 name="userDetails"
                 control={control}
                 render={({ field }) => (
@@ -327,6 +327,38 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                       <TextField {...params} label="Select Users" fullWidth />
                     )}
                     onChange={(_, value) => field.onChange(value)}
+                  />
+                )}
+              /> */}
+              <Controller
+                name="userDetails"
+                control={control}
+                render={({ field }) => (
+                  <Autocomplete
+                    {...field}
+                    multiple
+                    options={Array.isArray(committeData?.userDetails) ? committeData?.userDetails : []}
+                    disableCloseOnSelect
+                    getOptionLabel={(option) =>
+                      `${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`
+                    }
+                    value={field.value || []} // Ensure value is always an array
+                    onChange={(_, value) => field.onChange(value)} // Update form state
+                    isOptionEqualToValue={(option, value) => option._id === value._id} // Fix selection
+                    renderOption={(props, option) => {
+                      const isSelected = (field.value || []).some((val) => val._id === option._id);
+                      return (
+                        <li {...props}>
+                          <Checkbox
+                            icon={<CheckBoxOutlineBlankIcon />}
+                            checkedIcon={<CheckBoxIcon />}
+                            checked={isSelected}
+                          />
+                          {`${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`}
+                        </li>
+                      );
+                    }}
+                    renderInput={(params) => <TextField {...params} label="Select Users" fullWidth />}
                   />
                 )}
               />
