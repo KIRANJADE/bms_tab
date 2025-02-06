@@ -107,11 +107,12 @@ const Dashboard = () => {
   };
 
   const handleSearchToggle = () => {
-	console.log("hhhhh");
-	
     setShowSearch(!showSearch);
+  };
+  const handleSearchClose = () => {
     setSearchValue("");
     fetchUserList(1);
+    setSearchData("");
   };
   const handleSearch = async () => {
     try {
@@ -129,8 +130,7 @@ const Dashboard = () => {
     }
   };
 
-  console.log(searchValue,"showSearch");
-  
+  console.log(searchValue, "showSearch");
 
   const handleFilter = () => {
     setPage(1);
@@ -198,13 +198,19 @@ const Dashboard = () => {
               }
             />
           )}
+
           <IconButton
-            onClick={handleSearchToggle}
+            onClick={handleSearchToggle} // Function for IconButton click
             aria-label="toggle search"
             sx={{ marginRight: 1 }}
           >
-            {showSearch ? <CloseSharpIcon /> : <SearchIcon />}
+            {showSearch ? (
+              <CloseSharpIcon onClick={handleSearchClose} /> // Function for Close icon click
+            ) : (
+              <SearchIcon />
+            )}
           </IconButton>
+
           <IconButton
             onClick={handleExpandClick}
             aria-expanded={isExpanded}

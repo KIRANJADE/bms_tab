@@ -161,20 +161,17 @@ const SideBar = ({ addTab }) => {
           }}
         >
           {/* Toggle Drawer Button */}
+          <Box sx={{ mr: 1,   }}>LOGO</Box>
           <IconButton
             color="primary"
             onClick={() => setIsDrawerOpen(true)}
-            sx={{
-              borderRadius: "50%",
-              bgcolor: "white",
-              boxShadow: 2,
-            }}
+         
           >
             <MenuIcon />
           </IconButton>
 
           {/* Logo (Shown only in mobile view next to menu icon) */}
-          <Box sx={{ ml: 1, fontWeight: "bold", fontSize: "1.2rem" }}>LOGO</Box>
+         
         </Box>
       )}
 
