@@ -15,7 +15,11 @@ import CustomizedTables from "../../components/tableView/table";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { set } from "react-hook-form";
-import { CommitteeList, deleteCommiteeDetails, getCommiteemeetingDetailsById } from "../../state/redux/userApi";
+import {
+  CommitteeList,
+  deleteCommiteeDetails,
+  getCommiteemeetingDetailsById,
+} from "../../state/redux/userApi";
 import { committeebyId, committeeListData } from "../../state/redux/authSlice";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -28,7 +32,12 @@ const User = () => {
   const [limit, setLimit] = useState(12);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [viewData, setViewData] = useState(null);
+  const [userData, setUserData] = useState([]);
+
   const committeeData = useSelector((state) => state.auth?.committeeData || []);
+  const committeeByIdData = useSelector(
+    (state) => state.auth?.committeId || []
+  );
   const dispatch = useDispatch();
 
   console.log(committeeData, "committeeData");
@@ -43,10 +52,20 @@ const User = () => {
     { key: "actions", label: "Actions" }, // Added actions column
   ];
 
+  const viewTableHeader = [
+    { key: "id", label: "Meeting Id" },
+    { key: "memberId", label: "Member Id" },
+    { key: "name", label: "Member Name" },
+    { key: "attendance", label: "Attendance" },
+  ];
+
   const handleView = (data) => {
-    console.log(data, "datadatadata");
-    setViewData(data);
-    setIsViewModalOpen(true);
+    getCommiteeMemberById(data?._id, "View");
+  };
+
+  const handleViewClose = () => {
+    setUserData([]);
+    setIsViewModalOpen(false);
   };
 
   useEffect(() => {
@@ -101,22 +120,37 @@ const User = () => {
   };
 
   const handleEdit = (data) => {
-    getCommiteeMemberById(data?._id)
+    getCommiteeMemberById(data?._id, "Edit");
   };
 
-    const getCommiteeMemberById = async (value) => {
-      try {
-        const response = await getCommiteemeetingDetailsById(value);
-        console.log(response);
-        if (response?.status) {
-          dispatch(committeebyId(response));
+  const getCommiteeMemberById = async (value, data) => {
+    try {
+      const response = await getCommiteemeetingDetailsById(value);
+      console.log(response);
+      if (response?.status) {
+        dispatch(committeebyId(response));
+        if (data === "Edit") {
           setEditData(response);
           handleModalOpen();
         }
-      } catch (error) {
-        throw error;
+        if (data === "View") {
+          setViewData(response);
+          console.log("response",response);
+          
+          const formattedViewData = response?.userDetails?.map((item) => ({
+            id: item?.committeemeetingId,
+            memberId: item?.memberdetails?.memberId,
+            name: item.profile?.firstname,
+            attendance: item?.attendance === true ? "True" : "False",
+          }));
+          setUserData(formattedViewData);
+          setIsViewModalOpen(true);
+        }
       }
-    };
+    } catch (error) {
+      throw error;
+    }
+  };
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
@@ -142,6 +176,8 @@ const User = () => {
     setEditingCard(null);
   };
 
+  console.log(userData, "userDatauserData");
+
   return (
     <>
       {isModalOpen && (
@@ -161,12 +197,12 @@ const User = () => {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: "90%",
-            maxWidth: 500,
+            height: "90%",
             bgcolor: "background.paper",
             borderRadius: 4,
             boxShadow: 24,
             p: 4,
-            overflow: "hidden",
+            overflow: "scroll",
             textAlign: "center", // Center the text
           }}
         >
@@ -193,6 +229,7 @@ const User = () => {
               alignItems: "center", // Center vertically
             }}
           >
+            {console.log(viewData, "viewData")}
             {viewData && (
               <>
                 <Grid container spacing={2}>
@@ -220,13 +257,21 @@ const User = () => {
                     </Typography>
                   </Grid>
                 </Grid>
+
+                {
+                  <CustomizedTables
+                    data={userData}
+                    search={false}
+                    headers={viewTableHeader}
+                  />
+                }
                 <Grid item xs={12}>
                   <Divider />
                 </Grid>
                 <Grid item xs={12}>
                   <Button
                     variant="contained"
-                    onClick={() => setIsViewModalOpen(false)}
+                    onClick={() => handleViewClose()}
                     fullWidth
                   >
                     Close
@@ -255,7 +300,7 @@ const User = () => {
           </Button>
         </Box>
         <Grid container spacing={1}>
-          <CustomizedTables data={tableData} search={false} headers={headers} />
+          <CustomizedTables data={tableData} search={false} headers={headers} height={"300px"} />
         </Grid>
       </div>
     </>

@@ -17,7 +17,7 @@ export default function OrdersTable({ data, headers,handleModalOpen }) {
 
   return (
     <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Paper sx={{ flex: 1 }}>
+      <Paper sx={{ flex: 1 ,  maxHeight: '500px'}}>
         <TableContainer sx={{ maxHeight: 'calc(100vh - 64px)', overflow: 'auto' }}>
           <Table sx={{ minWidth: 650 }}>
             <TableHead>
