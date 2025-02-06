@@ -107,7 +107,7 @@ console.log(userDetails, "userDetails")
             <Divider />
           </Grid>
           <Grid item xs={12}>
-            <Button variant="contained" onClick={() => handleEditUsers()} fullWidth>Cancel</Button>
+            <Button variant="contained" style={{ backgroundColor: "#4c79f8", color: "white" }} onClick={() => handleEditUsers()} fullWidth>Cancel</Button>
           </Grid>
         </Grid>
       </Box>

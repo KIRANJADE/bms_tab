@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from "react";
 import ActionCard from "../../components/cardList/card";
-import { Grid, Box, Button, IconButton, Modal, Typography, Divider } from "@mui/material";
+import {
+  Grid,
+  Box,
+  Button,
+  IconButton,
+  Modal,
+  Typography,
+  Divider,
+} from "@mui/material";
 import CommitteePopup from "../committeeMeetingAdd/committee";
 import { useDispatch, useSelector } from "react-redux";
 import CustomizedTables from "../../components/tableView/table";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { set } from "react-hook-form";
-import { CommitteeList, deleteCommiteeDetails } from "../../state/redux/userApi";
+import {
+  CommitteeList,
+  deleteCommiteeDetails,
+} from "../../state/redux/userApi";
 import { committeeListData } from "../../state/redux/authSlice";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -36,11 +47,10 @@ const User = () => {
   ];
 
   const handleView = (data) => {
-    console.log(data, "datadatadata")
+    console.log(data, "datadatadata");
     setViewData(data);
     setIsViewModalOpen(true);
   };
-
 
   useEffect(() => {
     if (committeeData && committeeData.length > 0) {
@@ -60,7 +70,11 @@ const User = () => {
             >
               <EditIcon fontSize="small" />
             </IconButton>
-            <IconButton color="info" size="small" onClick={() => handleView(item)}>
+            <IconButton
+              color="info"
+              size="small"
+              onClick={() => handleView(item)}
+            >
               <VisibilityIcon fontSize="small" />
             </IconButton>
             {/* <IconButton
@@ -126,19 +140,18 @@ const User = () => {
     setEditingCard(null);
   };
 
-
   return (
     <>
-      {isModalOpen &&
+      {isModalOpen && (
         <CommitteePopup
           open={isModalOpen}
           editDatas={isEditData}
           onClose={handleModalClose}
         />
-      }
+      )}
 
- {/* View Modal */}
- <Modal open={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>
+      {/* View Modal */}
+      <Modal open={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>
         <Box
           sx={{
             position: "absolute",
@@ -152,46 +165,68 @@ const User = () => {
             boxShadow: 24,
             p: 4,
             overflow: "hidden",
+            textAlign: "center", // Center the text
           }}
         >
           {/* Modal Header */}
           <Box
             sx={{
-              textAlign: "center",
               position: "relative",
               bgcolor: "linear-gradient(to right, #4facfe, #00f2fe)",
               borderRadius: 3,
               p: 3,
+              mb: 2, // Margin-bottom for spacing
             }}
           >
-            {/* Close Button */}
-            
             <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>
               Meeting Details
             </Typography>
           </Box>
           {/* Modal Content */}
-          <Grid container spacing={2} sx={{ mt: 2 }}>
-         
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              justifyContent: "center", // Center horizontally
+              alignItems: "center", // Center vertically
+            }}
+          >
             {viewData && (
               <>
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
-                    <Typography variant="body1"><strong>Meeting Id:</strong> {viewData.committeemeetingId}</Typography>
-                    <Typography variant="body1"><strong>Attendance:</strong> {viewData.isAddAttendance === true ? "Present" : "Absent"}</Typography>
-                    <Typography variant="body1"><strong>Meeting Title:</strong> {viewData.meetingtitle}</Typography>
+                    <Typography variant="body1">
+                      <strong>Meeting Id:</strong> {viewData.committeemeetingId}
+                    </Typography>
+                    <Typography variant="body1">
+                      <strong>Attendance:</strong>{" "}
+                      {viewData.isAddAttendance === true ? "Present" : "Absent"}
+                    </Typography>
+                    <Typography variant="body1">
+                      <strong>Meeting Title:</strong> {viewData.meetingtitle}
+                    </Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="body1"><strong>Meeting Date:</strong> {viewData.meetingDate}</Typography>
-                    <Typography variant="body1"><strong>Fine Amount:</strong> ₹{viewData.fineAmount}</Typography>
-                    <Typography variant="body1"><strong>Status:</strong> {viewData.status}</Typography>
+                    <Typography variant="body1">
+                      <strong>Meeting Date:</strong> {viewData.meetingDate}
+                    </Typography>
+                    <Typography variant="body1">
+                      <strong>Fine Amount:</strong> ₹{viewData.fineAmount}
+                    </Typography>
+                    <Typography variant="body1">
+                      <strong>Status:</strong> {viewData.status}
+                    </Typography>
                   </Grid>
                 </Grid>
                 <Grid item xs={12}>
                   <Divider />
                 </Grid>
                 <Grid item xs={12}>
-                  <Button variant="contained" onClick={() => setIsViewModalOpen(false)} fullWidth>
+                  <Button
+                    variant="contained"
+                    onClick={() => setIsViewModalOpen(false)}
+                    fullWidth
+                  >
                     Close
                   </Button>
                 </Grid>
@@ -209,12 +244,12 @@ const User = () => {
           }}
         >
           <Button
-            style={{ backgroundColor: "#4c79f8" }}
+            style={{ backgroundColor: "#4C79F8" }}
             variant="contained"
             color="primary"
             onClick={handleAddOpen}
           >
-            + Add New
+            Add Committee meeting
           </Button>
         </Box>
         <Grid container spacing={1}>

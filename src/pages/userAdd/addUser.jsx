@@ -859,20 +859,24 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
 
           {/* Buttons */}
           <Box mt={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button onClick={() => cancelUserForm()} sx={{ marginRight: 1 }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => cancelUserForm()}
+              sx={{ marginRight: 1 }}
+              style={{ color: "#4C79F8", borderColor: "#4C79F8" }}
+            >
               Cancel
             </Button>
-            {console.log(isEditUsers, "isEditUsersisEditUsers")}
 
-            {isEditUsers ? (
-              <Button type="submit" variant="contained">
-                Update
-              </Button>
-            ) : (
-              <Button type="submit" variant="contained">
-                Add
-              </Button>
-            )}
+            <Button
+              style={{ backgroundColor: "#4C79F8" }}
+              variant="contained"
+              color="primary"
+              type="submit"
+            >
+              {isEditUsers ? "Update" : "Add"}
+            </Button>
           </Box>
         </form>
       </Box>

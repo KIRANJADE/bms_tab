@@ -153,7 +153,7 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
           <Divider />
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" onClick={() => handleEditUsers()} fullWidth>
+          <Button variant="contained" style={{ backgroundColor: "#4c79f8", color: "white" }} onClick={() => handleEditUsers()} fullWidth>
             Edit User
           </Button>
         </Grid>

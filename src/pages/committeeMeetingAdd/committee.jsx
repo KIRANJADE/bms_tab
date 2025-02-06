@@ -172,7 +172,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
         const response = await editCommiteeMeeting(editDatas?._id, payload);
         if (response?.status || response?.ok) {
           await fetchCommitteeList();
-          handleCancel()
+          handleCancel();
         } else {
           throw new Error("Unexpected response format while editing.");
         }
@@ -181,7 +181,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
         const response = await createCommitteMeeting(payload);
         if (response?.status || response?.ok) {
           await fetchCommitteeList();
-          handleCancel()
+          handleCancel();
         } else {
           throw new Error("Unexpected response format while creating.");
         }
@@ -196,7 +196,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
     onClose(); // Close the modal or form
   }, [reset, onClose]); // Dependencies ensure this function is stable
 
-  console.log(editDatas.length, "editDatas")
+  console.log(editDatas.length, "editDatas");
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -259,7 +259,9 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                 control={control}
                 render={({ field }) => (
                   <FormControl component="fieldset">
-                    <FormLabel component="legend">isAttendance Required</FormLabel>
+                    <FormLabel component="legend">
+                      isAttendance Required
+                    </FormLabel>
                     <RadioGroup
                       row
                       {...field}
@@ -337,16 +339,26 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                   <Autocomplete
                     {...field}
                     multiple
-                    options={Array.isArray(committeData?.userDetails) ? committeData?.userDetails : []}
+                    options={
+                      Array.isArray(committeData?.userDetails)
+                        ? committeData?.userDetails
+                        : []
+                    }
                     disableCloseOnSelect
                     getOptionLabel={(option) =>
-                      `${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`
+                      `${option?.profile?.firstname || ""} ${
+                        option?.profile?.lastname || ""
+                      }`
                     }
                     value={field.value || []} // Ensure value is always an array
                     onChange={(_, value) => field.onChange(value)} // Update form state
-                    isOptionEqualToValue={(option, value) => option._id === value._id} // Fix selection
+                    isOptionEqualToValue={(option, value) =>
+                      option._id === value._id
+                    } // Fix selection
                     renderOption={(props, option) => {
-                      const isSelected = (field.value || []).some((val) => val._id === option._id);
+                      const isSelected = (field.value || []).some(
+                        (val) => val._id === option._id
+                      );
                       return (
                         <li {...props}>
                           <Checkbox
@@ -354,22 +366,31 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                             checkedIcon={<CheckBoxIcon />}
                             checked={isSelected}
                           />
-                          {`${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`}
+                          {`${option?.profile?.firstname || ""} ${
+                            option?.profile?.lastname || ""
+                          }`}
                         </li>
                       );
                     }}
-                    renderInput={(params) => <TextField {...params} label="Select Users" fullWidth />}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Select Users" fullWidth />
+                    )}
                   />
                 )}
               />
             </Grid>
 
             <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2}>
-              <Button variant="outlined" color="primary" onClick={handleCancel}>
+              <Button variant="outlined" color="primary" style={{ color: "#4C79F8", borderColor: "#4C79F8" }} onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button type="submit" variant="contained" color="primary">
-                Submit
+              <Button
+                style={{ backgroundColor: "#4C79F8" }}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                {editDatas ? "Update" : "Add"}
               </Button>
             </Grid>
           </Grid>
