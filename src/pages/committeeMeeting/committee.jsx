@@ -7,8 +7,8 @@ import CustomizedTables from "../../components/tableView/table";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { set } from "react-hook-form";
-import { CommitteeList, deleteCommiteeDetails } from "../../state/redux/userApi";
-import { committeeListData } from "../../state/redux/authSlice";
+import { CommitteeList, deleteCommiteeDetails, getCommiteemeetingDetailsById } from "../../state/redux/userApi";
+import { committeebyId, committeeListData } from "../../state/redux/authSlice";
 import CloseIcon from "@mui/icons-material/Close";
 
 const User = () => {
@@ -57,24 +57,16 @@ const User = () => {
               color="primary"
               size="small"
               onClick={() => handleEdit(item)}
+              disabled={new Date(item.meetingDate) < new Date()}
             >
               <EditIcon fontSize="small" />
             </IconButton>
             <IconButton color="info" size="small" onClick={() => handleView(item)}>
               <VisibilityIcon fontSize="small" />
             </IconButton>
-            {/* <IconButton
-              color="error"
-              size="small"
-              onClick={() => handleDelete(item?._id)}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton> */}
           </div>
         ),
       }));
-
-      console.log("Formatted Table Data:", formattedData);
       setTableData(formattedData);
     }
   }, [committeeData]);
@@ -98,9 +90,22 @@ const User = () => {
   };
 
   const handleEdit = (data) => {
-    setEditData(data);
-    handleModalOpen();
+    getCommiteeMemberById(data?._id)
   };
+
+    const getCommiteeMemberById = async (value) => {
+      try {
+        const response = await getCommiteemeetingDetailsById(value);
+        console.log(response);
+        if (response?.status) {
+          dispatch(committeebyId(response));
+          setEditData(response);
+          handleModalOpen();
+        }
+      } catch (error) {
+        throw error;
+      }
+    };
 
   const handleModalOpen = () => {
     setIsModalOpen(true);

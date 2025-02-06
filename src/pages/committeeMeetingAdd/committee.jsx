@@ -30,40 +30,7 @@ import {
   committeeListData,
 } from "../../state/redux/authSlice";
 
-// const defaultValues = {
-//   isAddAttendance: true,
-//   meetingtitle: "pothu kulu kuttam",
-//   meetingDate: "13-11-2024",
-//   fineAmount: "10",
-//   status: "active",
-//   administrator: "", // Added administrator field
-//   userDetails: [
-//     {
-//       _id: "676bc769f9eaeb1e39ce6006",
-//       profile: { firstname: "நவாப்நாதன்", lastname: "செ", gender: "male" },
-//       status: "active",
-//       memberdetails: {
-//         memberType: "a-class",
-//         memberId: "A0001",
-//         userType: "full",
-//       },
-//       attendance: false,
-//     },
-//     {
-//       _id: "676bc769f9eaeb1e39ce6007",
-//       profile: { firstname: "துரைபாண்டியன்", lastname: "கி", gender: "male" },
-//       status: "active",
-//       memberdetails: {
-//         memberType: "a-class",
-//         memberId: "A0002",
-//         userType: "full",
-//       },
-//       attendance: true,
-//     },
-//   ],
-// };
 
-console.log();
 const AttendanceForm = ({ open, onClose, editDatas }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
@@ -121,12 +88,11 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
       } else {
         console.error("Invalid date:", editDatas.meetingDate);
       }
-      setValue("fineAmount", editDatas?.fineAmount || "");
-      setValue(
-        "administrator",
-        editDatas.administrator === "true" ? true : false
-      );
-      setValue("userDetails", editDatas?.userDetails || []);
+      console.log("editDatas",editDatas);
+      
+      setValue("fineAmount", editDatas?.fineAmount || "");      
+      setValue("administrator", editDatas.isAddAttendance === true ? true : false);
+      setValue("userDetails", (editDatas?.userDetails || []).filter(user => user?.attendance === true));
     }
   }, [editDatas, setValue]);
 
@@ -238,6 +204,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                     type="date"
                     label="Meeting Date"
                     fullWidth
+                    inputProps={{ min: new Date().toISOString().split("T")[0] }}
                     InputLabelProps={{ shrink: true }} // Fixes label overlap
                   />
                 )}
@@ -288,48 +255,6 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
               <Typography variant="h6">User Details</Typography>
             </Grid>
             <Grid item xs={12}>
-              {console.log(
-                committeData?.userDetails,
-                "committeData?.userDetails"
-              )}
-
-              {/* <Controller
-                name="userDetails"
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    {...field}
-                    multiple
-                    options={
-                      Array.isArray(committeData?.userDetails)
-                        ? committeData?.userDetails
-                        : []
-                    }
-                    disableCloseOnSelect
-                    getOptionLabel={(option) =>
-                      `${option?.profile?.firstname || ""} ${
-                        option?.profile?.lastname || ""
-                      }`
-                    }
-                    renderOption={(props, option, { selected }) => (
-                      <li {...props}>
-                        <Checkbox
-                          icon={<CheckBoxOutlineBlankIcon />}
-                          checkedIcon={<CheckBoxIcon />}
-                          checked={selected}
-                        />
-                        {`${option?.profile?.firstname || ""} ${
-                          option?.profile?.lastname || ""
-                        }`}
-                      </li>
-                    )}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Select Users" fullWidth />
-                    )}
-                    onChange={(_, value) => field.onChange(value)}
-                  />
-                )}
-              /> */}
               <Controller
                 name="userDetails"
                 control={control}
@@ -339,9 +264,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                     multiple
                     options={Array.isArray(committeData?.userDetails) ? committeData?.userDetails : []}
                     disableCloseOnSelect
-                    getOptionLabel={(option) =>
-                      `${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`
-                    }
+                    getOptionLabel={(option) => `${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`}
                     value={field.value || []} // Ensure value is always an array
                     onChange={(_, value) => field.onChange(value)} // Update form state
                     isOptionEqualToValue={(option, value) => option._id === value._id} // Fix selection
