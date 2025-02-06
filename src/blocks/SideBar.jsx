@@ -17,7 +17,7 @@ import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import MenuIcon from "@mui/icons-material/Menu";
-import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
+import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
 import { useNavigate } from "react-router-dom";
 
 const pages = [
@@ -56,8 +56,14 @@ const SideBar = ({ addTab }) => {
     navigate("/");
   };
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setIsDrawerOpen(open);
   };
 
   const drawerContent = (
@@ -137,15 +143,23 @@ const SideBar = ({ addTab }) => {
   return (
     <>
       {/* Menu Icon for Small Screens */}
-      {isSmallScreen && (
-        <IconButton
-          color="primary"
-          onClick={toggleDrawer}
-          style={{ position: "fixed", top: 10, left: 10 }}
-        >
-          <MenuIcon />
-        </IconButton>
-      )}
+      {isSmallScreen && !isDrawerOpen && (
+  <IconButton
+    color="primary"
+    onClick={() => setIsDrawerOpen(true)}
+    sx={{
+      position: "fixed",
+      top: 10,
+      left: 10,
+      zIndex: 1300,
+      bgcolor: "white", // Optional: Adds background for visibility
+      boxShadow: 2, // Adds a subtle shadow
+      borderRadius: "50%",
+    }}
+  >
+    <MenuIcon />
+  </IconButton>
+)}
 
       {/* Sidebar Drawer */}
       <Drawer
