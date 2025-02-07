@@ -53,7 +53,7 @@ const User = () => {
   ];
 
   const viewTableHeader = [
-    { key: "id", label: "Meeting Id" },
+    // { key: "id", label: "Meeting Id" },
     { key: "memberId", label: "Member Id" },
     { key: "name", label: "Member Name" },
     { key: "attendance", label: "Attendance" },
@@ -197,11 +197,10 @@ const User = () => {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: "90%",
-            height: "90%",
+            height: "90vh",
             bgcolor: "background.paper",
             borderRadius: 4,
             boxShadow: 24,
-            p: 4,
             overflow: "scroll",
             textAlign: "center", // Center the text
           }}
@@ -209,77 +208,104 @@ const User = () => {
           {/* Modal Header */}
           <Box
             sx={{
-              position: "relative",
+              position: "sticky",
+              top: 0,
               bgcolor: "linear-gradient(to right, #4facfe, #00f2fe)",
-              borderRadius: 3,
-              p: 3,
-              mb: 2, // Margin-bottom for spacing
+              borderRadius: "4px 4px 0 0",
+              p: 2,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              zIndex: 1,
+              
             }}
           >
-            <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>
+            <Typography variant="h6" sx={{ fontWeight: "bold",width:"100%" }}>
               Meeting Details
             </Typography>
+            <IconButton onClick={() => setIsViewModalOpen(false)}>
+              <CloseIcon />
+            </IconButton>
           </Box>
-          {/* Modal Content */}
-          <Grid
-            container
-            spacing={2}
-            sx={{
-              justifyContent: "center", // Center horizontally
-              alignItems: "center", // Center vertically
-            }}
-          >
-            {console.log(viewData, "viewData")}
-            {viewData && (
-              <>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Typography variant="body1">
-                      <strong>Meeting Id:</strong> {viewData.committeemeetingId}
-                    </Typography>
-                    <Typography variant="body1">
-                      <strong>Attendance:</strong>{" "}
-                      {viewData.isAddAttendance === true ? "Present" : "Absent"}
-                    </Typography>
-                    <Typography variant="body1">
-                      <strong>Meeting Title:</strong> {viewData.meetingtitle}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="body1">
-                      <strong>Meeting Date:</strong> {viewData.meetingDate}
-                    </Typography>
-                    <Typography variant="body1">
-                      <strong>Fine Amount:</strong> ₹{viewData.fineAmount}
-                    </Typography>
-                    <Typography variant="body1">
-                      <strong>Status:</strong> {viewData.status}
-                    </Typography>
-                  </Grid>
-                </Grid>
 
-                {
-                  <CustomizedTables
-                    data={userData}
-                    search={false}
-                    headers={viewTableHeader}
-                  />
-                }
-                <Grid item xs={12}>
-                  <Divider />
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    onClick={() => handleViewClose()}
-                    fullWidth
-                  >
-                    Close
-                  </Button>
-                </Grid>
-              </>
-            )}
-          </Grid>
+          {/* Modal Content */}
+          <Box sx={{ flex: 1, overflowY: "auto", p: 3 }}>
+            <Grid container spacing={2}>
+              {viewData && (
+                <>
+                  <Grid container spacing={3} alignItems="center">
+                    <Grid item xs>
+                      <Typography variant="caption" fontWeight="bold">
+                        Meeting Id
+                      </Typography>
+                      <Box
+                        sx={{
+                          padding: "4px 8px",
+                          fontWeight: "bold",
+                          fontSize: "14px",
+                        }}
+                      >
+                        {viewData.committeemeetingId}
+                      </Box>
+                    </Grid>
+
+                    <Grid item xs>
+                      <Typography variant="caption" fontWeight="bold">
+                        Meeting Title
+                      </Typography>
+                      <Typography variant="body2" fontWeight="bold">
+                        {viewData.meetingtitle}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs>
+                      <Typography variant="caption" fontWeight="bold">
+                        Attendance
+                      </Typography>
+                      <Typography variant="body2" fontWeight="bold">
+                        <Box
+                          sx={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 1,
+                            backgroundColor: viewData.isAddAttendance ? "#27ae6054" : "#FDEDCB",
+                            color: viewData.isAddAttendance ? "#27AE60" : "#D6940B",
+                            padding: "2px 8px",
+                            borderRadius: "12px",
+                            fontWeight: "bold",
+                            fontSize: "14px",
+                          }}
+                        >
+                          {viewData.isAddAttendance ? "Yes" : "No"}
+                        </Box>
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs>
+                      <Typography variant="caption" fontWeight="bold">
+                        Meeting Date
+                      </Typography>
+                      <Typography variant="body2" fontWeight="bold">
+                        {viewData.meetingDate}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs>
+                      <Typography variant="caption" fontWeight="bold">
+                        Fine Amount
+                      </Typography>
+                      <Typography variant="body2" fontWeight="bold">
+                        ₹{viewData.fineAmount}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+
+                  <CustomizedTables data={userData} search={false} headers={viewTableHeader} />
+
+                </>
+              )}
+            </Grid>
+          </Box>
         </Box>
       </Modal>
       <div>

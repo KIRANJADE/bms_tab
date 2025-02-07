@@ -131,9 +131,10 @@ export const CommitteeList = async (page = 1, limit = 10, payload = {}) => {
       "x-access-token": `${authToken}`,
       "Content-Type": "application/json",
     };
-    const response = await axios.get(`${BASE_URL}/api/committeemeeting/`, {
+    const response = await axios.post(`${BASE_URL}/api/committeemeeting/getAll`, payload, {
       headers,
     });
+    console.log(response.data,'response.data')
     return response.data;
   } catch (error) {
     console.error("Error fetching user list:", error);

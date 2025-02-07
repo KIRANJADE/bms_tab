@@ -136,6 +136,7 @@ const Dashboard = () => {
     setPage(1);
     dispatch(userListData({ userDetails: [], totalRecords: 0 })); // Clear previous data
     fetchUserList(1, {
+      ...({"isEdit":true}),
       ...(status && { status }),
       ...(memberType && { "memberdetails.memberType": memberType }),
       ...(gender && { "profile.gender": gender }),

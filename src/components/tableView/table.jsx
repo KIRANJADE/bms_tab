@@ -1,8 +1,6 @@
 import React from 'react';
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination,
-  Paper, Box,
-  Button
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box
 } from '@mui/material';
 
 export default function OrdersTable({ data, headers,handleModalOpen }) {
@@ -16,10 +14,10 @@ export default function OrdersTable({ data, headers,handleModalOpen }) {
   };
 
   return (
-    <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Paper sx={{ flex: 1 ,  maxHeight: '500px'}}>
-        <TableContainer sx={{ maxHeight: 'calc(100vh - 64px)', overflow: 'auto' }}>
-          <Table sx={{ minWidth: 650 }}>
+    <Box sx={{ width: '100%', height: '450px', display: 'flex', flexDirection: 'column' }}>
+      <Paper sx={{ flex: 1, maxHeight: '450px', overflow: 'hidden' }}>
+        <TableContainer sx={{ maxHeight: '450px', overflow: 'auto' }}>
+          <Table sx={{ minWidth: 650 }} stickyHeader>
             <TableHead>
               <TableRow>
                 {headers?.map((header) => (
@@ -30,6 +28,9 @@ export default function OrdersTable({ data, headers,handleModalOpen }) {
                       color: '#333333',
                       fontWeight: 'bold',
                       fontSize: '14px',
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 1000,
                     }}
                   >
                     {header.label}
@@ -41,12 +42,9 @@ export default function OrdersTable({ data, headers,handleModalOpen }) {
               {data?.map((row, rowIndex) => (
                 <TableRow key={rowIndex}>
                   {headers?.map((header) => (
-                    <>
-                    
                     <TableCell key={header.key}>
                       {row[header.key] ? row[header.key] : 'N/A'}
                     </TableCell>
-                    </>
                   ))}
                 </TableRow>
               ))}
@@ -54,16 +52,6 @@ export default function OrdersTable({ data, headers,handleModalOpen }) {
           </Table>
         </TableContainer>
       </Paper>
-      {/* Pagination if you want it */}
-      {/* <TablePagination
-        component="div"
-        count={data.length}
-        page={page}
-        onPageChange={handleChangePage}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        rowsPerPageOptions={[5, 10, 15]}
-      /> */}
     </Box>
   );
 }

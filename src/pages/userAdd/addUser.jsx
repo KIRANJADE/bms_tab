@@ -27,6 +27,7 @@ import {
 import { userCreate, userListData } from "../../state/redux/authSlice";
 import { useEffect, useState } from "react";
 import { use } from "react";
+import FamilyDetailsTables from "../../components/tableView/familydetailsTable";
 
 const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
   const {
@@ -40,6 +41,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
   } = useForm({});
 
   const [userById, setUserById] = useState([]);
+  const [familydetail, setFamilydetails] = useState([]);
 
   const { addUser, editUser } = useSelector((state) => state.auth);
   console.log(editUser, "editUser");
@@ -60,6 +62,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     "பொருளாளர்",
     "கணக்கர்",
     "செயலாளர்",
+    "Member"
   ];
 
   const chitCommitteePositionOptions = ["தலைவர்", "பொருளாளர்", "கணக்கர்"];
@@ -193,7 +196,8 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
   const fetchUsersById = async () => {
     const response = await getUserById(cardsUserId);
     console.log(response, "myresss");
-    setUserById(response?.data);
+    setUserById(response?.data?.user);
+    setFamilydetails(response?.data?.familymembersdetails)
   };
 
   const cancelUserForm = () => {
@@ -854,6 +858,14 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 {...register("remarks")}
                 slotProps={{ inputLabel: { shrink: true } }}
               />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <Typography id="add-new-modal-title" component="h6">
+                Family Details
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <FamilyDetailsTables data={familydetail} search={false}/>
             </Grid>
           </Grid>
 

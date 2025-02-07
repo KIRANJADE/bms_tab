@@ -26,7 +26,13 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
   const [anchorEl, setAnchorEl] = useState(null);
   const [isresetCancelEditFlag, setIsResetCancelEditFlag] = useState(false);
 
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleEditUsers = () => {
     setIsResetCancelEditFlag(true)
@@ -42,53 +48,63 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="user-details-modal">
-    <Box
-      sx={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: "90%",
-        maxWidth: 500,
-        bgcolor: "background.paper",
-        borderRadius: 4,
-        boxShadow: 24,
-        p: 4,
-        overflow: "hidden",
-      }}
-    >
-      {/* Modal Header */}
       <Box
         sx={{
-          textAlign: "center",
-          position: "relative",
-          bgcolor: "linear-gradient(to right, #4facfe, #00f2fe)",
-          borderRadius: 3,
-          p: 3,
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "90%",
+          maxWidth: 500,
+          bgcolor: "background.paper",
+          borderRadius: 4,
+          boxShadow: 24,
+          p: 4,
+          overflow: "hidden",
         }}
       >
+        {/* Modal Header */}
+        <Box
+          sx={{
+            textAlign: "center",
+            position: "relative",
+            bgcolor: "linear-gradient(to right, #4facfe, #00f2fe)",
+            borderRadius: 3,
+            p: 3,
+          }}
+        >
         {/* Close Button */}
         <IconButton
           sx={{ position: "absolute", top: 8, right: 8, color: "white" }}
           onClick={onClose}
-        >
+          >
           <CloseIcon />
-        </IconButton>
-  
-        <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>
-          {userDetails?.profile?.firstname} {userDetails?.profile?.lastname}
-        </Typography>
-        <Typography variant="subtitle1">
-          Member ID: {userDetails?.memberdetails?.memberId}
-        </Typography>
-      </Box>
-  
-      {/* Modal Content */}
-      <Grid container spacing={2} sx={{ mt: 2 }}>
-        <Grid item xs={12}>
-          <Divider />
-        </Grid>
-  
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={() => handleEditUsers()}>
+              Edit
+            </MenuItem>
+            <MenuItem onClick={() => handleDelete(userDetails?._id)}>Delete</MenuItem>
+          </Menu> 
+
+          <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>
+            {userDetails?.profile?.firstname} {userDetails?.profile?.lastname}
+          </Typography>
+          <Typography variant="subtitle1">
+            Member ID: {userDetails?.memberdetails?.memberId}
+          </Typography>
+        </Box>
+
+        {/* Modal Content */}
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+
         {userDetails?.profile?.phoneno && (
           <Grid item xs={12} sm={6}>
             <Box display="flex" alignItems="center" gap={1}>
@@ -99,7 +115,7 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
             </Box>
           </Grid>
         )}
-  
+
         {userDetails?.profile?.dob && (
           <Grid item xs={12} sm={6}>
             <Box display="flex" alignItems="center" gap={1}>
@@ -110,25 +126,25 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
             </Box>
           </Grid>
         )}
-  
-        <Grid item xs={12} sm={6}>
-          <Box display="flex" alignItems="center" gap={1}>
-            {genderIcon}
-            <Typography variant="body1">
-              <strong>Gender:</strong> {userDetails?.profile?.gender}
-            </Typography>
-          </Box>
-        </Grid>
-  
-        <Grid item xs={12} sm={6}>
-          <Box display="flex" alignItems="center" gap={1}>
-            <AccountBalanceWalletIcon color="success" />
-            <Typography variant="body1">
+
+          <Grid item xs={12} sm={6}>
+            <Box display="flex" alignItems="center" gap={1}>
+              {genderIcon}
+              <Typography variant="body1">
+                <strong>Gender:</strong> {userDetails?.profile?.gender}
+              </Typography>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <Box display="flex" alignItems="center" gap={1}>
+              <AccountBalanceWalletIcon color="success" />
+              <Typography variant="body1">
               <strong>Balance:</strong> ₹{userDetails?.balance || "0"}
-            </Typography>
-          </Box>
-        </Grid>
-  
+              </Typography>
+            </Box>
+          </Grid>
+
         {userDetails?.profile?.fathername && (
           <Grid item xs={12} sm={6}>
             <Box display="flex" alignItems="center" gap={1}>
@@ -139,27 +155,33 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
             </Box>
           </Grid>
         )}
-  
-        <Grid item xs={12} sm={6}>
-          <Box display="flex" alignItems="center" gap={1}>
-            <FamilyRestroomIcon color="secondary" />
-            <Typography variant="body1">
+
+          <Grid item xs={12} sm={6}>
+            <Box display="flex" alignItems="center" gap={1}>
+              <FamilyRestroomIcon color="secondary" />
+              <Typography variant="body1">
               <strong>Mother's Name:</strong> {userDetails?.profile?.mothername}
-            </Typography>
-          </Box>
+              </Typography>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+          <Grid item xs={12} justifyContent="space-between">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {}}
+              style={{ marginRight: "10px" }}
+            >
+              View User
+            </Button>
+            <Button variant="contained" onClick={() => handleEditUsers()} >Edit User</Button>
+          </Grid>
         </Grid>
-  
-        <Grid item xs={12}>
-          <Divider />
-        </Grid>
-        <Grid item xs={12}>
-          <Button variant="contained" style={{ backgroundColor: "#4c79f8", color: "white" }} onClick={() => handleEditUsers()} fullWidth>
-            Edit User
-          </Button>
-        </Grid>
-      </Grid>
-    </Box>
-  </Modal>
+      </Box>
+    </Modal>
   );
 };
 

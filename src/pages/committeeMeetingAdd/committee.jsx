@@ -65,7 +65,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
       });
 
       if (response.status) {
-        dispatch(committeeListData(response.userDetails));
+        dispatch(committeeListData(response.committeemeetingDetails));
         // setTotalPages(response.totalPages);
       }
     } catch (error) {
@@ -227,7 +227,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                 render={({ field }) => (
                   <FormControl component="fieldset">
                     <FormLabel component="legend">
-                      isAttendance Required
+                      Is Attendance Required
                     </FormLabel>
                     <RadioGroup
                       row

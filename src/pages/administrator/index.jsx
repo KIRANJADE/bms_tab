@@ -4,28 +4,11 @@ import CustomizedTables from "../../components/tableView/administratorTable";
 import { administratorsList } from "../../state/redux/userApi";
 import { useDispatch, useSelector } from "react-redux";
 import { administratorData } from "../../state/redux/authSlice";
-const ordersData = [
-  {
-    memberId: "100/000/0156",
-    lastname: "ரா",
-    firstname: "சத்யரூபன்",
-    position: "தலைவர்",
-    phoneno: "9789453541",
-  },
-  {
-    memberId: "100/000/0157",
-    lastname: "நா",
-    firstname: "சதாசிவம்",
-    position: "துணைத்தலைவர்",
-    phoneno: "9488073868",
-  },
-];
+
 const index = () => {
   const dispatch = useDispatch();
 
   const adminData = useSelector((state) => state.auth?.adminData);
-  console.log(adminData,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-  
 
   useEffect(() => {
     fetchAdministratorsList();
@@ -45,7 +28,7 @@ const index = () => {
 
   return (
     <div>
-      {/* <h4>Administrator List</h4> */}
+      <h5>Administrator List</h5>
       <CustomizedTables data={adminData} search={false}/>
     </div>
   );
