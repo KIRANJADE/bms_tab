@@ -85,7 +85,7 @@ const ParentComponent = () => {
     try {
       let response;
       if (editData && editData._id) {
-        response = await editChanthafee(editData?._id);
+        response = await editChanthafee(editData?._id,editData);
         setChanthaData((prevData) => prevData.map((item) => (item.id === editData.id ? response : item)));
       } else {
         response = await createChanthafee(data);

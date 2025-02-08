@@ -377,7 +377,7 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 	  }
 	};
 
-  export const editChanthafee = async (id) => {
+  export const editChanthafee = async (id,requestParams) => {
 	  try {
 		const authToken = JSON.parse(localStorage.getItem("authToken"));
 		const headers = {
@@ -386,7 +386,7 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 		};  
     console.log(headers,"headerssss");
     
-		const response = await axios.get(`${BASE_URL}/api/chanthafee/${id}`, {
+		const response = await axios.put(`${BASE_URL}/api/chanthafee/${id}`,requestParams, {
 		  headers,
 		});
     
