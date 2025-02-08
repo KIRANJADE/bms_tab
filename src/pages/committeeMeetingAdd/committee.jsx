@@ -14,6 +14,7 @@ import {
   FormControl,
   FormLabel,
   Checkbox,
+  CircularProgress,
 } from "@mui/material";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
@@ -34,6 +35,8 @@ import {
 const AttendanceForm = ({ open, onClose, editDatas }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
+  const [loading, setLoading] = useState(false);
+
   const { handleSubmit, control, reset, setValue } = useForm();
 
   const committeData = useSelector((state) => state.auth.committeData);
@@ -98,13 +101,13 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
 
   console.log(editDatas, "editDatas");
 
+
   const onSubmit = async (data) => {
+    setLoading(true); // Start loader
     const updatedUserDetails = committeData?.userDetails.map((user) => {
-      // Check if the user is selected in the dropdown
       const isSelected = data.userDetails.some(
         (selectedUser) => selectedUser._id === user._id
       );
-
       return {
         _id: user._id,
         profile: {
@@ -121,41 +124,37 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
         attendance: isSelected, // Set attendance to true if selected, else false
       };
     });
-
+  
     const payload = {
       isAddAttendance: true,
       meetingtitle: data.meetingtitle,
       meetingDate: data.meetingDate,
       fineAmount: data.fineAmount,
       status: "active",
-      // _id: editDatas?._id,
       userDetails: updatedUserDetails,
     };
-
+  
     try {
+      let response;
       if (editDatas && editDatas._id) {
-        // Edit existing committee meeting
-        const response = await editCommiteeMeeting(editDatas?._id, payload);
-        if (response?.status || response?.ok) {
-          await fetchCommitteeList();
-          handleCancel();
-        } else {
-          throw new Error("Unexpected response format while editing.");
-        }
+        response = await editCommiteeMeeting(editDatas._id, payload);
       } else {
-        // Create new committee meeting
-        const response = await createCommitteMeeting(payload);
-        if (response?.status || response?.ok) {
-          await fetchCommitteeList();
-          handleCancel();
-        } else {
-          throw new Error("Unexpected response format while creating.");
-        }
+        response = await createCommitteMeeting(payload);
+      }
+  
+      if (response?.status || response?.ok) {
+        await fetchCommitteeList();
+        handleCancel();
+      } else {
+        throw new Error("Unexpected response format.");
       }
     } catch (error) {
       console.error("Error in add/edit committee meeting:", error);
+    } finally {
+      setLoading(false); // Stop loader after API call
     }
   };
+  
 
   const handleCancel = useCallback(() => {
     reset(); // Reset form values
@@ -305,14 +304,29 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
               <Button variant="outlined" color="primary" style={{ color: "#4C79F8", borderColor: "#4C79F8" }} onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button
-                style={{ backgroundColor: "#4C79F8" }}
+              {/* <Button
+                style={{ backgroundColor: "#4C79F8",color:"white" }}
                 variant="contained"
                 color="primary"
                 type="submit"
+                disabled={loading} // Disable button when loading
               >
-                {editDatas ? "Update" : "Add"}
-              </Button>
+                {loading ? "Processing..." : editDatas ? "Update" : "Add"}
+              </Button> */}
+              <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={loading}
+              sx={{ minWidth: 100, position: "relative" }} // Ensures consistent button size
+            >
+              {loading ?  (
+                <>
+               <span style={{color:"black"}}>Processing...</span> 
+                <CircularProgress size={20} sx={{ color: "black" }} />
+                </>
+              ) : editDatas ? "Update" : "Add"}
+            </Button>
             </Grid>
           </Grid>
         </form>

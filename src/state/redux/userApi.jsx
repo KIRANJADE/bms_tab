@@ -316,6 +316,109 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 	  }
 	};
 
+  export const createChanthafee = async (requestParams) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.post(`${BASE_URL}/api/chanthafee`,requestParams, {
+		  headers,
+		});
+    console.log(response,"hghghgh");
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const getAllChanthafee = async () => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.get(`${BASE_URL}/api/chanthafee`, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const getChanthafeeById = async (id) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.get(`${BASE_URL}/api/chanthafee/${id}`, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const editChanthafee = async (id) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.get(`${BASE_URL}/api/chanthafee/${id}`, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const deleteChanthafee = async (id) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.delete(`${BASE_URL}/api/chanthafee/${id}`, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+
+
 
 
   
