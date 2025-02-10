@@ -7,9 +7,9 @@ import User from "../pages/committeeMeeting/committee";
 import Chantha from "../pages/chantha/chantha";
 import Events from "../pages/events/index";
 import "../assets/css/common.css";
-import { userList, CommitteeList } from "../state/redux/userApi";
+import { userList, CommitteeList, getAllEvents } from "../state/redux/userApi";
 import { useDispatch } from "react-redux";
-import { userListData, committeeListData } from "../state/redux/authSlice";
+import { userListData, committeeListData, eventsList } from "../state/redux/authSlice";
 import { Pagination, Stack } from "@mui/material";
 import Home from "../pages/homePage";
 import { useMediaQuery } from "@mui/material";
@@ -64,10 +64,31 @@ const DashboardLayout = () => {
       setLoading(false);
     }
   };
+  const fetchEventsList = async (payload) => {
+    // setLoading(true);
+
+    try {
+      const response = await getAllEvents(payload );
+
+      if (response.status) {
+        dispatch(eventsList(response?.eventDetails));
+        // setTotalPages(response.totalPages);
+      }
+    } catch (error) {
+      setError("Failed to fetch user data");
+    } finally {
+      // setLoading(false);
+    }
+  };
 
   useEffect(() => {
+    let payload = {
+      page: 1,
+      limit: 12,
+    }
     fetchUserList();
     fetchCommitteeList();
+    fetchEventsList(payload)
   }, [page, limit]);
 
   const handlePageChange = (event, newPage) => {

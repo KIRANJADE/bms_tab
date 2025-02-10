@@ -337,7 +337,7 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 	  }
 	};
 
-  export const getAllChanthafee = async () => {
+  export const getAllChanthafee = async (payload) => {
 	  try {
 		const authToken = JSON.parse(localStorage.getItem("authToken"));
 		const headers = {
@@ -346,7 +346,7 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 		};  
     console.log(headers,"headerssss");
     
-		const response = await axios.get(`${BASE_URL}/api/chanthafee`, {
+		const response = await axios.post(`${BASE_URL}/api/chanthafee/getall`,payload, {
 		  headers,
 		});
     
@@ -409,6 +409,85 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
       ...requestParams,
     }
 		const response = await axios.delete(`${BASE_URL}/api/chanthafee/${id}`,config);
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const getAllEvents = async (payload) => {
+    console.log(payload, "ksdjkshdjhd")
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.post(`${BASE_URL}/api/events/getall`,payload, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const createEvents = async (requestParams) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    
+		const response = await axios.post(`${BASE_URL}/api/events/`,requestParams, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const editEvents = async (id,requestParams) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    
+		const response = await axios.put(`${BASE_URL}/api/events/${id}`,requestParams, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const getEventById = async (id) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.get(`${BASE_URL}/api/events/${id}`, {
+		  headers,
+		});
     
 		return response.data;
 	

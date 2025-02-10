@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Grid, Grid2, MenuItem, Modal, Select, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Grid2,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+} from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import ChanthaTable from "../../components/tableView/chanthaTable";
 import {
@@ -15,7 +24,7 @@ const ParentComponent = () => {
   const [open, setOpen] = useState(false);
   const [chanthaData, setChanthaData] = useState([]);
   const [editData, setEditData] = useState({});
-  const [editStatus, setEditStatus]= useState("active");
+  const [editStatus, setEditStatus] = useState("active");
   const { control, handleSubmit, setValue, reset } = useForm();
   const dispatch = useDispatch();
 
@@ -32,7 +41,11 @@ const ParentComponent = () => {
 
   const fetchAllChanthaFeeDetails = async () => {
     try {
-      const response = await getAllChanthafee();
+      let payload = {
+        page: 1,
+        limit: 10,
+      };
+      const response = await getAllChanthafee(payload);
       if (response) {
         dispatch(chanthaList(response));
       }
@@ -43,17 +56,17 @@ const ParentComponent = () => {
 
   const handleDelete = async (data) => {
     let payload = {
-      "remark": "test delete"
-    }
+      remark: "test delete",
+    };
     try {
-      const response = await deleteChanthafee(data?._id, payload)
+      const response = await deleteChanthafee(data?._id, payload);
       if (response) {
         fetchAllChanthaFeeDetails();
       }
     } catch (error) {
-      throw error
+      throw error;
     }
-  }
+  };
 
   const handleOpen = (data = null) => {
     setEditData(data);
@@ -62,7 +75,7 @@ const ParentComponent = () => {
       setValue("chanthaId", data.chanthaId);
 
       // Convert DD/MM/YYYY to YYYY-MM-DD
-      console.log(data.effectiveDate,'data.effectiveDate')
+      console.log(data.effectiveDate, "data.effectiveDate");
       if (data.effectiveDate) {
         const dateParts = data.effectiveDate.split("-"); // Split the date
         if (dateParts.length === 3) {
@@ -78,13 +91,11 @@ const ParentComponent = () => {
     setOpen(true);
   };
 
-
   const handleClose = () => {
     setOpen(false);
     reset();
     setEditData({});
   };
-
 
   const onSubmit = async (data) => {
     try {
@@ -95,7 +106,9 @@ const ParentComponent = () => {
           status: editStatus,
         };
         response = await editChanthafee(editData?._id, updatedData);
-        setChanthaData((prevData) => prevData.map((item) => (item.id === editData.id ? response : item)));
+        setChanthaData((prevData) =>
+          prevData.map((item) => (item.id === editData.id ? response : item))
+        );
       } else {
         response = await createChanthafee(data);
         setChanthaData((prevData) => [...prevData, response]);
@@ -131,7 +144,6 @@ const ParentComponent = () => {
       </Grid2>
 
       <Modal open={open} onClose={handleClose}>
-
         <Box
           sx={{
             position: "absolute",
@@ -145,25 +157,27 @@ const ParentComponent = () => {
             borderRadius: 2,
           }}
         >
-          <h5 style={{ "marginBottom": "20px" }}>{editData._id ? "Edit Chantha" : "Add Chantha"}</h5>
+          <h5 style={{ marginBottom: "20px" }}>
+            {editData._id ? "Edit Chantha" : "Add Chantha"}
+          </h5>
           <form onSubmit={handleSubmit(onSubmit)}>
             {editData._id && (
               <Controller
-              name="chanthaId"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Chantha Id"
-                  fullWidth
-                  margin="normal"
-                  type="text"
-                  required
-                  disabled              
-                />
-              )}
-            />
+                name="chanthaId"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Chantha Id"
+                    fullWidth
+                    margin="normal"
+                    type="text"
+                    required
+                    disabled
+                  />
+                )}
+              />
             )}
             <Controller
               name="chanthaamount"
@@ -198,20 +212,20 @@ const ParentComponent = () => {
               )}
             />
             {editData._id && (
-  <Select
-    fullWidth
-    style={{ marginTop: "15px", marginBottom: "15px" }}
-    value={editStatus || editData.status || ""}
-    onChange={(e) => {
-      const newStatus = e.target.value;
-      setEditStatus(newStatus);
-      setEditData((prev) => ({ ...prev, status: newStatus })); // Update editData state
-    }}
-  >
-    <MenuItem value="active">Active</MenuItem>
-    <MenuItem value="inactive">Inactive</MenuItem>
-  </Select>
-)}
+              <Select
+                fullWidth
+                style={{ marginTop: "15px", marginBottom: "15px" }}
+                value={editStatus || editData.status || ""}
+                onChange={(e) => {
+                  const newStatus = e.target.value;
+                  setEditStatus(newStatus);
+                  setEditData((prev) => ({ ...prev, status: newStatus })); // Update editData state
+                }}
+              >
+                <MenuItem value="active">Active</MenuItem>
+                <MenuItem value="inactive">Inactive</MenuItem>
+              </Select>
+            )}
             <Box
               sx={{
                 display: "flex",
