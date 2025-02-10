@@ -397,18 +397,18 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 	  }
 	};
 
-  export const deleteChanthafee = async (id) => {
+  export const deleteChanthafee = async (id,requestParams) => {
 	  try {
 		const authToken = JSON.parse(localStorage.getItem("authToken"));
 		const headers = {
 		  "x-access-token": `${authToken}`,
 		  "Content-Type": "application/json",
-		};  
-    console.log(headers,"headerssss");
-    
-		const response = await axios.delete(`${BASE_URL}/api/chanthafee/${id}`, {
-		  headers,
-		});
+		};
+    const config = {
+      headers,
+      ...requestParams,
+    }
+		const response = await axios.delete(`${BASE_URL}/api/chanthafee/${id}`,config);
     
 		return response.data;
 	

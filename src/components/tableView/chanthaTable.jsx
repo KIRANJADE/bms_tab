@@ -26,6 +26,19 @@ const chanthaTable = ({ data, onEdit, onDelete }) => {
       <Table>
         <TableHead sx={{ backgroundColor: "white" }}>
           <TableRow>
+          <TableCell
+              sx={{
+                backgroundColor: "#f5f5f5",
+                color: "#333333",
+                fontWeight: "bold",
+                fontSize: "14px",
+                position: "sticky",
+                top: 0,
+                zIndex: 1000,
+              }}
+            >
+              Chantha Id
+            </TableCell>
             <TableCell
               sx={{
                 backgroundColor: "#f5f5f5",
@@ -63,6 +76,19 @@ const chanthaTable = ({ data, onEdit, onDelete }) => {
                 zIndex: 1000,
               }}
             >
+              Status
+            </TableCell>
+            <TableCell
+              sx={{
+                backgroundColor: "#f5f5f5",
+                color: "#333333",
+                fontWeight: "bold",
+                fontSize: "14px",
+                position: "sticky",
+                top: 0,
+                zIndex: 1000,
+              }}
+            >
               Actions
             </TableCell>
           </TableRow>
@@ -70,14 +96,24 @@ const chanthaTable = ({ data, onEdit, onDelete }) => {
         <TableBody>
           {data?.map((row, index) => (
             <TableRow key={index}>
+              <TableCell>{row?.chanthaId}</TableCell>
               <TableCell>{row?.chanthaamount}</TableCell>
               <TableCell>{row?.effectiveDate}</TableCell>
+              <TableCell>{row.status ? row.status.charAt(0).toUpperCase() + row.status.slice(1) : ''}</TableCell>
               <TableCell>
-                <IconButton color="primary">
-                  <Edit onClick={() => onEdit(row)} />
+                <IconButton 
+                  color="primary" 
+                  onClick={() => onEdit(row)} 
+                  disabled={row?.status !== "active"}
+                >
+                  <Edit />
                 </IconButton>
-                <IconButton color="secondary">
-                  <Delete onClick={() => onDelete(row)} />
+                <IconButton 
+                  color="secondary" 
+                  onClick={() => onDelete(row)} 
+                  disabled={row?.status !== "active"}
+                >
+                  <Delete />
                 </IconButton>
               </TableCell>
             </TableRow>

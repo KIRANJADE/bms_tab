@@ -1,16 +1,5 @@
 import React, { useState } from "react";
-import {
-  Modal,
-  Box,
-  Typography,
-  Avatar,
-  Divider,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-  Button,
-} from "@mui/material";
+import {Modal,Box,Typography,Avatar,Divider,Grid,IconButton,Menu,MenuItem,Button} from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PersonIcon from "@mui/icons-material/Person";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -48,22 +37,8 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="user-details-modal">
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "90%",
-          maxWidth: 500,
-          bgcolor: "background.paper",
-          borderRadius: 4,
-          boxShadow: 24,
-          p: 4,
-          overflow: "hidden",
-        }}
-      >
-        {/* Modal Header */}
+      <Box sx={{ position: "absolute", top: "50%",left: "50%", transform: "translate(-50%, -50%)", width: "90%",
+          maxWidth: 500,bgcolor: "background.paper",borderRadius: 4, boxShadow: 24, p: 4, overflow: "hidden",}}>
         <Box
           sx={{
             textAlign: "center",

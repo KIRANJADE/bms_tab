@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Grid, Grid2, Modal, TextField } from "@mui/material";
+import { Box, Button, Grid, Grid2, MenuItem, Modal, Select, TextField } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import ChanthaTable from "../../components/tableView/chanthaTable";
 import {
@@ -15,6 +15,7 @@ const ParentComponent = () => {
   const [open, setOpen] = useState(false);
   const [chanthaData, setChanthaData] = useState([]);
   const [editData, setEditData] = useState({});
+  const [editStatus, setEditStatus]= useState("active");
   const { control, handleSubmit, setValue, reset } = useForm();
   const dispatch = useDispatch();
 
@@ -40,10 +41,12 @@ const ParentComponent = () => {
     }
   };
 
-  const handleDelete = async(data) => {
-    console.log(data);
+  const handleDelete = async (data) => {
+    let payload = {
+      "remark": "test delete"
+    }
     try {
-      const response = await deleteChanthafee(data?._id)
+      const response = await deleteChanthafee(data?._id, payload)
       if (response) {
         fetchAllChanthaFeeDetails();
       }
@@ -56,10 +59,12 @@ const ParentComponent = () => {
     setEditData(data);
     if (data) {
       setValue("chanthaamount", data.chanthaamount);
-  
+      setValue("chanthaId", data.chanthaId);
+
       // Convert DD/MM/YYYY to YYYY-MM-DD
+      console.log(data.effectiveDate,'data.effectiveDate')
       if (data.effectiveDate) {
-        const dateParts = data.effectiveDate.split("/"); // Split the date
+        const dateParts = data.effectiveDate.split("-"); // Split the date
         if (dateParts.length === 3) {
           const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // Rearrange to YYYY-MM-DD
           setValue("effectiveDate", formattedDate);
@@ -72,7 +77,7 @@ const ParentComponent = () => {
     }
     setOpen(true);
   };
-  
+
 
   const handleClose = () => {
     setOpen(false);
@@ -85,7 +90,11 @@ const ParentComponent = () => {
     try {
       let response;
       if (editData && editData._id) {
-        response = await editChanthafee(editData?._id,editData);
+        const updatedData = {
+          chanthaamount: data?.chanthaamount,
+          status: editStatus,
+        };
+        response = await editChanthafee(editData?._id, updatedData);
         setChanthaData((prevData) => prevData.map((item) => (item.id === editData.id ? response : item)));
       } else {
         response = await createChanthafee(data);
@@ -117,11 +126,12 @@ const ParentComponent = () => {
         <ChanthaTable
           data={chanthaListData?.chanthafeeDetails}
           onEdit={handleOpen}
-          onDelete = {handleDelete}
+          onDelete={handleDelete}
         />
       </Grid2>
 
       <Modal open={open} onClose={handleClose}>
+
         <Box
           sx={{
             position: "absolute",
@@ -135,7 +145,26 @@ const ParentComponent = () => {
             borderRadius: 2,
           }}
         >
+          <h5 style={{ "marginBottom": "20px" }}>{editData._id ? "Edit Chantha" : "Add Chantha"}</h5>
           <form onSubmit={handleSubmit(onSubmit)}>
+            {editData._id && (
+              <Controller
+              name="chanthaId"
+              control={control}
+              defaultValue=""
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Chantha Id"
+                  fullWidth
+                  margin="normal"
+                  type="text"
+                  required
+                  disabled              
+                />
+              )}
+            />
+            )}
             <Controller
               name="chanthaamount"
               control={control}
@@ -146,6 +175,7 @@ const ParentComponent = () => {
                   label="Chantha Amount"
                   fullWidth
                   margin="normal"
+                  type="number"
                   required
                 />
               )}
@@ -162,10 +192,26 @@ const ParentComponent = () => {
                   fullWidth
                   margin="normal"
                   required
+                  disabled={editData._id ? true : false}
                   InputLabelProps={{ shrink: true }}
                 />
               )}
             />
+            {editData._id && (
+  <Select
+    fullWidth
+    style={{ marginTop: "15px", marginBottom: "15px" }}
+    value={editStatus || editData.status || ""}
+    onChange={(e) => {
+      const newStatus = e.target.value;
+      setEditStatus(newStatus);
+      setEditData((prev) => ({ ...prev, status: newStatus })); // Update editData state
+    }}
+  >
+    <MenuItem value="active">Active</MenuItem>
+    <MenuItem value="inactive">Inactive</MenuItem>
+  </Select>
+)}
             <Box
               sx={{
                 display: "flex",
