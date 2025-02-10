@@ -29,9 +29,7 @@ import {
 } from "../../state/redux/userApi";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  committeCommonData,
-  committeeListData,
-  eventsList,
+ eventsList,
 } from "../../state/redux/authSlice";
 
 const AttendanceForm = ({ open, onClose, editDatas }) => {
@@ -242,7 +240,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                     <span style={{ color: "black" }}>Processing...</span>
                     <CircularProgress size={20} sx={{ color: "black" }} />
                   </>
-                ) : editDatas ? (
+                ) : editDatas?._id ? (
                   "Update"
                 ) : (
                   "Add"

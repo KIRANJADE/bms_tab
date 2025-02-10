@@ -94,20 +94,23 @@ const Events = () => {
               color="primary"
               size="small"
               onClick={() => handleEdit(item)}
-              disabled={new Date(item.meetingDate) < new Date()}
+              disabled={!!item.isalreadyAdded || new Date(item.meetingDate) < new Date()}
             >
               <EditIcon fontSize="small" />
             </IconButton>
             <IconButton
               color="error"
               size="small"
+              disabled={item.isalreadyAdded}
               onClick={() => handleDelete(item?._id)}
+              
             >
               <DeleteIcon fontSize="small" />
             </IconButton>
             <IconButton
               color="success"
               size="small"
+              disabled={item.isalreadyAdded}
               onClick={() => handlePublicity(item)}
             >
               <PublicIcon fontSize="small" />
