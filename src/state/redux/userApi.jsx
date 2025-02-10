@@ -496,6 +496,45 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 	  }
 	};
 
+  export const deleteEvents = async (id,requestParams) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};
+    const config = {
+      headers,
+      ...requestParams,
+    }
+		const response = await axios.delete(`${BASE_URL}/api/events/${id}`,config);
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const publishEvents = async (requestParams) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    
+		const response = await axios.post(`${BASE_URL}/api/events/publisheventsamount`,requestParams, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
 
 
 

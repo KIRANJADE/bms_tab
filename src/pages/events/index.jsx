@@ -19,10 +19,17 @@ import {
   getAllEvents,
   deleteCommiteeDetails,
   getEventById,
+  deleteEvents,
+  publishEvents,
 } from "../../state/redux/userApi";
-import { committeebyId, eventById, eventsList } from "../../state/redux/authSlice";
+import {
+  committeebyId,
+  eventById,
+  eventsList,
+} from "../../state/redux/authSlice";
 import CloseIcon from "@mui/icons-material/Close";
-import { Feed } from "@mui/icons-material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PublicIcon from "@mui/icons-material/Public";
 
 const Events = () => {
   const [editingCard, setEditingCard] = React.useState(null);
@@ -52,7 +59,6 @@ const Events = () => {
     { key: "fee", label: "late Fee" },
     { key: "status", label: "Status" }, // Added actions column
     { key: "actions", label: "Actions" }, // Added actions column
-
   ];
 
   const viewTableHeader = [
@@ -72,7 +78,7 @@ const Events = () => {
   };
 
   useEffect(() => {
-    console.log(eventListData, "eventListData")
+    console.log(eventListData, "eventListData");
     if (eventListData && eventListData.length > 0) {
       const formattedData = eventListData.map((item) => ({
         id: item?.eventId,
@@ -93,11 +99,18 @@ const Events = () => {
               <EditIcon fontSize="small" />
             </IconButton>
             <IconButton
-              color="info"
+              color="error"
               size="small"
-              onClick={() => handleView(item)}
+              onClick={() => handleDelete(item?._id)}
             >
-              <VisibilityIcon fontSize="small" />
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              color="success"
+              size="small"
+              onClick={() => handlePublicity(item)}
+            >
+              <PublicIcon fontSize="small" />
             </IconButton>
           </div>
         ),
@@ -134,8 +147,8 @@ const Events = () => {
       console.log(response);
       if (response?.status) {
         dispatch(eventById(response));
-          setEditData(response);
-          handleModalOpen();
+        setEditData(response);
+        handleModalOpen();
       }
     } catch (error) {
       throw error;
@@ -158,7 +171,20 @@ const Events = () => {
   const handleDelete = async (id) => {
     console.log(id, "wghgdwhgd");
     try {
-      const response = await deleteCommiteeDetails(id);
+      const response = await deleteEvents(id);
+      if (response?.status) {
+        fetchEventsList();
+      }
+    } catch (error) {}
+    setEditingCard(null);
+  };
+
+  const handlePublicity = async (item) => {
+    try {
+      let payload = {
+        eventId: item.eventId,
+      }
+      const response = await publishEvents(payload);
       if (response?.status) {
         fetchEventsList();
       }
@@ -207,10 +233,9 @@ const Events = () => {
               justifyContent: "space-between",
               alignItems: "center",
               zIndex: 1,
-              
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: "bold",width:"100%" }}>
+            <Typography variant="h6" sx={{ fontWeight: "bold", width: "100%" }}>
               Meeting Details
             </Typography>
             <IconButton onClick={() => setIsViewModalOpen(false)}>
@@ -258,8 +283,12 @@ const Events = () => {
                             display: "inline-flex",
                             alignItems: "center",
                             gap: 1,
-                            backgroundColor: viewData.isAddAttendance ? "#27ae6054" : "#FDEDCB",
-                            color: viewData.isAddAttendance ? "#27AE60" : "#D6940B",
+                            backgroundColor: viewData.isAddAttendance
+                              ? "#27ae6054"
+                              : "#FDEDCB",
+                            color: viewData.isAddAttendance
+                              ? "#27AE60"
+                              : "#D6940B",
                             padding: "2px 8px",
                             borderRadius: "12px",
                             fontWeight: "bold",
@@ -290,8 +319,11 @@ const Events = () => {
                     </Grid>
                   </Grid>
 
-                  <CustomizedTables data={userData} search={false} headers={viewTableHeader} />
-
+                  <CustomizedTables
+                    data={userData}
+                    search={false}
+                    headers={viewTableHeader}
+                  />
                 </>
               )}
             </Grid>
@@ -316,7 +348,12 @@ const Events = () => {
           </Button>
         </Box>
         <Grid container spacing={1}>
-          <CustomizedTables data={tableData} search={false} headers={headers} height={"300px"} />
+          <CustomizedTables
+            data={tableData}
+            search={false}
+            headers={headers}
+            height={"300px"}
+          />
         </Grid>
       </div>
     </>
