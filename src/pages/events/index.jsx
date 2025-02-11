@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import ActionCard from "../../components/cardList/card";
 import {
   Grid,
   Box,
@@ -13,23 +12,19 @@ import EventsPopup from "../eventsForm/index";
 import { useDispatch, useSelector } from "react-redux";
 import CustomizedTables from "../../components/tableView/table";
 import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { set } from "react-hook-form";
 import {
   getAllEvents,
-  deleteCommiteeDetails,
   getEventById,
   deleteEvents,
   publishEvents,
 } from "../../state/redux/userApi";
 import {
-  committeebyId,
   eventById,
   eventsList,
 } from "../../state/redux/authSlice";
-import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PublicIcon from "@mui/icons-material/Public";
+import ConfirmationPopup from "../../components/confirmationPopup";
 
 const Events = () => {
   const [editingCard, setEditingCard] = React.useState(null);
@@ -38,47 +33,28 @@ const Events = () => {
   const [isEditData, setEditData] = React.useState([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [viewData, setViewData] = useState(null);
   const [userData, setUserData] = useState([]);
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const [actionType, setActionType] = useState(null);
 
   const eventListData = useSelector((state) => state.auth?.eventsData || []);
-  const committeeByIdData = useSelector(
-    (state) => state.auth?.committeId || []
-  );
+
   const dispatch = useDispatch();
 
-  console.log(eventListData, "committeeData");
 
   const headers = [
     { key: "id", label: "Event Id" },
     { key: "name", label: "Event Name" },
-    { key: "date", label: "start Date" }, // Changed from 'payment' to 'date'
+    { key: "date", label: "start Date" }, 
     { key: "endDate", label: "End Date" },
     { key: "amount", label: "Amount" },
     { key: "fee", label: "late Fee" },
-    { key: "status", label: "Status" }, // Added actions column
-    { key: "actions", label: "Actions" }, // Added actions column
+    { key: "status", label: "Status" }, 
+    { key: "actions", label: "Actions" }, 
   ];
-
-  const viewTableHeader = [
-    // { key: "id", label: "Meeting Id" },
-    { key: "memberId", label: "Member Id" },
-    { key: "name", label: "Member Name" },
-    { key: "attendance", label: "Attendance" },
-  ];
-
-  const handleView = (data) => {
-    getCommiteeMemberById(data?._id, "View");
-  };
-
-  const handleViewClose = () => {
-    setUserData([]);
-    setIsViewModalOpen(false);
-  };
 
   useEffect(() => {
-    console.log(eventListData, "eventListData");
     if (eventListData && eventListData.length > 0) {
       const formattedData = eventListData.map((item) => ({
         id: item?.eventId,
@@ -87,31 +63,36 @@ const Events = () => {
         endDate: item.endDate,
         amount: item.amount,
         fee: item.lateFee,
-        status: item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : '',
+        status: item.status
+          ? item.status.charAt(0).toUpperCase() + item.status.slice(1)
+          : "",
         actions: (
           <div style={{ display: "flex", gap: "8px" }}>
             <IconButton
               color="primary"
               size="small"
               onClick={() => handleEdit(item)}
-              disabled={item.isalreadyAdded || new Date(item.meetingDate) < new Date() || item.status == 'deleted'}
+              disabled={
+                item.isalreadyAdded ||
+                new Date(item.meetingDate) < new Date() ||
+                item.status == "deleted"
+              }
             >
               <EditIcon fontSize="small" />
             </IconButton>
             <IconButton
               color="error"
               size="small"
-              disabled={item.isalreadyAdded || item.status == 'deleted'}
-              onClick={() => handleDelete(item?._id)}
-              
+              disabled={item.isalreadyAdded || item.status == "deleted"}
+              onClick={() => handleConfirmationDelete(item?._id)}
             >
               <DeleteIcon fontSize="small" />
             </IconButton>
             <IconButton
               color="success"
               size="small"
-              disabled={item.isalreadyAdded || item.status == 'deleted'}
-              onClick={() => handlePublicity(item)}
+              disabled={item.isalreadyAdded || item.status == "deleted"}
+              onClick={() => handleConfirmationPublic(item)}
             >
               <PublicIcon fontSize="small" />
             </IconButton>
@@ -123,7 +104,6 @@ const Events = () => {
   }, [eventListData]);
 
   const fetchEventsList = async () => {
-    // setLoading(true);
     let payload = { page: 1, limit: 12 };
     try {
       const response = await getAllEvents(payload, {
@@ -137,7 +117,6 @@ const Events = () => {
     } catch (error) {
       setError("Failed to fetch user data");
     } finally {
-      // setLoading(false);
     }
   };
 
@@ -172,31 +151,42 @@ const Events = () => {
     setIsModalOpen(false);
   };
 
-  const handleDelete = async (id) => {
-    console.log(id, "wghgdwhgd");
-    try {
-      const response = await deleteEvents(id);
-      if (response?.status) {
-        fetchEventsList();
-      }
-    } catch (error) {}
-    setEditingCard(null);
+  const handleConfirmationDelete = (id) => {
+    setSelectedId(id);
+    setPopupOpen(true);
+    setActionType("delete");
   };
 
-  const handlePublicity = async (item) => {
-    try {
-      let payload = {
-        eventId: item.eventId,
-      }
-      const response = await publishEvents(payload);
-      if (response?.status) {
-        fetchEventsList();
-      }
-    } catch (error) {}
-    setEditingCard(null);
+  const handleConfirmationPublic = (item) => {
+    setSelectedId(item);
+    setActionType("public");
+    setPopupOpen(true);
   };
 
-  console.log(userData, "userDatauserData");
+ 
+
+  const handleConfirmAction = async () => {
+    if (!selectedId) return;
+
+    try {
+      if (actionType === "delete") {
+        const response = await deleteEvents(selectedId);
+        if (response?.status) fetchEventsList();
+      } else if (actionType === "public") {
+        let payload = {
+          eventId: selectedId.eventId,
+        };
+        const response = await publishEvents(payload);
+        if (response?.status) fetchEventsList();
+      }
+    } catch (error) {
+      console.error(`Error performing ${actionType}:`, error);
+    }
+
+    setPopupOpen(false);
+    setSelectedId(null);
+    setActionType(null);
+  };
 
   return (
     <>
@@ -207,6 +197,15 @@ const Events = () => {
           onClose={handleModalClose}
         />
       )}
+      <ConfirmationPopup
+        show={popupOpen}
+        title="Confirmation"
+        message={actionType === "delete"
+          ? "Are you sure you want to delete this item? "
+          : "Are you sure you want to make this item public?"}
+        onConfirm={handleConfirmAction}
+        onCancel={() => setPopupOpen(false)}
+      />
 
       <div>
         <Box
