@@ -20,6 +20,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { chanthaList } from "../../state/redux/authSlice";
 import ConfirmationPopup from "../../components/confirmationPopup";
+import { ToastContainer } from "react-toastify";
 
 const ParentComponent = () => {
   const [open, setOpen] = useState(false);
@@ -142,6 +143,7 @@ const ParentComponent = () => {
         onConfirm={handleDelete}
         onCancel={() => setPopupOpen(false)}
       />
+        <ToastContainer position="top-right" autoClose={3000} />
 
       <Box
         sx={{ display: "flex", justifyContent: "flex-start", marginBottom: 2 }}

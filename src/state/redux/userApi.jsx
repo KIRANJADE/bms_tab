@@ -1,6 +1,8 @@
 import urls from "../../utils/AppSettings";
 import axios from "axios";
 let BASE_URL = urls.BaseUrl;
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // UserLoginAPI
 
 export const createUserLogin = async (params) => {
@@ -66,6 +68,8 @@ export const createUserApi = async (params) => {
     const response = await axios.post(`${BASE_URL}/api/users`, params, {
       headers,
     });
+    toast.success("Created successfully!");
+
     return response;
   } catch (error) {
     throw error;
@@ -86,6 +90,8 @@ export const editUserApi = async (id, requestParams) => {
         headers,
       }
     );
+    toast.success("Updated successfully!");
+
     return response;
   } catch (error) {
     throw error;
@@ -102,6 +108,7 @@ export const deleteUserApi = async (id) => {
     const response = await axios.delete(`${BASE_URL}/api/users/${id}`, {
       headers,
     });
+    toast.success("Deleted successfully!");
     return response;
   } catch (error) {
     throw error;
@@ -155,6 +162,7 @@ export const deleteCommiteeDetails = async (id) => {
         headers,
       }
     );
+    toast.success("Deleted successfully!");
     return response.data;
   } catch (error) {
     console.error("Error fetching user list:", error);
@@ -193,7 +201,10 @@ export const editCommiteeMeeting = async (id, requestParams) => {
         headers,
       }
     );
+    toast.success("Updated successfully!");
+
     return response.data;
+
   } catch (error) {
     console.error("Error fetching user list:", error);
     throw error;
@@ -233,6 +244,8 @@ export const createCommitteMeeting = async (requestParams) => {
         headers,
       }
     );
+    toast.success("Created successfully!");
+
     return response.data;
   } catch (error) {
     throw error;
@@ -253,6 +266,8 @@ export const deleteCommiteeMeeting = async (id, requestParams) => {
         headers,
       }
     );
+    toast.success("Deleted successfully!");
+
     return response.data;
   } catch (error) {
     throw error;
@@ -289,6 +304,8 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
         headers,
       }
     );
+    toast.success("Updated successfully!");
+
     return response.data;
   } catch (error) {
     throw error;
@@ -389,6 +406,8 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 		const response = await axios.put(`${BASE_URL}/api/chanthafee/${id}`,requestParams, {
 		  headers,
 		});
+    toast.success("Edited successfully!");
+
     
 		return response.data;
 	
@@ -409,6 +428,7 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
       ...requestParams,
     }
 		const response = await axios.delete(`${BASE_URL}/api/chanthafee/${id}`,config);
+    toast.success("Chantha deleted successfully!");
     
 		return response.data;
 	
@@ -448,6 +468,8 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 		const response = await axios.post(`${BASE_URL}/api/events/`,requestParams, {
 		  headers,
 		});
+    toast.success("Created successfully!");
+
     
 		return response.data;
 	
@@ -467,6 +489,8 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 		const response = await axios.put(`${BASE_URL}/api/events/${id}`,requestParams, {
 		  headers,
 		});
+    toast.success("Edited successfully!");
+
     
 		return response.data;
 	
@@ -507,6 +531,8 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
       ...requestParams,
     }
 		const response = await axios.delete(`${BASE_URL}/api/events/${id}`,config);
+    toast.success("Deleted successfully!");
+
     
 		return response.data;
 	
@@ -526,6 +552,8 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 		const response = await axios.post(`${BASE_URL}/api/events/publisheventsamount`,requestParams, {
 		  headers,
 		});
+    toast.success("Published successfully!");
+
     
 		return response.data;
 	

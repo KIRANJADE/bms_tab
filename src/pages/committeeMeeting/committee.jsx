@@ -22,6 +22,7 @@ import {
 } from "../../state/redux/userApi";
 import { committeebyId, committeeListData } from "../../state/redux/authSlice";
 import CloseIcon from "@mui/icons-material/Close";
+import { ToastContainer } from "react-toastify";
 
 const User = () => {
   const [editingCard, setEditingCard] = React.useState(null);
@@ -187,6 +188,7 @@ const User = () => {
           onClose={handleModalClose}
         />
       )}
+       <ToastContainer position="top-right" autoClose={3000} />
 
       {/* View Modal */}
       <Modal open={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>

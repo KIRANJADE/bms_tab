@@ -23,6 +23,7 @@ import { useForm } from "react-hook-form";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseSharpIcon from "@mui/icons-material/CloseSharp";
 import EmptyState from "../../pages/common/EmptyState";
+import { ToastContainer } from "react-toastify";
 const ITEMS_PER_PAGE = 12;
 
 const Dashboard = () => {
@@ -162,6 +163,7 @@ const Dashboard = () => {
         cardsUserId={cardsUserId}
         isEditUsers={editingCard}
       />
+       <ToastContainer position="top-right" autoClose={3000} />
       <div>
         <Box
           sx={{

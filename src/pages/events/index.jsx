@@ -25,6 +25,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import PublicIcon from "@mui/icons-material/Public";
 import ConfirmationPopup from "../../components/confirmationPopup";
+import { ToastContainer } from "react-toastify";
 
 const Events = () => {
   const [editingCard, setEditingCard] = React.useState(null);
@@ -197,6 +198,7 @@ const Events = () => {
           onClose={handleModalClose}
         />
       )}
+       <ToastContainer position="top-right" autoClose={3000} />
       <ConfirmationPopup
         show={popupOpen}
         title="Confirmation"
