@@ -93,31 +93,39 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
     }
   }, [editDatas, setValue]);
 
-  console.log(editDatas, "editDatas");
-
   const onSubmit = async (data) => {
-    setLoading(true); // Start loader
-
-    const payload = {
-      eventName: data.meetingtitle,
-      startDate: data.meetingDate,
-      endDate: data.meetingEndDate,
-      amount: data.amount,
-      lateFee: data.lateFee,
-      status: "active",
-    };
-
+    setLoading(true); 
+  
     try {
+      const formatDate = (dateStr) => {
+        if (!dateStr) return "";
+        const parts = dateStr.split("-");
+        return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : dateStr;
+      };
+  
+      const meetingDate = formatDate(data?.meetingDate);
+      const meetingEndDate = formatDate(data?.meetingEndDate);
+  
+      const payload = {
+        eventName: data?.meetingtitle || "",
+        startDate: meetingDate,
+        endDate: meetingEndDate,
+        amount: data?.amount || 0,
+        lateFee: data?.lateFee || 0,
+        status: "active",
+      };
+  
       let response;
-      if (editDatas && editDatas._id) {
+      if (editDatas?._id) {
         response = await editEvents(editDatas._id, payload);
       } else {
         response = await createEvents(payload);
       }
-
-      console.log(response, "responseresponse");
-
-      if (response?.status || response?.ok) {
+  
+      console.log(response, "Response received");
+  
+      // Handle success based on API response
+      if (response?.ok || response?.status === 200) {
         await fetchEventList();
         handleCancel();
       } else {
@@ -128,7 +136,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
     } finally {
       setLoading(false); // Stop loader after API call
     }
-  };
+  };  
 
   const handleCancel = useCallback(() => {
     reset(); // Reset form values

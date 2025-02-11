@@ -418,7 +418,6 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 	};
 
   export const getAllEvents = async (payload) => {
-    console.log(payload, "ksdjkshdjhd")
 	  try {
 		const authToken = JSON.parse(localStorage.getItem("authToken"));
 		const headers = {

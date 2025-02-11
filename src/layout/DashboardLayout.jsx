@@ -68,7 +68,7 @@ const DashboardLayout = () => {
     // setLoading(true);
 
     try {
-      const response = await getAllEvents(payload );
+      const response = await getAllEvents(payload);
 
       if (response.status) {
         dispatch(eventsList(response?.eventDetails));

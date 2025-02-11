@@ -87,21 +87,21 @@ const Events = () => {
         endDate: item.endDate,
         amount: item.amount,
         fee: item.lateFee,
-        status: item.status,
+        status: item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : '',
         actions: (
           <div style={{ display: "flex", gap: "8px" }}>
             <IconButton
               color="primary"
               size="small"
               onClick={() => handleEdit(item)}
-              disabled={!!item.isalreadyAdded || new Date(item.meetingDate) < new Date()}
+              disabled={item.isalreadyAdded || new Date(item.meetingDate) < new Date() || item.status == 'deleted'}
             >
               <EditIcon fontSize="small" />
             </IconButton>
             <IconButton
               color="error"
               size="small"
-              disabled={item.isalreadyAdded}
+              disabled={item.isalreadyAdded || item.status == 'deleted'}
               onClick={() => handleDelete(item?._id)}
               
             >
@@ -110,7 +110,7 @@ const Events = () => {
             <IconButton
               color="success"
               size="small"
-              disabled={item.isalreadyAdded}
+              disabled={item.isalreadyAdded || item.status == 'deleted'}
               onClick={() => handlePublicity(item)}
             >
               <PublicIcon fontSize="small" />
@@ -124,8 +124,9 @@ const Events = () => {
 
   const fetchEventsList = async () => {
     // setLoading(true);
+    let payload = { page: 1, limit: 12 };
     try {
-      const response = await getAllEvents(page, limit, {
+      const response = await getAllEvents(payload, {
         status: "active",
       });
 
@@ -207,132 +208,6 @@ const Events = () => {
         />
       )}
 
-      {/* View Modal */}
-      <Modal open={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "90%",
-            height: "90vh",
-            bgcolor: "background.paper",
-            borderRadius: 4,
-            boxShadow: 24,
-            overflow: "scroll",
-            textAlign: "center", // Center the text
-          }}
-        >
-          {/* Modal Header */}
-          <Box
-            sx={{
-              position: "sticky",
-              top: 0,
-              bgcolor: "linear-gradient(to right, #4facfe, #00f2fe)",
-              borderRadius: "4px 4px 0 0",
-              p: 2,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              zIndex: 1,
-            }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: "bold", width: "100%" }}>
-              Meeting Details
-            </Typography>
-            <IconButton onClick={() => setIsViewModalOpen(false)}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-
-          {/* Modal Content */}
-          <Box sx={{ flex: 1, overflowY: "auto", p: 3 }}>
-            <Grid container spacing={2}>
-              {viewData && (
-                <>
-                  <Grid container spacing={3} alignItems="center">
-                    <Grid item xs>
-                      <Typography variant="caption" fontWeight="bold">
-                        Meeting Id
-                      </Typography>
-                      <Box
-                        sx={{
-                          padding: "4px 8px",
-                          fontWeight: "bold",
-                          fontSize: "14px",
-                        }}
-                      >
-                        {viewData.committeemeetingId}
-                      </Box>
-                    </Grid>
-
-                    <Grid item xs>
-                      <Typography variant="caption" fontWeight="bold">
-                        Meeting Title
-                      </Typography>
-                      <Typography variant="body2" fontWeight="bold">
-                        {viewData.meetingtitle}
-                      </Typography>
-                    </Grid>
-
-                    <Grid item xs>
-                      <Typography variant="caption" fontWeight="bold">
-                        Attendance
-                      </Typography>
-                      <Typography variant="body2" fontWeight="bold">
-                        <Box
-                          sx={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 1,
-                            backgroundColor: viewData.isAddAttendance
-                              ? "#27ae6054"
-                              : "#FDEDCB",
-                            color: viewData.isAddAttendance
-                              ? "#27AE60"
-                              : "#D6940B",
-                            padding: "2px 8px",
-                            borderRadius: "12px",
-                            fontWeight: "bold",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {viewData.isAddAttendance ? "Yes" : "No"}
-                        </Box>
-                      </Typography>
-                    </Grid>
-
-                    <Grid item xs>
-                      <Typography variant="caption" fontWeight="bold">
-                        Meeting Date
-                      </Typography>
-                      <Typography variant="body2" fontWeight="bold">
-                        {viewData.meetingDate}
-                      </Typography>
-                    </Grid>
-
-                    <Grid item xs>
-                      <Typography variant="caption" fontWeight="bold">
-                        Fine Amount
-                      </Typography>
-                      <Typography variant="body2" fontWeight="bold">
-                        ₹{viewData.fineAmount}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-
-                  <CustomizedTables
-                    data={userData}
-                    search={false}
-                    headers={viewTableHeader}
-                  />
-                </>
-              )}
-            </Grid>
-          </Box>
-        </Box>
-      </Modal>
       <div>
         <Box
           sx={{
