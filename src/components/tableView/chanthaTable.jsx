@@ -110,7 +110,7 @@ const chanthaTable = ({ data, onEdit, onDelete }) => {
                 </IconButton>
                 <IconButton 
                   color="secondary" 
-                  onClick={() => onDelete(row)} 
+                  onClick={() => onDelete(row?._id)} 
                   disabled={row?.status !== "active"}
                 >
                   <Delete />

@@ -19,12 +19,15 @@ import {
 } from "../../state/redux/userApi";
 import { useDispatch, useSelector } from "react-redux";
 import { chanthaList } from "../../state/redux/authSlice";
+import ConfirmationPopup from "../../components/confirmationPopup";
 
 const ParentComponent = () => {
   const [open, setOpen] = useState(false);
   const [chanthaData, setChanthaData] = useState([]);
   const [editData, setEditData] = useState({});
   const [editStatus, setEditStatus] = useState("active");
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
   const { control, handleSubmit, setValue, reset } = useForm();
   const dispatch = useDispatch();
 
@@ -54,18 +57,20 @@ const ParentComponent = () => {
     }
   };
 
-  const handleDelete = async (data) => {
+  const handleDelete = async () => {
     let payload = {
       remark: "test delete",
     };
     try {
-      const response = await deleteChanthafee(data?._id, payload);
+      const response = await deleteChanthafee(selectedId, payload);
       if (response) {
         fetchAllChanthaFeeDetails();
       }
     } catch (error) {
       throw error;
     }
+    setSelectedId(null);
+    setPopupOpen(false);
   };
 
   const handleOpen = (data = null) => {
@@ -96,6 +101,12 @@ const ParentComponent = () => {
     reset();
     setEditData({});
   };
+  const handleConfirmationDelete = (id) => {
+    console.log("Delete ID received:", id); // Debugging log
+    if (!id) return; // Ensure ID is valid
+    setSelectedId(id);
+    setPopupOpen(true);
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -124,6 +135,14 @@ const ParentComponent = () => {
 
   return (
     <div>
+      <ConfirmationPopup
+        show={popupOpen}
+        title="Confirmation"
+        message={"Are you sure you want to delete this item?" }
+        onConfirm={handleDelete}
+        onCancel={() => setPopupOpen(false)}
+      />
+
       <Box
         sx={{ display: "flex", justifyContent: "flex-start", marginBottom: 2 }}
       >
@@ -139,7 +158,7 @@ const ParentComponent = () => {
         <ChanthaTable
           data={chanthaListData?.chanthafeeDetails}
           onEdit={handleOpen}
-          onDelete={handleDelete}
+          onDelete={(id) => handleConfirmationDelete(id)}
         />
       </Grid2>
 
