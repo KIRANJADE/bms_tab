@@ -562,6 +562,26 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 	  }
 	};
 
+  export const getAllNotifications = async (requestParams) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    
+		const response = await axios.post(`${BASE_URL}/api/notification/`,requestParams, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+
 
 
 

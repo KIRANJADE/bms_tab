@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Drawer,
   List,
@@ -10,6 +10,10 @@ import {
   IconButton,
   useMediaQuery,
   Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import PersonIcon from "@mui/icons-material/Person";
@@ -22,7 +26,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
 import { useNavigate } from "react-router-dom";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
+import { getAllNotifications } from "../state/redux/userApi";
 const pages = [
   {
     id: "tab1",
@@ -47,6 +52,12 @@ const pages = [
   { id: "tab6", label: "Events", path: "/events", icon: <EventIcon /> },
 ];
 
+const notifications = [
+  { id: 1, message: "New friend request from John" },
+  { id: 2, message: "Your order has been shipped" },
+  { id: 3, message: "Reminder: Meeting at 3 PM" },
+];
+
 const SideBar = ({ addTab }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
@@ -59,6 +70,13 @@ const SideBar = ({ addTab }) => {
     localStorage.clear();
     navigate("/");
   };
+
+  useEffect(() => {
+    let payload = {
+      memberId: "100/000/0590",
+    };
+    getAllNotifications(payload);
+  }, []);
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -105,40 +123,65 @@ const SideBar = ({ addTab }) => {
       {/* Footer Section (Profile and Logout) */}
       <div style={{ marginTop: "auto" }}>
         <List>
-        <ListItemButton
-        onClick={() => {
-          setNotifDrawerOpen(true);
-        }}
-        sx={{
-          "&:hover": {
-            backgroundColor: "#f0f0f0",
-            borderRadius: "10px",
-          },
-          margin: "4px 8px",
-        }}
-      >
-        <ListItemIcon>
-          <NotificationsActiveIcon />
-        </ListItemIcon>
-        <ListItemText primary="Notifications" />
-      </ListItemButton>
-      
-      <Drawer anchor="right" open={isNotifDrawerOpen} onClose={() => setNotifDrawerOpen(false)}>
-        <List sx={{ width: 300 }}>
-          <ListItem>
+          <ListItemButton
+            onClick={() => {
+              setNotifDrawerOpen(true);
+            }}
+            sx={{
+              "&:hover": {
+                backgroundColor: "#f0f0f0",
+                borderRadius: "10px",
+              },
+              margin: "4px 8px",
+            }}
+          >
+            <ListItemIcon>
+              <NotificationsActiveIcon />
+            </ListItemIcon>
             <ListItemText primary="Notifications" />
-            <IconButton onClick={() => setNotifDrawerOpen(false)}>
-              <CloseIcon />
-            </IconButton>
-          </ListItem>
-          <ListItem button onClick={() => navigate("/profile")}> 
-            <ListItemText primary="Go to Profile" />
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="No new notifications" />
-          </ListItem>
-        </List>
-      </Drawer>
+          </ListItemButton>
+
+          <Drawer anchor="right" open={isNotifDrawerOpen} onClose={() => setNotifDrawerOpen(false)}>
+  <List sx={{ width: 300 }}>
+    <ListItem>
+      <ListItemText primary="Notifications" />
+      <IconButton onClick={() => setNotifDrawerOpen(false)}>
+        <CloseIcon />
+      </IconButton>
+    </ListItem>
+    <ListItem button onClick={() => navigate("/profile")}> 
+      <ListItemText primary="Go to Profile" />
+    </ListItem>
+    {notifications.length > 0 ? (
+      notifications.map((notification) => (
+        <ListItem key={notification.id} sx={{ padding: 1, marginBottom: 2 }}>
+          <Card sx={{ width: "100%" }}>
+            <CardContent sx={{ padding: "16px" }}>
+        
+              <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 2 }}>
+                {notification.message}
+              </Typography>
+              <Box display="flex"  mt={1}>
+                <Button variant="contained" color="primary" size="small" sx={{ marginRight: 1 }}>
+                  Accept
+                </Button>
+                <Button variant="outlined" color="secondary" size="small">
+                  Reject
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        </ListItem>
+      ))
+    ) : (
+      <ListItem>
+        <ListItemText primary="No new notifications" />
+      </ListItem>
+    )}
+  </List>
+</Drawer>
+
+
           <ListItemButton
             onClick={() => {
               navigate("/profile");
