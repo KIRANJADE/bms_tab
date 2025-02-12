@@ -5,6 +5,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  ListItem,
   Divider,
   IconButton,
   useMediaQuery,
@@ -20,7 +21,8 @@ import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import MenuIcon from "@mui/icons-material/Menu";
 import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
 import { useNavigate } from "react-router-dom";
-
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import CloseIcon from '@mui/icons-material/Close';
 const pages = [
   {
     id: "tab1",
@@ -51,6 +53,7 @@ const SideBar = ({ addTab }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(null); // Track active tab
   const navigate = useNavigate();
+  const [isNotifDrawerOpen, setNotifDrawerOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -102,6 +105,40 @@ const SideBar = ({ addTab }) => {
       {/* Footer Section (Profile and Logout) */}
       <div style={{ marginTop: "auto" }}>
         <List>
+        <ListItemButton
+        onClick={() => {
+          setNotifDrawerOpen(true);
+        }}
+        sx={{
+          "&:hover": {
+            backgroundColor: "#f0f0f0",
+            borderRadius: "10px",
+          },
+          margin: "4px 8px",
+        }}
+      >
+        <ListItemIcon>
+          <NotificationsActiveIcon />
+        </ListItemIcon>
+        <ListItemText primary="Notifications" />
+      </ListItemButton>
+      
+      <Drawer anchor="right" open={isNotifDrawerOpen} onClose={() => setNotifDrawerOpen(false)}>
+        <List sx={{ width: 300 }}>
+          <ListItem>
+            <ListItemText primary="Notifications" />
+            <IconButton onClick={() => setNotifDrawerOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+          </ListItem>
+          <ListItem button onClick={() => navigate("/profile")}> 
+            <ListItemText primary="Go to Profile" />
+          </ListItem>
+          <ListItem>
+            <ListItemText primary="No new notifications" />
+          </ListItem>
+        </List>
+      </Drawer>
           <ListItemButton
             onClick={() => {
               navigate("/profile");
@@ -161,17 +198,12 @@ const SideBar = ({ addTab }) => {
           }}
         >
           {/* Toggle Drawer Button */}
-          <Box sx={{ mr: 1,   }}>LOGO</Box>
-          <IconButton
-            color="primary"
-            onClick={() => setIsDrawerOpen(true)}
-         
-          >
+          <Box sx={{ mr: 1 }}>LOGO</Box>
+          <IconButton color="primary" onClick={() => setIsDrawerOpen(true)}>
             <MenuIcon />
           </IconButton>
 
           {/* Logo (Shown only in mobile view next to menu icon) */}
-         
         </Box>
       )}
 
