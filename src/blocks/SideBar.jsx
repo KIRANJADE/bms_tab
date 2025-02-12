@@ -149,9 +149,7 @@ const SideBar = ({ addTab }) => {
         <CloseIcon />
       </IconButton>
     </ListItem>
-    <ListItem button onClick={() => navigate("/profile")}> 
-      <ListItemText primary="Go to Profile" />
-    </ListItem>
+  
     {notifications.length > 0 ? (
       notifications.map((notification) => (
         <ListItem key={notification.id} sx={{ padding: 1, marginBottom: 2 }}>
