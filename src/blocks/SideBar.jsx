@@ -27,7 +27,13 @@ import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
 import { useNavigate } from "react-router-dom";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import CloseIcon from "@mui/icons-material/Close";
-import { getAllNotifications } from "../state/redux/userApi";
+import {
+  getAllNotifications,
+  approveRejectNotifications,
+} from "../state/redux/userApi";
+import { notify } from "../state/redux/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
 const pages = [
   {
     id: "tab1",
@@ -64,19 +70,39 @@ const SideBar = ({ addTab }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(null); // Track active tab
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [isNotifDrawerOpen, setNotifDrawerOpen] = useState(false);
+  const notification = useSelector(
+    (state) => state.auth?.notificationData || []
+  );
 
   const handleLogout = () => {
     localStorage.clear();
     navigate("/");
   };
 
+  console.log(notification?.notificationsDetails, "notificationnotification");
+
   useEffect(() => {
-    let payload = {
-      memberId: "100/000/0590",
-    };
-    getAllNotifications(payload);
-  }, []);
+    fetchNotify();
+  }, [localStorage.getItem("memberId")]);
+
+  const fetchNotify = async () => {
+    try {
+      let payload = {
+        memberId: localStorage.getItem("memberId"),
+      };
+      const response = await getAllNotifications(payload);
+
+      if (response.status) {
+        dispatch(notify(response));
+      }
+    } catch (error) {
+      // setError("Failed to fetch user data");
+    } finally {
+    }
+  };
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -86,6 +112,22 @@ const SideBar = ({ addTab }) => {
       return;
     }
     setIsDrawerOpen(open);
+  };
+
+  const handleAction = async (notificationId, actionType) => {
+    let payload = {
+      isRead: true,
+      status: actionType,
+      remark: actionType === "approve" ? "approved" : "rejected",
+    };
+    try {
+      await approveRejectNotifications(notificationId, payload);
+      fetchNotify();
+      toast.success(`Notification ${actionType}d successfully!`);
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+      console.error("Error handling action:", error);
+    }
   };
 
   const drawerContent = (
@@ -141,44 +183,77 @@ const SideBar = ({ addTab }) => {
             <ListItemText primary="Notifications" />
           </ListItemButton>
 
-          <Drawer anchor="right" open={isNotifDrawerOpen} onClose={() => setNotifDrawerOpen(false)}>
-  <List sx={{ width: 300 }}>
-    <ListItem>
-      <ListItemText primary="Notifications" />
-      <IconButton onClick={() => setNotifDrawerOpen(false)}>
-        <CloseIcon />
-      </IconButton>
-    </ListItem>
-  
-    {notifications.length > 0 ? (
-      notifications.map((notification) => (
-        <ListItem key={notification.id} sx={{ padding: 1, marginBottom: 2 }}>
-          <Card sx={{ width: "100%" }}>
-            <CardContent sx={{ padding: "16px" }}>
-        
-              <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 2 }}>
-                {notification.message}
-              </Typography>
-              <Box display="flex"  mt={1}>
-                <Button variant="contained" color="primary" size="small" sx={{ marginRight: 1 }}>
-                  Accept
-                </Button>
-                <Button variant="outlined" color="secondary" size="small">
-                  Reject
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        </ListItem>
-      ))
-    ) : (
-      <ListItem>
-        <ListItemText primary="No new notifications" />
-      </ListItem>
-    )}
-  </List>
-</Drawer>
+          <Drawer
+            anchor="right"
+            open={isNotifDrawerOpen}
+            onClose={() => setNotifDrawerOpen(false)}
+          >
+       <ToastContainer position="top-right" autoClose={3000} />
 
+            <List sx={{ width: 300 }}>
+              <ListItem>
+                <ListItemText primary="Notifications" />
+                <IconButton onClick={() => setNotifDrawerOpen(false)}>
+                  <CloseIcon />
+                </IconButton>
+              </ListItem>
+
+              {notification && notification?.notificationsDetails?.length > 0 ? (
+                notification?.notificationsDetails.map((notification) => (
+                  <ListItem
+                    key={notification.id}
+                    sx={{ padding: 1, marginBottom: 2 }}
+                  >
+                    {notification.message && (
+                      <Card sx={{ width: "100%" }}>
+                        <CardContent sx={{ padding: "16px" }}>
+                          <Typography variant="h6" sx={{ marginBottom: 1 }}>
+                            {notification.title}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ marginBottom: 2 }}
+                          >
+                            {notification.message}
+                          </Typography>
+                          {notification?.type === "approve" && (
+                            <Box display="flex" mt={1}>
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                size="small"
+                                onClick={() =>
+                                  handleAction(notification._id, "approve")
+                                }
+                                sx={{ marginRight: 1 }}
+                              >
+                                Accept
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                color="secondary"
+                                onClick={() =>
+                                  handleAction(notification._id, "reject")
+                                }
+                                size="small"
+                              >
+                                Reject
+                              </Button>
+                            </Box>
+                          )}
+                        </CardContent>
+                      </Card>
+                    )}
+                  </ListItem>
+                ))
+              ) : (
+                <ListItem>
+                  <ListItemText primary="No new notifications" />
+                </ListItem>
+              )}
+            </List>
+          </Drawer>
 
           <ListItemButton
             onClick={() => {

@@ -11,8 +11,14 @@ export const createUserLogin = async (params) => {
     console.log(response, "response");
     if (response.data.user?.token) {
       localStorage.setItem(
-        "authToken",
-        JSON.stringify(response.data.user?.token)
+        "authToken", JSON.stringify(response.data.user?.token),
+        
+      );
+    }
+    if (response) {
+      localStorage.setItem(
+        "memberId", response.data.user?.memberId,
+        
       );
     }
     return response;
@@ -570,9 +576,31 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 		  "Content-Type": "application/json",
 		};  
     
-		const response = await axios.post(`${BASE_URL}/api/notification/`,requestParams, {
+		const response = await axios.post(`${BASE_URL}/api/notification/getAll`,requestParams, {
 		  headers,
 		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+
+  export const approveRejectNotifications = async (id,requestParams) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    
+		const response = await axios.put(`${BASE_URL}/api/notification/${id}`,requestParams, {
+		  headers,
+		});
+    toast.success("Action completed successfully!");
+
     
 		return response.data;
 	
