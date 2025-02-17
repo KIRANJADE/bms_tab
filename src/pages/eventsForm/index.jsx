@@ -16,8 +16,6 @@ import {
   Checkbox,
   CircularProgress,
 } from "@mui/material";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import axios from "axios";
 import {
   createEvents,
@@ -31,13 +29,43 @@ import { useDispatch, useSelector } from "react-redux";
 import {
  eventsList,
 } from "../../state/redux/authSlice";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
 
 const AttendanceForm = ({ open, onClose, editDatas }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [loading, setLoading] = useState(false);
 
-  const { handleSubmit, control, reset, setValue } = useForm();
+  const validationSchema = yup.object().shape({
+    meetingtitle: yup.string().required("Event Name is required"),
+    meetingDate: yup.date().required("Start Date is required"),
+    meetingEndDate: yup
+      .date()
+      .required("End Date is required")
+      .min(yup.ref("meetingDate"), "End Date cannot be before Start Date"),
+    amount: yup.string()
+      .required("Amount is required")
+      ,
+    lateFee: yup.string()
+    .required("lateFee is required")
+
+  });
+  
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    control,
+    setValue,
+  } = useForm({
+    resolver: yupResolver(validationSchema), // ✅ Add Yup validation
+    mode: "onChange", // Triggers validation on change
+  });
+  
 
   const committeData = useSelector((state) => state.auth.committeData);
   console.log(committeData?.userDetails, "committeData");
@@ -67,7 +95,7 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
     if (editDatas) {
       setValue("meetingtitle", editDatas?.eventName || "");
       const parsedDate = new Date(editDatas.startDate);
-      const endData = new Date(editDatas.endDate);
+      const parsedEndDate = new Date(editDatas?.endDate);
 
       // Check if it's a valid date
       if (!isNaN(parsedDate)) {
@@ -77,12 +105,19 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
         console.error("Invalid date:", editDatas.meetingDate);
       }
 
-      if (!isNaN(endData)) {
-        const formattedDate = endData.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-        setValue("meetingEndDate", formattedDate); // Populate the meetingDate
-      } else {
-        console.error("Invalid date:", editDatas.meetingDate);
+
+      if (editDatas?.endDate) {
+        let formattedEndDate = editDatas.endDate;
+      
+        // If the date is in "DD-MM-YYYY", convert it
+        if (/^\d{2}-\d{2}-\d{4}$/.test(editDatas.endDate)) {
+          const [day, month, year] = editDatas.endDate.split("-");
+          formattedEndDate = `${year}-${month}-${day}`; // Convert to "YYYY-MM-DD"
+        }
+      
+        setValue("meetingEndDate", formattedEndDate);
       }
+      
      
 
       setValue("amount", editDatas?.amount || "");
@@ -98,10 +133,23 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
   
     try {
       const formatDate = (dateStr) => {
-        if (!dateStr) return "";
-        const parts = dateStr.split("-");
-        return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : dateStr;
+        if (!dateStr) return ""; // Ensure it's not undefined/null
+      
+        if (dateStr instanceof Date) {
+          // Convert Date to local YYYY-MM-DD format
+          return new Date(dateStr.getTime() - dateStr.getTimezoneOffset() * 60000)
+            .toISOString()
+            .split("T")[0];
+        }
+      
+        if (typeof dateStr === "string") {
+          const parts = dateStr.split("-");
+          return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : dateStr;
+        }
+      
+        return ""; // Default return for unexpected formats
       };
+      
   
       const meetingDate = formatDate(data?.meetingDate);
       const meetingEndDate = formatDate(data?.meetingEndDate);
@@ -125,10 +173,12 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
       console.log(response, "Response received");
   
       // Handle success based on API response
-      if (response?.ok || response?.status === 200) {
-        await fetchEventList();
+      if (response?.status === true) {
         handleCancel();
-      } else {
+
+        await fetchEventList();
+      }
+       else {
         throw new Error("Unexpected response format.");
       }
     } catch (error) {
@@ -171,7 +221,8 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                 control={control}
                 slotProps={{ inputLabel: { shrink: true } }}
                 render={({ field }) => (
-                  <TextField {...field} label="Event Name" fullWidth />
+                  <TextField {...field} label="Event Name" fullWidth  error={!!errors.meetingtitle}
+                  helperText={errors.meetingtitle?.message}/>
                 )}
               />
             </Grid>
@@ -187,6 +238,8 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                     fullWidth
                     inputProps={{ min: new Date().toISOString().split("T")[0] }}
                     InputLabelProps={{ shrink: true }} // Fixes label overlap
+                    error={!!errors.meetingDate}
+                    helperText={errors.meetingDate?.message}
                   />
                 )}
               />
@@ -203,6 +256,8 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                     fullWidth
                     inputProps={{ min: new Date().toISOString().split("T")[0] }}
                     InputLabelProps={{ shrink: true }} // Fixes label overlap
+                    error={!!errors.meetingEndDate}
+                    helperText={errors.meetingEndDate?.message}
                   />
                 )}
               />
@@ -213,7 +268,8 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                 name="amount"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="Amount" fullWidth />
+                  <TextField {...field} type="number" label="Amount" fullWidth  error={!!errors.amount}
+                  helperText={errors.amount?.message} />
                 )}
               />
             </Grid>
@@ -222,7 +278,9 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
                 name="lateFee"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="Late Fee" fullWidth />
+                  <TextField {...field}  type="number" label="Late Fee" fullWidth error={!!errors.lateFee}
+                  helperText={errors.lateFee?.message} />
+                  
                 )}
               />
             </Grid>

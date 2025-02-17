@@ -14,6 +14,11 @@ import {
   Card,
   CardContent,
   Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import PersonIcon from "@mui/icons-material/Person";
@@ -34,6 +39,7 @@ import {
 import { notify } from "../state/redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
+import Badge from "@mui/material/Badge";
 const pages = [
   {
     id: "tab1",
@@ -71,11 +77,36 @@ const SideBar = ({ addTab }) => {
   const [activeTab, setActiveTab] = useState(null); // Track active tab
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [selectedNotificationId, setSelectedNotificationId] = useState(null);
 
   const [isNotifDrawerOpen, setNotifDrawerOpen] = useState(false);
   const notification = useSelector(
     (state) => state.auth?.notificationData || []
   );
+  const [open, setOpen] = useState(false); // State to control modal visibility
+  const [rejectReason, setRejectReason] = useState(""); // State to store the reject reason
+
+  // Open the modal
+  const handleClickOpen = (notificationId) => {
+    setSelectedNotificationId(notificationId); // Store the selected notification ID
+    setOpen(true);
+  };
+
+  // Close the modal
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  // Handle form submission
+  const handleReject = () => {
+    if (rejectReason && selectedNotificationId) {
+      handleAction(selectedNotificationId, "reject", rejectReason); // Use selected ID
+      setOpen(false);
+      setRejectReason(""); // Clear the reason after submission
+      setSelectedNotificationId(null); // Reset selected notification ID
+    }
+  };
+  
 
   const handleLogout = () => {
     localStorage.clear();
@@ -114,11 +145,11 @@ const SideBar = ({ addTab }) => {
     setIsDrawerOpen(open);
   };
 
-  const handleAction = async (notificationId, actionType) => {
+  const handleAction = async (notificationId, actionType, rejectReason) => {
     let payload = {
       isRead: true,
       status: actionType,
-      remark: actionType === "approve" ? "approved" : "rejected",
+      remark: actionType === "approve" ? "approved" : rejectReason,
     };
     try {
       await approveRejectNotifications(notificationId, payload);
@@ -178,7 +209,16 @@ const SideBar = ({ addTab }) => {
             }}
           >
             <ListItemIcon>
-              <NotificationsActiveIcon />
+              <Badge
+                badgeContent={
+                  notification && notification?.notificationsDetails?.length
+                }
+                color="error"
+              >
+                {" "}
+                {/* You can dynamically change the number */}
+                <NotificationsActiveIcon />
+              </Badge>
             </ListItemIcon>
             <ListItemText primary="Notifications" />
           </ListItemButton>
@@ -188,7 +228,7 @@ const SideBar = ({ addTab }) => {
             open={isNotifDrawerOpen}
             onClose={() => setNotifDrawerOpen(false)}
           >
-       <ToastContainer position="top-right" autoClose={3000} />
+            <ToastContainer position="top-right" autoClose={3000} />
 
             <List sx={{ width: 300 }}>
               <ListItem>
@@ -198,13 +238,14 @@ const SideBar = ({ addTab }) => {
                 </IconButton>
               </ListItem>
 
-              {notification && notification?.notificationsDetails?.length > 0 ? (
-                notification?.notificationsDetails.map((notification) => (
+              {notification &&
+              notification?.notificationsDetails?.length > 0 ? (
+                notification?.notificationsDetails?.map((notification) => (
                   <ListItem
                     key={notification.id}
                     sx={{ padding: 1, marginBottom: 2 }}
                   >
-                    {notification.message && (
+                    {
                       <Card sx={{ width: "100%" }}>
                         <CardContent sx={{ padding: "16px" }}>
                           <Typography variant="h6" sx={{ marginBottom: 1 }}>
@@ -234,7 +275,8 @@ const SideBar = ({ addTab }) => {
                                 variant="outlined"
                                 color="secondary"
                                 onClick={() =>
-                                  handleAction(notification._id, "reject")
+                                  // handleAction(notification._id, "reject")
+                                  handleClickOpen(notification._id)
                                 }
                                 size="small"
                               >
@@ -244,7 +286,7 @@ const SideBar = ({ addTab }) => {
                           )}
                         </CardContent>
                       </Card>
-                    )}
+                    }
                   </ListItem>
                 ))
               ) : (
@@ -254,8 +296,31 @@ const SideBar = ({ addTab }) => {
               )}
             </List>
           </Drawer>
-
-          <ListItemButton
+          <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>Provide a Reject Reason</DialogTitle>
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Reject Reason"
+                fullWidth
+                variant="outlined"
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)} // Update reason on change
+                multiline
+                rows={4}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleReject} color="primary">
+                Submit
+              </Button>
+            </DialogActions>
+          </Dialog>
+          {/* <ListItemButton
             onClick={() => {
               navigate("/profile");
               if (isSmallScreen) setIsDrawerOpen(false);
@@ -272,7 +337,7 @@ const SideBar = ({ addTab }) => {
               <PersonIcon />
             </ListItemIcon>
             <ListItemText primary="Profile" />
-          </ListItemButton>
+          </ListItemButton> */}
           <ListItemButton
             onClick={handleLogout}
             sx={{
