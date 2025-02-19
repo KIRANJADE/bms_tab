@@ -80,6 +80,7 @@ const SideBar = ({ addTab }) => {
   const [selectedNotificationId, setSelectedNotificationId] = useState(null);
 
   const [isNotifDrawerOpen, setNotifDrawerOpen] = useState(false);
+  const [notificData,setNotifyData] = useState([])
   const notification = useSelector(
     (state) => state.auth?.notificationData || []
   );
@@ -113,8 +114,6 @@ const SideBar = ({ addTab }) => {
     navigate("/");
   };
 
-  console.log(notification?.notificationsDetails, "notificationnotification");
-
   useEffect(() => {
     fetchNotify();
   }, [localStorage.getItem("memberId")]);
@@ -145,6 +144,10 @@ const SideBar = ({ addTab }) => {
     setIsDrawerOpen(open);
   };
 
+  useEffect(() => {
+    setNotifyData(notification?.notificationsDetails);
+  }, [notification]);
+
   const handleAction = async (notificationId, actionType, rejectReason) => {
     let payload = {
       isRead: true,
@@ -154,7 +157,8 @@ const SideBar = ({ addTab }) => {
     try {
       await approveRejectNotifications(notificationId, payload);
       fetchNotify();
-      toast.success(`Notification ${actionType}d successfully!`);
+      // toast.success(`Notification ${actionType}d successfully!`);
+      setNotifDrawerOpen(false)
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
       console.error("Error handling action:", error);
@@ -211,7 +215,7 @@ const SideBar = ({ addTab }) => {
             <ListItemIcon>
               <Badge
                 badgeContent={
-                  notification && notification?.notificationsDetails?.length
+                  notificData && notificData?.length
                 }
                 color="error"
               >
@@ -223,12 +227,12 @@ const SideBar = ({ addTab }) => {
             <ListItemText primary="Notifications" />
           </ListItemButton>
 
-          <Drawer
+        { isNotifDrawerOpen && <Drawer
             anchor="right"
             open={isNotifDrawerOpen}
             onClose={() => setNotifDrawerOpen(false)}
           >
-            <ToastContainer position="top-right" autoClose={3000} />
+            
 
             <List sx={{ width: 300 }}>
               <ListItem>
@@ -256,9 +260,11 @@ const SideBar = ({ addTab }) => {
                             color="text.secondary"
                             sx={{ marginBottom: 2 }}
                           >
-                            {notification.message}
+                            {notification.message || "No message"}
                           </Typography>
-                          {notification?.type === "approve" && (
+                          {
+                          notification?.type === "approve" &&
+                           (
                             <Box display="flex" mt={1}>
                               <Button
                                 variant="contained"
@@ -295,7 +301,7 @@ const SideBar = ({ addTab }) => {
                 </ListItem>
               )}
             </List>
-          </Drawer>
+          </Drawer>}
           <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Provide a Reject Reason</DialogTitle>
             <DialogContent>
@@ -320,6 +326,7 @@ const SideBar = ({ addTab }) => {
               </Button>
             </DialogActions>
           </Dialog>
+          <ToastContainer position="top-right" autoClose={3000} />
           {/* <ListItemButton
             onClick={() => {
               navigate("/profile");
