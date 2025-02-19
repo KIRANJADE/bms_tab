@@ -16,6 +16,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  IconButton,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -28,6 +29,7 @@ import { userCreate, userListData } from "../../state/redux/authSlice";
 import { useEffect, useState } from "react";
 import { use } from "react";
 import FamilyDetailsTables from "../../components/tableView/familydetailsTable";
+import CloseIcon from "@mui/icons-material/Close";
 
 const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
   const {
@@ -62,7 +64,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     "பொருளாளர்",
     "கணக்கர்",
     "செயலாளர்",
-    "Member"
+    "Member",
   ];
 
   const chitCommitteePositionOptions = ["தலைவர்", "பொருளாளர்", "கணக்கர்"];
@@ -197,7 +199,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     const response = await getUserById(cardsUserId);
     console.log(response, "myresss");
     setUserById(response?.data?.user);
-    setFamilydetails(response?.data?.familymembersdetails)
+    setFamilydetails(response?.data?.familymembersdetails);
   };
 
   const cancelUserForm = () => {
@@ -308,6 +310,12 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
         <Typography id="add-new-modal-title" variant="h6" component="h2" mb={3}>
           Add / Edit User
         </Typography>
+        <IconButton
+          onClick={cancelUserForm} // Define a function to close the modal or form
+          sx={{ position: "absolute", top: 8, right: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
         <form
           onSubmit={handleSubmit(onSubmit)}
           style={{ flex: 1, overflow: "auto" }}
@@ -865,7 +873,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
               </Typography>
             </Grid>
             <Grid item xs={12} sm={12}>
-              <FamilyDetailsTables data={familydetail} search={false}/>
+              <FamilyDetailsTables data={familydetail} search={false} />
             </Grid>
           </Grid>
 

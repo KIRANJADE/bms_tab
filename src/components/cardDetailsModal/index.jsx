@@ -50,7 +50,7 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
         >
         {/* Close Button */}
         <IconButton
-          sx={{ position: "absolute", top: 8, right: 8, color: "white" }}
+          sx={{ position: "absolute", top: 8, right: 8, color: "black" }}
           onClick={onClose}
           >
           <CloseIcon />

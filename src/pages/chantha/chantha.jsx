@@ -4,6 +4,7 @@ import {
   Button,
   Grid,
   Grid2,
+  IconButton,
   MenuItem,
   Modal,
   Select,
@@ -21,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { chanthaList } from "../../state/redux/authSlice";
 import ConfirmationPopup from "../../components/confirmationPopup";
 import { ToastContainer } from "react-toastify";
+import CloseIcon from "@mui/icons-material/Close";
 
 const ParentComponent = () => {
   const [open, setOpen] = useState(false);
@@ -139,11 +141,11 @@ const ParentComponent = () => {
       <ConfirmationPopup
         show={popupOpen}
         title="Confirmation"
-        message={"Are you sure you want to delete this item?" }
+        message={"Are you sure you want to delete this item?"}
         onConfirm={handleDelete}
         onCancel={() => setPopupOpen(false)}
       />
-        <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} />
 
       <Box
         sx={{ display: "flex", justifyContent: "flex-start", marginBottom: 2 }}
@@ -181,6 +183,12 @@ const ParentComponent = () => {
           <h5 style={{ marginBottom: "20px" }}>
             {editData._id ? "Edit Chantha" : "Add Chantha"}
           </h5>
+          <IconButton
+            onClick={handleClose} // Define a function to close the modal or form
+            sx={{ position: "absolute", top: 8, right: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
           <form onSubmit={handleSubmit(onSubmit)}>
             {editData._id && (
               <Controller

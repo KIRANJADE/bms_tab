@@ -15,6 +15,7 @@ import {
   FormLabel,
   Checkbox,
   CircularProgress,
+  IconButton,
 } from "@mui/material";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
@@ -30,7 +31,7 @@ import {
   committeCommonData,
   committeeListData,
 } from "../../state/redux/authSlice";
-
+import CloseIcon from "@mui/icons-material/Close";
 
 const AttendanceForm = ({ open, onClose, editDatas }) => {
   const [page, setPage] = useState(1);
@@ -182,6 +183,12 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h6">Meeting Details</Typography>
+              <IconButton
+    onClick={handleCancel} // Define a function to close the modal or form
+    sx={{ position: "absolute", top: 8, right: 8 }}
+  >
+    <CloseIcon />
+  </IconButton>
             </Grid>
             <Grid item xs={6}>
               <Controller

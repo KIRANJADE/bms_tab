@@ -15,18 +15,60 @@ import Home from "../pages/homePage";
 import { useMediaQuery } from "@mui/material";
 
 const DashboardLayout = () => {
-  const [activeTabs, setActiveTabs] = useState([
-    { id: "tab1", label: "Dashboard" },
-  ]);
-  const [activeTab, setActiveTab] = useState("tab1");
+  // const [activeTabs, setActiveTabs] = useState([
+  //   { id: "tab1", label: "Dashboard" },
+  // ]);
+  // const [activeTab, setActiveTab] = useState("tab1");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isSidebarOpen, setSidebarOpen] = useState(true);
+  // const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [totalPages, setTotalPages] = useState(0);
-  const isSmallScreen = useMediaQuery("(max-width:1200px)");
+  // const isSmallScreen = useMediaQuery("(max-width:1200px)");
   const dispatch = useDispatch();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(
+    JSON.parse(localStorage.getItem("isSidebarOpen")) ?? true
+  );
+  const [activeTabs, setActiveTabs] = useState(
+    JSON.parse(localStorage.getItem("activeTabs")) || ["dashboard"]
+  );
+  const [activeTab, setActiveTab] = useState(
+    JSON.parse(localStorage.getItem("activeTab")) || "dashboard"
+  );
+
+  const isSmallScreen = window.innerWidth <= 768;
+
+ useEffect(() => {
+    localStorage.setItem("isSidebarOpen", JSON.stringify(isSidebarOpen));
+  }, [isSidebarOpen]);
+
+  useEffect(() => {
+    localStorage.setItem("activeTabs", JSON.stringify(activeTabs));
+  }, [activeTabs]);
+
+  useEffect(() => {
+    localStorage.setItem("activeTab", JSON.stringify(activeTab));
+  }, [activeTab]);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  const addTab = (tabId, label, path) => {
+    if (!activeTabs.find((tab) => tab.id === tabId)) {
+      setActiveTabs((prevTabs) => [...prevTabs, { id: tabId, label }]);
+    }
+    setActiveTab(tabId);
+  };
+
+  const removeTab = (tabId) => {
+    setActiveTabs((prevTabs) => prevTabs.filter((tab) => tab.id !== tabId));
+    if (activeTab === tabId && activeTabs.length > 1) {
+      const nextTab = activeTabs.find((tab) => tab.id !== tabId);
+      setActiveTab(nextTab?.id || "tab1");
+    }
+  };
 
   const fetchUserList = async () => {
     setLoading(true);
@@ -95,9 +137,7 @@ const DashboardLayout = () => {
     setPage(newPage);
   };
 
-  const toggleSidebar = () => {
-    setSidebarOpen((prev) => !prev);
-  };
+
 
   const tabComponents = {
     tab1: <Home />,
@@ -108,20 +148,6 @@ const DashboardLayout = () => {
     tab6: <Events />,
   };
 
-  const addTab = (tabId, label, path) => {
-    if (!activeTabs.find((tab) => tab.id === tabId)) {
-      setActiveTabs((prevTabs) => [...prevTabs, { id: tabId, label }]);
-    }
-    setActiveTab(tabId);
-  };
-
-  const removeTab = (tabId) => {
-    setActiveTabs((prevTabs) => prevTabs.filter((tab) => tab.id !== tabId));
-    if (activeTab === tabId && activeTabs.length > 1) {
-      const nextTab = activeTabs.find((tab) => tab.id !== tabId);
-      setActiveTab(nextTab?.id || "tab1");
-    }
-  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
