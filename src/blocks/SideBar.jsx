@@ -70,7 +70,7 @@ const notifications = [
   { id: 3, message: "Reminder: Meeting at 3 PM" },
 ];
 
-const SideBar = ({ addTab }) => {
+const SideBar = ({ addTab, }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -86,6 +86,14 @@ const SideBar = ({ addTab }) => {
   );
   const [open, setOpen] = useState(false); // State to control modal visibility
   const [rejectReason, setRejectReason] = useState(""); // State to store the reject reason
+
+  // useEffect(() => {
+  //   const currentPath = window.location.pathname;
+  //   const activePage = pages.find((page) => page.path === currentPath);
+  //   if (activePage) {
+  //     setActiveTab(activePage.id);
+  //   }
+  // }, []);
 
   // Open the modal
   const handleClickOpen = (notificationId) => {

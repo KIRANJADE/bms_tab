@@ -34,23 +34,28 @@ const DashboardLayout = () => {
     const storedTabs = localStorage.getItem("activeTabs");
     return storedTabs ? JSON.parse(storedTabs) : [{ id: "tab1", label: "Dashboard" }];
   });
-  
+
   const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem("activeTab") || "tab1";
+    const storedTab = JSON.parse(localStorage.getItem("activeTab"));
+    return storedTab || "tab1";
   });
   const isSmallScreen = window.innerWidth <= 768;
 
- useEffect(() => {
+  useEffect(() => {
     localStorage.setItem("isSidebarOpen", JSON.stringify(isSidebarOpen));
   }, [isSidebarOpen]);
 
   useEffect(() => {
-    localStorage.setItem("activeTabs", JSON.stringify(activeTabs));
-  }, [activeTabs]);
-
-  useEffect(() => {
     localStorage.setItem("activeTab", JSON.stringify(activeTab));
   }, [activeTab]);
+  
+  useEffect(() => {
+    const storedTab = JSON.parse(localStorage.getItem("activeTab"));
+    if (storedTab && activeTabs.some((tab) => tab.id === storedTab)) {
+      setActiveTab(storedTab);
+    }
+  }, [activeTabs]);
+  
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
