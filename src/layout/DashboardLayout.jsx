@@ -15,17 +15,11 @@ import Home from "../pages/homePage";
 import { useMediaQuery } from "@mui/material";
 
 const DashboardLayout = () => {
-  // const [activeTabs, setActiveTabs] = useState([
-  //   { id: "tab1", label: "Dashboard" },
-  // ]);
-  // const [activeTab, setActiveTab] = useState("tab1");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [totalPages, setTotalPages] = useState(0);
-  // const isSmallScreen = useMediaQuery("(max-width:1200px)");
   const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(
     JSON.parse(localStorage.getItem("isSidebarOpen")) ?? true
