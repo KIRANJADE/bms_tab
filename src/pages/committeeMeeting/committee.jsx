@@ -84,7 +84,7 @@ const User = () => {
               color="primary"
               size="small"
               onClick={() => handleEdit(item)}
-              disabled={new Date(item.meetingDate) < new Date()}
+              disabled={item.isComplete}
             >
               <EditIcon fontSize="small" />
             </IconButton>

@@ -226,24 +226,6 @@ const Dashboard = () => {
           <Box sx={{ marginTop: 2, marginBottom: 2 }}>
             <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
               <FormControl variant="outlined" fullWidth>
-                <InputLabel id="Status-label">Status</InputLabel>
-                <Select
-                  labelId="Status-label"
-                  label="Status"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                >
-                  <MenuItem value="">
-                    <em>Select Status</em>
-                  </MenuItem>
-                  <MenuItem value="active">Active</MenuItem>
-                  <MenuItem value="death">Death</MenuItem>
-                  <MenuItem value="dismiss">Dismiss</MenuItem>
-                  <MenuItem value="suspend">Suspend</MenuItem>
-                  <MenuItem value="VRS">VRS</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl variant="outlined" fullWidth>
                 <InputLabel id="memberType-label">Member Type</InputLabel>
                 <Select
                   labelId="memberType-label"
@@ -257,6 +239,21 @@ const Dashboard = () => {
                   <MenuItem value="a-class">A-Class</MenuItem>
                   <MenuItem value="b-class">B-Class</MenuItem>
                   <MenuItem value="c-class">C-Class</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl variant="outlined" fullWidth>
+                <InputLabel id="userType-label">User Type</InputLabel>
+                <Select
+                  labelId="userType-label"
+                  label="User Type"
+                  value={userType}
+                  onChange={(e) => setUserType(e.target.value)}
+                >
+                  <MenuItem value="">
+                    <em>Select User Type</em>
+                  </MenuItem>
+                  <MenuItem value="full">Full</MenuItem>
+                  <MenuItem value="half">Half</MenuItem>
                 </Select>
               </FormControl>
               <FormControl variant="outlined" fullWidth>
@@ -275,18 +272,21 @@ const Dashboard = () => {
                 </Select>
               </FormControl>
               <FormControl variant="outlined" fullWidth>
-                <InputLabel id="userType-label">User Type</InputLabel>
+                <InputLabel id="Status-label">Status</InputLabel>
                 <Select
-                  labelId="userType-label"
-                  label="User Type"
-                  value={userType}
-                  onChange={(e) => setUserType(e.target.value)}
+                  labelId="Status-label"
+                  label="Status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
                 >
                   <MenuItem value="">
-                    <em>Select User Type</em>
+                    <em>Select Status</em>
                   </MenuItem>
-                  <MenuItem value="full">Full</MenuItem>
-                  <MenuItem value="half">Half</MenuItem>
+                  <MenuItem value="active">Active</MenuItem>
+                  <MenuItem value="death">Death</MenuItem>
+                  <MenuItem value="dismiss">Dismiss</MenuItem>
+                  <MenuItem value="suspend">Suspend</MenuItem>
+                  <MenuItem value="VRS">VRS</MenuItem>
                 </Select>
               </FormControl>
               <Button
