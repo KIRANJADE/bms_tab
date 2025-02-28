@@ -83,13 +83,7 @@ const SideBar = ({ addTab, }) => {
   const [open, setOpen] = useState(false); // State to control modal visibility
   const [rejectReason, setRejectReason] = useState(""); // State to store the reject reason
 
-  // useEffect(() => {
-  //   const currentPath = window.location.pathname;
-  //   const activePage = pages.find((page) => page.path === currentPath);
-  //   if (activePage) {
-  //     setActiveTab(activePage.id);
-  //   }
-  // }, []);
+
 
   // Open the modal
   const handleClickOpen = (notificationId) => {

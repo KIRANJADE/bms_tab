@@ -25,24 +25,30 @@ const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(
     JSON.parse(localStorage.getItem("isSidebarOpen")) ?? true
   );
+  
   const [activeTabs, setActiveTabs] = useState(() => {
     const storedTabs = localStorage.getItem("activeTabs");
     return storedTabs ? JSON.parse(storedTabs) : [{ id: "tab1", label: "Dashboard" }];
   });
-
+  
   const [activeTab, setActiveTab] = useState(() => {
     const storedTab = JSON.parse(localStorage.getItem("activeTab"));
     return storedTab || "tab1";
   });
+  
   const isSmallScreen = window.innerWidth <= 768;
-
+  
   useEffect(() => {
     localStorage.setItem("isSidebarOpen", JSON.stringify(isSidebarOpen));
   }, [isSidebarOpen]);
-
+  
   useEffect(() => {
     localStorage.setItem("activeTab", JSON.stringify(activeTab));
   }, [activeTab]);
+  
+  useEffect(() => {
+    localStorage.setItem("activeTabs", JSON.stringify(activeTabs));
+  }, [activeTabs]);
   
   useEffect(() => {
     const storedTab = JSON.parse(localStorage.getItem("activeTab"));
@@ -51,25 +57,33 @@ const DashboardLayout = () => {
     }
   }, [activeTabs]);
   
-
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
-
-  const addTab = (tabId, label, path) => {
-    if (!activeTabs.find((tab) => tab.id === tabId)) {
-      setActiveTabs((prevTabs) => [...prevTabs, { id: tabId, label }]);
-    }
+  
+  const addTab = (tabId, label) => {
+    setActiveTabs((prevTabs) => {
+      const updatedTabs = prevTabs.find((tab) => tab.id === tabId)
+        ? prevTabs
+        : [...prevTabs, { id: tabId, label }];
+      localStorage.setItem("activeTabs", JSON.stringify(updatedTabs)); // Persist tabs immediately
+      return updatedTabs;
+    });
     setActiveTab(tabId);
   };
-
+  
   const removeTab = (tabId) => {
-    setActiveTabs((prevTabs) => prevTabs.filter((tab) => tab.id !== tabId));
-    if (activeTab === tabId && activeTabs.length > 1) {
-      const nextTab = activeTabs.find((tab) => tab.id !== tabId);
-      setActiveTab(nextTab?.id || "tab1");
+    setActiveTabs((prevTabs) => {
+      const updatedTabs = prevTabs.filter((tab) => tab.id !== tabId);
+      localStorage.setItem("activeTabs", JSON.stringify(updatedTabs)); // Persist tabs immediately
+      return updatedTabs;
+    });
+  
+    if (activeTab === tabId) {
+      setActiveTab(activeTabs.length > 1 ? activeTabs[0].id : "tab1");
     }
   };
+  
 
   const fetchUserList = async () => {
     setLoading(true);
