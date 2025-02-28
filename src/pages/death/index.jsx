@@ -14,18 +14,18 @@ import CustomizedTables from "../../components/tableView/table";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PublicIcon from "@mui/icons-material/Public";
-import EventsPopup from "../eventsForm/index";
+import DeathPopup from "../deathForm/index";
 import ConfirmationPopup from "../../components/confirmationPopup";
 import { ToastContainer } from "react-toastify";
 import {
-  getAllEvents,
+  getAllDeath,
   getEventById,
-  deleteEvents,
+  deleteDeath,
   publishEvents,
 } from "../../state/redux/userApi";
-import { eventById, eventsList } from "../../state/redux/authSlice";
+import { eventById, death } from "../../state/redux/authSlice";
 
-const Events = () => {
+const Death = () => {
   const [editingCard, setEditingCard] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tableData, setTableData] = useState([]);
@@ -42,12 +42,13 @@ const Events = () => {
   const eventListData = useSelector((state) => state.auth?.eventsData || []);
 
   const headers = [
-    { key: "id", label: "Event Id" },
-    { key: "name", label: "Event Name" },
-    { key: "date", label: "Start Date" },
-    { key: "endDate", label: "End Date" },
-    { key: "amount", label: "Amount" },
-    { key: "fee", label: "Late Fee" },
+    { key: "familyid", label: "Family Id" },
+    { key: "memberId", label: "Member Id" },
+    { key: "deathDate", label: "Death Date" },
+    { key: "funeral", label: "Funeral Date" },
+    { key: "deathDetails", label: "Death Details Id" },
+    { key: "amount", label: "Fine Amount" },
+    { key: "description", label: "description" },
     { key: "status", label: "Status" },
     { key: "actions", label: "Actions" },
   ];
@@ -57,14 +58,14 @@ const Events = () => {
 
     try {
       if (actionType === "delete") {
-        const response = await deleteEvents(selectedId);
-        if (response?.status) fetchEventsList();
+        const response = await deleteDeath(selectedId);
+        if (response?.status) fetchDeathList();
       } else if (actionType === "public") {
         let payload = {
           eventId: selectedId.eventId,
         };
         const response = await publishEvents(payload);
-        if (response?.status) fetchEventsList();
+        if (response?.status) fetchDeathList();
       }
     } catch (error) {
       // console.error(Error performing ${actionType}:, error);
@@ -81,76 +82,43 @@ const Events = () => {
     setActionType("delete");
   };
 
-  const handleConfirmationPublic = (item) => {
-    setSelectedId(item);
-    setActionType("public");
-    setPopupOpen(true);
+
+  const handleEdit = (item) => {
+    setEditData(item); // Set the selected data
+    setIsModalOpen(true); // Open the modal
   };
 
-  const handleEdit = (data) => {
-    getEventByIds(data?._id);
-  };
-
-  const getEventByIds = async (value) => {
+  const fetchDeathList = async () => {
+    let payload = { page: page + 1, limit: rowsPerPage, status: "active" }; // Backend page starts from 1
     try {
-      const response = await getEventById(value);
-      console.log(response);
-      if (response?.status) {
-        dispatch(eventById(response));
-        setEditData(response);
-        handleModalOpen();
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const handleModalOpen = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleAddOpen = () => {
-    handleModalOpen();
-    setEditData([]);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
-
-  const fetchEventsList = async () => {
-    let payload = { page: page + 1, limit: rowsPerPage }; // Backend page starts from 1
-    try {
-      const response = await getAllEvents(payload, { status: "active" });
+      const response = await getAllDeath(payload);
       if (response.status) {
-        dispatch(eventsList(response.eventDetails)); // Update Redux store
+        dispatch(death(response.deathdetails)); // Update Redux store
         setTotalRecords(response.totalRecords || 0);
         
+        console.log(response.deathdetails, "response.deathdetails")
         // Update table data immediately
-        const formattedData = response?.eventDetails.map((item) => ({
-          id: item?.eventId,
-          name: item.eventName,
-          date: item.startDate,
-          endDate: item.endDate,
-          amount: item.amount,
-          fee: item.lateFee,
+        const formattedData = response?.deathdetails.map((item) => ({
+          familyid: item?.familyId,
+          memberId: item.memberId,
+          deathDate: item.deathDate,
+          funeral: item.funeralDate,
+          deathDetails: item.deathdetailsId,
+          amount: item.fineAmount,
+          description: item.description,
           status: item.status
             ? item.status.charAt(0).toUpperCase() + item.status.slice(1)
             : "",
           actions: (
             <div style={{ display: "flex", gap: "8px" }}>
-              <IconButton
+              {item.deathDate !== item.funeralDate &&  <IconButton
                 color="primary"
                 size="small"
                 onClick={() => handleEdit(item)}
-                disabled={
-                  item.isalreadyAdded ||
-                  new Date(item.meetingDate) < new Date() ||
-                  item.status === "deleted"
-                }
+               
               >
                 <EditIcon fontSize="small" />
-              </IconButton>
+              </IconButton>}
               <IconButton
                 color="error"
                 size="small"
@@ -159,14 +127,7 @@ const Events = () => {
               >
                 <DeleteIcon fontSize="small" />
               </IconButton>
-              <IconButton
-                color="success"
-                size="small"
-                disabled={item.isalreadyAdded || item.status === "deleted"}
-                onClick={() => handleConfirmationPublic(item)}
-              >
-                <PublicIcon fontSize="small" />
-              </IconButton>
+              
             </div>
           ),
         }));
@@ -180,7 +141,7 @@ const Events = () => {
   
 
   useEffect(() => {
-    fetchEventsList();
+    fetchDeathList();
   }, [page, rowsPerPage]);
   
 
@@ -206,7 +167,7 @@ console.log(eventListData, "eventDatas")
   return (
     <>
       {isModalOpen && (
-        <EventsPopup open={isModalOpen} editDatas={isEditData} onClose={() => setIsModalOpen(false)} />
+        <DeathPopup open={isModalOpen} editDatas={isEditData} onClose={() => setIsModalOpen(false)} />
       )}
       <ToastContainer position="top-right" autoClose={3000} />
       <ConfirmationPopup
@@ -220,7 +181,7 @@ console.log(eventListData, "eventDatas")
       />
       <Box sx={{ display: "flex", justifyContent: "flex-start", marginBottom: 2 }}>
         <Button style={{ backgroundColor: "#4C79F8" }} variant="contained" onClick={() => setIsModalOpen(true)}>
-          Add Event
+          Add Death
         </Button>
       </Box>
       <Grid container spacing={1}>
@@ -240,4 +201,4 @@ console.log(eventListData, "eventDatas")
   );
 };
 
-export default Events;
+export default Death;

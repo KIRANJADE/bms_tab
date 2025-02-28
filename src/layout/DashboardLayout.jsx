@@ -6,10 +6,11 @@ import Admin from "../pages/administrator";
 import User from "../pages/committeeMeeting/committee";
 import Chantha from "../pages/chantha/chantha";
 import Events from "../pages/events/index";
+import Death from "../pages/death/index";
 import "../assets/css/common.css";
-import { userList, CommitteeList, getAllEvents } from "../state/redux/userApi";
+import { userList, CommitteeList, getAllEvents, getAllDeath, getMemberId } from "../state/redux/userApi";
 import { useDispatch } from "react-redux";
-import { userListData, committeeListData, eventsList } from "../state/redux/authSlice";
+import { userListData, committeeListData, eventsList, death, memberData } from "../state/redux/authSlice";
 import { Pagination, Stack } from "@mui/material";
 import Home from "../pages/homePage";
 import { useMediaQuery } from "@mui/material";
@@ -123,14 +124,58 @@ const DashboardLayout = () => {
     }
   };
 
+  const fetchDeathList = async (payload) => {
+    // setLoading(true);
+
+    try {
+      const response = await getAllDeath(payload);
+
+      if (response.status) {
+        dispatch(death(response?.deathdetails));
+        // setTotalPages(response.totalPages);
+      }
+    } catch (error) {
+      setError("Failed to fetch user data");
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  const fetchMemberList = async (payload) => {
+    // setLoading(true);
+
+    try {
+      const response = await getMemberId(payload);
+
+      if (response.status) {
+        dispatch(memberData(response?.userDetails));
+        // setTotalPages(response.totalPages);
+      }
+    } catch (error) {
+      setError("Failed to fetch user data");
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+
+  
+
   useEffect(() => {
     let payload = {
       page: 1,
       limit: 12,
     }
+    let deathPayload = {
+      page: 1,
+      limit: 12,
+      status: "active"
+    }
     fetchUserList();
     fetchCommitteeList();
     fetchEventsList(payload)
+    fetchDeathList(deathPayload);
+    fetchMemberList()
   }, [page, limit]);
 
   const handlePageChange = (event, newPage) => {
@@ -146,6 +191,8 @@ const DashboardLayout = () => {
     tab4: <User />,
     tab5: <Chantha />,
     tab6: <Events />,
+    tab7: <Death />,
+
   };
 
 

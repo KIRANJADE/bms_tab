@@ -609,9 +609,129 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 	  }
 	};
 
+  export const getAllDeath = async (payload) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.post(`${BASE_URL}/api/deathdetails/getall`,payload, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
 
+  export const getMemberId = async () => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.get(`${BASE_URL}/api/common/getcollectionmembers`, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
 
+  export const familyList = async (payload) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.post(`${BASE_URL}/api/familydetails/getall`,payload, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+ 
+  export const createDeath = async (requestParams) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    
+		const response = await axios.post(`${BASE_URL}/api/deathdetails`,requestParams, {
+		  headers,
+		});
+    toast.success("Created successfully!");
 
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const editDeath = async (id,requestParams) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    
+		const response = await axios.put(`${BASE_URL}/api/deathdetails/${id}`,requestParams, {
+		  headers,
+		});
+    toast.success("Edited successfully!");
+
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+
+  export const deleteDeath = async (id,requestParams) => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};
+    const config = {
+      headers,
+      ...requestParams,
+    }
+		const response = await axios.delete(`${BASE_URL}/api/deathdetails/${id}`,config);
+    toast.success("Deleted successfully!");
+
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
 
 
   

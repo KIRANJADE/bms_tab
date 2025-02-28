@@ -6,6 +6,7 @@ import Login from "../pages/login/login";
 import Dashboard from "../pages/dashboard/dashboard";
 import Admin from "../pages/administrator";
 import Chantha from "../pages/chantha/chantha";
+import Death from "../pages/death/index";
 import Home from "../pages/homePage";
 const AppRoutes = () => {
   return (
@@ -19,6 +20,7 @@ const AppRoutes = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/chantha" element={<Chantha />} />
+        <Route path="/deaths" element={<Death />} />
       </Route>
     </Routes>
   );

@@ -18,7 +18,7 @@ import {
   DialogTitle,
   DialogContent,
   TextField,
-  DialogActions,
+ DialogActions,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import PersonIcon from "@mui/icons-material/Person";
@@ -40,6 +40,7 @@ import { notify } from "../state/redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import Badge from "@mui/material/Badge";
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 const pages = [
   {
     id: "tab1",
@@ -62,12 +63,7 @@ const pages = [
     icon: <PaidOutlinedIcon />,
   },
   { id: "tab6", label: "Events", path: "/events", icon: <EventIcon /> },
-];
-
-const notifications = [
-  { id: 1, message: "New friend request from John" },
-  { id: 2, message: "Your order has been shipped" },
-  { id: 3, message: "Reminder: Meeting at 3 PM" },
+  { id: "tab7", label: "Death", path: "/deaths", icon: <WarningAmberIcon /> },
 ];
 
 const SideBar = ({ addTab, }) => {
