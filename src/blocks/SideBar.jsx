@@ -18,7 +18,7 @@ import {
   DialogTitle,
   DialogContent,
   TextField,
- DialogActions,
+  DialogActions,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import PersonIcon from "@mui/icons-material/Person";
@@ -32,6 +32,7 @@ import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
 import { useNavigate } from "react-router-dom";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import CloseIcon from "@mui/icons-material/Close";
+import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import {
   getAllNotifications,
   approveRejectNotifications,
@@ -40,7 +41,7 @@ import { notify } from "../state/redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import Badge from "@mui/material/Badge";
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 const pages = [
   {
     id: "tab1",
@@ -64,9 +65,32 @@ const pages = [
   },
   { id: "tab6", label: "Events", path: "/events", icon: <EventIcon /> },
   { id: "tab7", label: "Death", path: "/deaths", icon: <WarningAmberIcon /> },
+  {
+    id: "tab8",
+    label: "Collections",
+    path: "/collections",
+    icon: <LocalAtmIcon />,
+    submenu: [
+      {
+        id: "sub1",
+        label: "Ledger Collection",
+        path: "/collections/ledger",
+      },
+      {
+        id: "sub2",
+        label: "Yearly Collections",
+        path: "/collections/yearly",
+      },
+      {
+        id: "sub3",
+        label: "Pending Collections",
+        path: "/collections/pending",
+      },
+    ],
+  },
 ];
 
-const SideBar = ({ addTab, }) => {
+const SideBar = ({ addTab }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -74,17 +98,21 @@ const SideBar = ({ addTab, }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [selectedNotificationId, setSelectedNotificationId] = useState(null);
+const [activeSubTab, setActiveSubTab] = useState(null); // For submenu
 
   const [isNotifDrawerOpen, setNotifDrawerOpen] = useState(false);
-  const [notificData,setNotifyData] = useState([])
+  const [notificData, setNotifyData] = useState([]);
   const notification = useSelector(
     (state) => state.auth?.notificationData || []
   );
   const [open, setOpen] = useState(false); // State to control modal visibility
   const [rejectReason, setRejectReason] = useState(""); // State to store the reject reason
-  const [memberId, setMemberId] = useState(localStorage.getItem("memberId") || "");
-  const [membername, setMembername] = useState(localStorage.getItem("membername") || "");
-
+  const [memberId, setMemberId] = useState(
+    localStorage.getItem("memberId") || ""
+  );
+  const [membername, setMembername] = useState(
+    localStorage.getItem("membername") || ""
+  );
 
   // Open the modal
   const handleClickOpen = (notificationId) => {
@@ -106,7 +134,6 @@ const SideBar = ({ addTab, }) => {
       setSelectedNotificationId(null); // Reset selected notification ID
     }
   };
-  
 
   const handleLogout = () => {
     localStorage.clear();
@@ -121,7 +148,7 @@ const SideBar = ({ addTab, }) => {
     try {
       let payload = {
         memberId: localStorage.getItem("memberId"),
-        isRead:false
+        isRead: false,
       };
       const response = await getAllNotifications(payload);
 
@@ -158,7 +185,7 @@ const SideBar = ({ addTab, }) => {
       await approveRejectNotifications(notificationId, payload);
       fetchNotify();
       // toast.success(`Notification ${actionType}d successfully!`);
-      setNotifDrawerOpen(false)
+      setNotifDrawerOpen(false);
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
       console.error("Error handling action:", error);
@@ -177,26 +204,60 @@ const SideBar = ({ addTab, }) => {
         <Divider />
         <List>
           {pages.map((page) => (
-            <ListItemButton
-              key={page.id}
-              onClick={() => {
-                setActiveTab(page.id);
-                addTab(page.id, page.label, page.path);
-                if (isSmallScreen) setIsDrawerOpen(false);
-              }}
-              sx={{
-                backgroundColor: activeTab === page.id ? "#DEEFFF" : "inherit",
-                borderRadius: activeTab === page.id ? "10px" : "0",
-                "&:hover": {
-                  backgroundColor: "#DEEFFF",
-                  borderRadius: "10px",
-                },
-                margin: "4px 8px", // Add margin for better spacing
-              }}
-            >
-              <ListItemIcon>{page.icon}</ListItemIcon>
-              <ListItemText primary={page.label} />
-            </ListItemButton>
+            <div key={page.id}>
+              <ListItemButton
+                onClick={() => {
+                  setActiveTab(page.id);
+                  setActiveSubTab(null); // Clear submenu highlight
+                  addTab(page.id, page.label, page.path);
+                  if (isSmallScreen) setIsDrawerOpen(false);
+                }}
+                sx={{
+                  backgroundColor:
+                    activeTab === page.id && !activeSubTab
+                      ? "#DEEFFF"
+                      : "inherit",
+                  borderRadius: activeTab === page.id ? "10px" : "0",
+                  "&:hover": {
+                    backgroundColor: "#DEEFFF",
+                    borderRadius: "10px",
+                  },
+                  margin: "4px 8px",
+                }}
+              >
+                <ListItemIcon>{page.icon}</ListItemIcon>
+                <ListItemText primary={page.label} />
+              </ListItemButton>
+
+              {/* Check and render submenu if exists */}
+              {page.submenu && activeTab === page.id && (
+                <div style={{ paddingLeft: "32px" }}>
+                  {page.submenu.map((sub) => (
+                    <ListItemButton
+                      key={sub.id}
+                      onClick={() => {
+                        setActiveTab(page.id); // Keep parent open
+                        setActiveSubTab(sub.id); // Highlight submenu
+                        addTab(sub.id, sub.label, sub.path);
+                        if (isSmallScreen) setIsDrawerOpen(false);
+                      }}
+                      sx={{
+                        backgroundColor:
+                          activeSubTab === sub.id ? "#E3F2FD" : "inherit",
+                        borderRadius: activeSubTab === sub.id ? "8px" : "0",
+                        "&:hover": {
+                          backgroundColor: "#E3F2FD",
+                          borderRadius: "8px",
+                        },
+                        margin: "2px 16px", // Indent for submenu
+                      }}
+                    >
+                      <ListItemText primary={sub.label} />
+                    </ListItemButton>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </List>
         <Divider />
@@ -219,9 +280,7 @@ const SideBar = ({ addTab, }) => {
           >
             <ListItemIcon>
               <Badge
-                badgeContent={
-                  notificData && notificData?.length
-                }
+                badgeContent={notificData && notificData?.length}
                 color="error"
               >
                 {" "}
@@ -232,81 +291,79 @@ const SideBar = ({ addTab, }) => {
             <ListItemText primary="Notifications" />
           </ListItemButton>
 
-        { isNotifDrawerOpen && <Drawer
-            anchor="right"
-            open={isNotifDrawerOpen}
-            onClose={() => setNotifDrawerOpen(false)}
-          >
-            
-
-            <List sx={{ width: 300 }}>
-              <ListItem>
-                <ListItemText primary="Notifications" />
-                <IconButton onClick={() => setNotifDrawerOpen(false)}>
-                  <CloseIcon />
-                </IconButton>
-              </ListItem>
-
-              {notification &&
-              notification?.notificationsDetails?.length > 0 ? (
-                notification?.notificationsDetails?.map((notification) => (
-                  <ListItem
-                    key={notification.id}
-                    sx={{ padding: 1, marginBottom: 2 }}
-                  >
-                    {
-                      <Card sx={{ width: "100%" }}>
-                        <CardContent sx={{ padding: "16px" }}>
-                          <Typography variant="h6" sx={{ marginBottom: 1 }}>
-                            {notification.title}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ marginBottom: 2 }}
-                          >
-                            {notification.message || "No message"}
-                          </Typography>
-                          {
-                          notification?.type === "approve" &&
-                           (
-                            <Box display="flex" mt={1}>
-                              <Button
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                onClick={() =>
-                                  handleAction(notification._id, "approve")
-                                }
-                                sx={{ marginRight: 1 }}
-                              >
-                                Accept
-                              </Button>
-                              <Button
-                                variant="outlined"
-                                color="secondary"
-                                onClick={() =>
-                                  // handleAction(notification._id, "reject")
-                                  handleClickOpen(notification._id)
-                                }
-                                size="small"
-                              >
-                                Reject
-                              </Button>
-                            </Box>
-                          )}
-                        </CardContent>
-                      </Card>
-                    }
-                  </ListItem>
-                ))
-              ) : (
+          {isNotifDrawerOpen && (
+            <Drawer
+              anchor="right"
+              open={isNotifDrawerOpen}
+              onClose={() => setNotifDrawerOpen(false)}
+            >
+              <List sx={{ width: 300 }}>
                 <ListItem>
-                  <ListItemText primary="No new notifications" />
+                  <ListItemText primary="Notifications" />
+                  <IconButton onClick={() => setNotifDrawerOpen(false)}>
+                    <CloseIcon />
+                  </IconButton>
                 </ListItem>
-              )}
-            </List>
-          </Drawer>}
+
+                {notification &&
+                notification?.notificationsDetails?.length > 0 ? (
+                  notification?.notificationsDetails?.map((notification) => (
+                    <ListItem
+                      key={notification.id}
+                      sx={{ padding: 1, marginBottom: 2 }}
+                    >
+                      {
+                        <Card sx={{ width: "100%" }}>
+                          <CardContent sx={{ padding: "16px" }}>
+                            <Typography variant="h6" sx={{ marginBottom: 1 }}>
+                              {notification.title}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{ marginBottom: 2 }}
+                            >
+                              {notification.message || "No message"}
+                            </Typography>
+                            {notification?.type === "approve" && (
+                              <Box display="flex" mt={1}>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  size="small"
+                                  onClick={() =>
+                                    handleAction(notification._id, "approve")
+                                  }
+                                  sx={{ marginRight: 1 }}
+                                >
+                                  Accept
+                                </Button>
+                                <Button
+                                  variant="outlined"
+                                  color="secondary"
+                                  onClick={() =>
+                                    // handleAction(notification._id, "reject")
+                                    handleClickOpen(notification._id)
+                                  }
+                                  size="small"
+                                >
+                                  Reject
+                                </Button>
+                              </Box>
+                            )}
+                          </CardContent>
+                        </Card>
+                      }
+                    </ListItem>
+                  ))
+                ) : (
+                  <ListItem>
+                    <ListItemText primary="No new notifications" />
+                  </ListItem>
+                )}
+              </List>
+            </Drawer>
+          )}
           <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Provide a Reject Reason</DialogTitle>
             <DialogContent>

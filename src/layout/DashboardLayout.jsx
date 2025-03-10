@@ -7,6 +7,7 @@ import User from "../pages/committeeMeeting/committee";
 import Chantha from "../pages/chantha/chantha";
 import Events from "../pages/events/index";
 import Death from "../pages/death/index";
+import Ledger from "../pages/ledgerCollections/index";
 import "../assets/css/common.css";
 import { userList, CommitteeList, getAllEvents, getAllDeath, getMemberId } from "../state/redux/userApi";
 import { useDispatch } from "react-redux";
@@ -204,6 +205,7 @@ const DashboardLayout = () => {
     tab5: <Chantha />,
     tab6: <Events />,
     tab7: <Death />,
+    tab8: <Ledger />,
 
   };
 

@@ -8,6 +8,7 @@ import Admin from "../pages/administrator";
 import Chantha from "../pages/chantha/chantha";
 import Death from "../pages/death/index";
 import Home from "../pages/homePage";
+import LedgerCollection from "../pages/ledgerCollections/index";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -21,6 +22,8 @@ const AppRoutes = () => {
         <Route path="/admin" element={<Admin />} />
         <Route path="/chantha" element={<Chantha />} />
         <Route path="/deaths" element={<Death />} />
+        <Route path="/collections/ledger" element={<LedgerCollection />} />
+
       </Route>
     </Routes>
   );
