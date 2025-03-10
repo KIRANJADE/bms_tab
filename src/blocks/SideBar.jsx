@@ -82,7 +82,8 @@ const SideBar = ({ addTab, }) => {
   );
   const [open, setOpen] = useState(false); // State to control modal visibility
   const [rejectReason, setRejectReason] = useState(""); // State to store the reject reason
-
+  const [memberId, setMemberId] = useState(localStorage.getItem("memberId") || "");
+  const [membername, setMembername] = useState(localStorage.getItem("membername") || "");
 
 
   // Open the modal
@@ -120,6 +121,7 @@ const SideBar = ({ addTab, }) => {
     try {
       let payload = {
         memberId: localStorage.getItem("memberId"),
+        isRead:false
       };
       const response = await getAllNotifications(payload);
 
@@ -167,6 +169,11 @@ const SideBar = ({ addTab, }) => {
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Main Menu Section */}
       <div>
+        <Divider />
+        <div style={{ textAlign: "center", padding: "10px" }}>
+          <Typography variant="body2">{membername}</Typography>
+          <Typography variant="body2">{memberId}</Typography>
+        </div>
         <Divider />
         <List>
           {pages.map((page) => (

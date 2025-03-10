@@ -13,6 +13,7 @@ import {
   Tooltip,
   CardContent,
 } from "@mui/material";
+import PersonIcon from "@mui/icons-material/Person";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
@@ -22,11 +23,13 @@ import "../../components/cardList/cards.less";
 import { deleteUser } from "../../state/redux/authSlice";
 import CardDetailPopUp from "../../components/cardDetailsModal/index";
 import BalanceDetailPopup from "../../components/balanceDetailPopup/index";
+import FamilyPopup from "../../components/familyDetailPopup/index";
 
 const ActionCard = ({ users, profile, onEdit,memberTypeHistory = [] }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [open, setOpen] = useState(false);
   const [openBalancePopup, setBalancePopup] = useState(false);
+  const [openFamilyPopup, setFamilyPopup] = useState(false);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const dispatch = useDispatch();
 
@@ -63,9 +66,17 @@ const ActionCard = ({ users, profile, onEdit,memberTypeHistory = [] }) => {
     setBalancePopup(false);
   };
 
+  const onFamilyClose = () => {
+    setFamilyPopup(false);
+  };
+
   const onClose = () => {
     setOpen(false);
   };
+
+  const onFamily = () =>{
+    setFamilyPopup(true);
+  }
 
   return (
     <>
@@ -75,6 +86,7 @@ const ActionCard = ({ users, profile, onEdit,memberTypeHistory = [] }) => {
           onClose={onClose}
           userDetails={users}
           onEdit={onEdit}
+          onFamily={onFamily}
         />
       )}
         {openBalancePopup && (
@@ -84,29 +96,59 @@ const ActionCard = ({ users, profile, onEdit,memberTypeHistory = [] }) => {
           userDetails={users}
         />
       )}
+      {openFamilyPopup && (
+        <FamilyPopup
+          open={openFamilyPopup}
+          onClose={onFamilyClose}
+          userDetails={users}
+        />
+      )}
       <Card
-        className={classNames("action-card")}
-        
+        sx={{
+          borderRadius: "20px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+          overflow: "visible",
+          position: "relative",
+        }}
       >
-        <Box className={users?.isEdit ? "editcard" : "disabledCard"}  onClick={ users?.isEdit ?() => handlePopUpClick() : ""}>
-          <Box className="action-card-header">
-            <Box className="d-flex align-items-center">
-              <Avatar
-                src={users?.image}
-                alt={users?.title}
-                className="action-card-avatar"
-              />
-              <Box className="action-card-details">
-                <Typography variant="subtitle1" className="action-card-name">
-                  {profile?.lastname} {profile?.firstname}
-                </Typography>
-                <Typography variant="body2" className="action-card-id">
-                  {users?.memberdetails?.memberId
-                    ? users?.memberdetails?.memberId
-                    : "No Member ID"}
-                </Typography>
-              </Box>
-            </Box>
+        <Box
+          sx={{
+            backgroundColor: "#6ea8fe",
+            padding: "20px",
+            borderTopLeftRadius: "20px",
+            borderTopRightRadius: "20px",
+            textAlign: "center",
+          }}
+          className={users?.isEdit ? "editcard" : "disabledCard"}  onClick={ users?.isEdit ?() => handlePopUpClick() : ""}
+        >
+          <Typography variant="subtitle1" className="action-card-name" >
+            {profile?.lastname} {profile?.firstname}
+          </Typography>
+          <Typography variant="body2" className="action-card-id">
+            {users?.memberdetails?.memberId
+              ? users?.memberdetails?.memberId
+              : "No Member ID"}
+          </Typography>
+        </Box>
+        <Box>
+          <Avatar
+            sx={{
+              width: 60,
+              height: 60,
+              backgroundColor: "#4ecbff",
+              position: "absolute",
+              top: "60px",
+              left: "calc(15% - 30px)",
+            }}
+          >
+            <PersonIcon sx={{ color: "#fff" }} />
+          </Avatar>
+        </Box>
+        <Box sx={{
+              position: "absolute",
+              top: "0px",
+              right: "calc(15% - 30px)",
+            }}>
             {!users?.isEdit && (
               <Tooltip
                 open={tooltipOpen}
@@ -147,16 +189,26 @@ const ActionCard = ({ users, profile, onEdit,memberTypeHistory = [] }) => {
                 </IconButton>
               </Tooltip>
             )}
-          </Box>
         </Box>
-        <Box onClick={ users?.isEdit ?() => handleBalancePopUpClick() : ""}  className={users?.isEdit ? "editcard" : "disabledCard"}>
-          <Box className="action-card-details-item">
+        <Box
+          sx={{
+            backgroundColor: "#fff",
+            padding: "10px",
+            borderBottomLeftRadius: "20px",
+            borderBottomRightRadius: "20px",
+            textAlign: "center",
+            minHeight:"70px"
+          }}
+          onClick={ users?.isEdit ?() => handleBalancePopUpClick() : ""}  className={users?.isEdit ? "editcard" : "disabledCard"}
+        >
+          
+          <Box className="action-card-details-item" sx={{paddingLeft:"75px",paddingBottom:"10px"}}>
            {profile?.phoneno && <LocalPhoneOutlinedIcon fontSize="small" color="action" />}
             <Typography variant="body2" className="action-card-memberId">
               {profile?.phoneno}
             </Typography>
           </Box>
-          <Box className="action-card-details-item">
+          <Box className="action-card-details-item" sx={{paddingLeft:"75px"}}>
             <CurrencyRupeeIcon fontSize="small" color="action" />
             <Typography variant="body2" className="action-card-balance">
               {users?.balance}

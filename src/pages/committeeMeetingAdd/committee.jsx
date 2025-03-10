@@ -23,7 +23,6 @@ import axios from "axios";
 import {
   createCommitteMeeting,
   getAttendanceMembersList,
-  CommitteeList,
   editCommiteeMeeting,
 } from "../../state/redux/userApi";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,107 +33,83 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 const AttendanceForm = ({ open, onClose, editDatas }) => {
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(12);
+  const { handleSubmit, control, reset, setValue, formState: { errors }, watch } = useForm({
+    defaultValues: {
+      isAddAttendance: true, // Set default to true
+      meetingtitle: "",
+      meetingDate: "",
+      fineAmount: "",
+      userDetails: [],
+    },
+  });
+
   const [loading, setLoading] = useState(false);
-
-  const { handleSubmit, control, reset, setValue } = useForm();
-
   const committeData = useSelector((state) => state.auth.committeData);
-  console.log(committeData?.userDetails, "committeData");
-
   const dispatch = useDispatch();
 
   useEffect(() => {
     fetchAttendanceCommonmembers();
   }, []);
 
-  const fetchAttendanceCommonmembers = async () => {
-    try {
-      const response = await getAttendanceMembersList();
-      console.log(response);
-      if (response?.status) {
-        dispatch(committeCommonData(response));
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const fetchCommitteeList = async () => {
-    // setLoading(true);
-    try {
-      const response = await CommitteeList(page, limit, {
-        status: "active",
-      });
-
-      if (response.status) {
-        dispatch(committeeListData(response.committeemeetingDetails));
-        // setTotalPages(response.totalPages);
-      }
-    } catch (error) {
-      setError("Failed to fetch user data");
-    } finally {
-      // setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (editDatas) {
+    if (editDatas?.length > 0) {
       setValue("meetingtitle", editDatas?.meetingtitle || "");
-      const parsedDate = new Date(editDatas.meetingDate);
-
-      // Check if it's a valid date
-      if (!isNaN(parsedDate)) {
-        const formattedDate = parsedDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-        console.log(formattedDate, "formattedDateformattedDate");
-        setValue("meetingDate", formattedDate); // Populate the meetingDate
-      } else {
-        console.error("Invalid date:", editDatas.meetingDate);
+      let formattedmeetingDate = "";
+      if (/^\d{2}-\d{2}-\d{4}$/.test(editDatas.meetingDate)) {
+        const [day, month, year] = editDatas.meetingDate.split("-");
+        formattedmeetingDate = `${year}-${month}-${day}`;
       }
-      console.log("editDatas",editDatas);
-      
-      setValue("fineAmount", editDatas?.fineAmount || "");      
-      setValue("administrator", editDatas.isAddAttendance === true ? true : false);
+      setValue("meetingDate", formattedmeetingDate);
+      setValue("fineAmount", editDatas?.fineAmount || "");
+      setValue("isAddAttendance", editDatas.isAddAttendance ?? true);
       setValue("userDetails", (editDatas?.userDetails || []).filter(user => user?.attendance === true));
     }
   }, [editDatas, setValue]);
 
-  console.log(editDatas, "editDatas");
+  const fetchAttendanceCommonmembers = async () => {
+    try {
+      const response = await getAttendanceMembersList();
+      if (response?.status) {
+        dispatch(committeCommonData(response));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  const handleCancel = useCallback(() => {
+    reset();
+    onClose();
+  }, [reset, onClose]);
 
   const onSubmit = async (data) => {
-    setLoading(true); // Start loader
+    setLoading(true);
     const updatedUserDetails = committeData?.userDetails.map((user) => {
-      const isSelected = data.userDetails.some(
+      const isSelected = data.userDetails?.some(
         (selectedUser) => selectedUser._id === user._id
       );
       return {
         _id: user._id,
-        profile: {
-          firstname: user.profile.firstname,
-          lastname: user.profile.lastname,
-          gender: user.profile.gender,
-        },
+        profile: user.profile,
         status: user.status,
-        memberdetails: {
-          memberType: user.memberdetails.memberType,
-          memberId: user.memberdetails.memberId,
-          userType: user.memberdetails.userType,
-        },
-        attendance: isSelected, // Set attendance to true if selected, else false
+        memberdetails: user.memberdetails,
+        attendance: isSelected,
       };
     });
-  
+
     const payload = {
-      isAddAttendance: true,
-      meetingtitle: data.meetingtitle,
-      meetingDate: data.meetingDate,
-      fineAmount: data.fineAmount,
-      status: "active",
+      ...data,
       userDetails: updatedUserDetails,
+      status: "active",
     };
-  
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(payload.meetingDate)) {
+      const [year, month, day] = payload.meetingDate.split("-");
+      payload.meetingDate = `${day}-${month}-${year}`;
+    }
+
+    console.log(payload,'payload')
+
     try {
       let response;
       if (editDatas && editDatas._id) {
@@ -142,27 +117,15 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
       } else {
         response = await createCommitteMeeting(payload);
       }
-  
       if (response?.status || response?.ok) {
-        await fetchCommitteeList();
         handleCancel();
-      } else {
-        throw new Error("Unexpected response format.");
       }
     } catch (error) {
       console.error("Error in add/edit committee meeting:", error);
     } finally {
-      setLoading(false); // Stop loader after API call
+      setLoading(false);
     }
   };
-  
-
-  const handleCancel = useCallback(() => {
-    reset(); // Reset form values
-    onClose(); // Close the modal or form
-  }, [reset, onClose]); // Dependencies ensure this function is stable
-
-  console.log(editDatas.length, "editDatas");
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -184,156 +147,123 @@ const AttendanceForm = ({ open, onClose, editDatas }) => {
             <Grid item xs={12}>
               <Typography variant="h6">Meeting Details</Typography>
               <IconButton
-    onClick={handleCancel} // Define a function to close the modal or form
-    sx={{ position: "absolute", top: 8, right: 8 }}
-  >
-    <CloseIcon />
-  </IconButton>
-            </Grid>
-            <Grid item xs={6}>
-              <Controller
-                name="meetingtitle"
-                control={control}
-                slotProps={{ inputLabel: { shrink: true } }}
-                render={({ field }) => (
-                  <TextField {...field} label="Meeting Title" fullWidth />
-                )}
-              />
+                onClick={handleCancel}
+                sx={{ position: "absolute", top: 8, right: 8 }}
+              >
+                <CloseIcon />
+              </IconButton>
             </Grid>
             <Grid item xs={6}>
               <Controller
                 name="meetingDate"
                 control={control}
+                rules={{ required: "Meeting Date is required" }}
                 render={({ field }) => (
                   <TextField
                     {...field}
                     type="date"
                     label="Meeting Date"
                     fullWidth
-                    inputProps={{ min: new Date().toISOString().split("T")[0] }}
-                    InputLabelProps={{ shrink: true }} // Fixes label overlap
+                    inputProps={{
+                      min: new Date().toISOString().split("T")[0],
+                    }}
+                    InputLabelProps={{ shrink: true }}
+                    error={!!errors.meetingDate}
+                    helperText={errors.meetingDate?.message}
                   />
                 )}
               />
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={3}>
               <Controller
-                name="fineAmount"
-                control={control}
-                render={({ field }) => (
-                  <TextField {...field} label="Fine Amount" fullWidth />
-                )}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <Controller
-                name="administrator"
+                name="isAddAttendance"
                 control={control}
                 render={({ field }) => (
                   <FormControl component="fieldset">
-                    <FormLabel component="legend">
-                      Is Attendance Required
-                    </FormLabel>
+                    <FormLabel component="legend">Is Attendance Required</FormLabel>
                     <RadioGroup
                       row
                       {...field}
-                      value={field.value ?? ""} // Ensure default value
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "true")
-                      }
+                      value={field.value ?? true}
+                      onChange={(e) => field.onChange(e.target.value === "true")}
                     >
-                      <FormControlLabel
-                        value={true}
-                        control={<Radio />}
-                        label="True"
-                      />
-                      <FormControlLabel
-                        value={false}
-                        control={<Radio />}
-                        label="False"
-                      />
+                      <FormControlLabel value={true} control={<Radio />} label="Yes" />
+                      <FormControlLabel value={false} control={<Radio />} label="No" />
                     </RadioGroup>
                   </FormControl>
                 )}
               />
             </Grid>
 
-            <Grid item xs={12}>
-              <Typography variant="h6">User Details</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Controller
-                name="userDetails"
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    {...field}
-                    multiple
-                    options={
-                      Array.isArray(committeData?.userDetails)
-                        ? committeData?.userDetails
-                        : []
-                    }
-                    disableCloseOnSelect
-                    getOptionLabel={(option) => `${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`}
-                    value={field.value || []} // Ensure value is always an array
-                    onChange={(_, value) => field.onChange(value)} // Update form state
-                    isOptionEqualToValue={(option, value) =>
-                      option._id === value._id
-                    } // Fix selection
-                    renderOption={(props, option) => {
-                      const isSelected = (field.value || []).some(
-                        (val) => val._id === option._id
-                      );
-                      return (
+            {watch("isAddAttendance") === true && (
+              <Grid item xs={3}>
+                <Controller
+                  name="fineAmount"
+                  control={control}
+                  rules={{ required: "Fine Amount is required" }}
+                  render={({ field }) => (
+                    <TextField
+                      type="number"
+                      {...field}
+                      label="Fine Amount"
+                      fullWidth
+                      error={!!errors.fineAmount}
+                      helperText={errors.fineAmount?.message}
+                    />
+                  )}
+                />
+              </Grid> 
+            )}
+
+            {control._formValues.isAddAttendance && (
+              <Grid item xs={12}>
+                <Controller
+                  name="userDetails"
+                  control={control}
+                  rules={{ required: "Please select at least one user" }}
+                  render={({ field }) => (
+                    <Autocomplete
+                      {...field}
+                      multiple
+                      options={committeData?.userDetails || []}
+                      disableCloseOnSelect
+                      getOptionLabel={(option) =>
+                        `${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`
+                      }
+                      onChange={(_, value) => field.onChange(value)}
+                      renderOption={(props, option) => (
                         <li {...props}>
                           <Checkbox
                             icon={<CheckBoxOutlineBlankIcon />}
                             checkedIcon={<CheckBoxIcon />}
-                            checked={isSelected}
+                            checked={field.value?.some((val) => val._id === option._id) || false}
                           />
-                          {`${option?.profile?.firstname || ""} ${
-                            option?.profile?.lastname || ""
-                          }`}
+                          {`${option?.profile?.firstname || ""} ${option?.profile?.lastname || ""}`}
                         </li>
-                      );
-                    }}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Select Users" fullWidth />
-                    )}
-                  />
-                )}
-              />
-            </Grid>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select Users"
+                          fullWidth
+                          error={!!errors.userDetails}
+                          helperText={errors.userDetails?.message}
+                        />
+                      )}
+                    />
+                  )}
+                />
+              </Grid>
+            )}
 
             <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2}>
-              <Button variant="outlined" color="primary" style={{ color: "#4C79F8", borderColor: "#4C79F8" }} onClick={handleCancel}>
+              <Button variant="outlined" color="primary" onClick={handleCancel}>
                 Cancel
               </Button>
-              {/* <Button
-                style={{ backgroundColor: "#4C79F8",color:"white" }}
-                variant="contained"
-                color="primary"
-                type="submit"
-                disabled={loading} // Disable button when loading
-              >
-                {loading ? "Processing..." : editDatas ? "Update" : "Add"}
-              </Button> */}
-              <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={loading}
-              sx={{ minWidth: 100, position: "relative" }} // Ensures consistent button size
-            >
-              {loading ?  (
-                <>
-               <span style={{color:"black"}}>Processing...</span> 
-                <CircularProgress size={20} sx={{ color: "black" }} />
-                </>
-              ) : editDatas ? "Update" : "Add"}
-            </Button>
+              <Button type="submit" variant="contained" color="primary" disabled={loading}>
+                {loading ? <CircularProgress size={24} /> : "Submit"}
+              </Button>
             </Grid>
           </Grid>
         </form>

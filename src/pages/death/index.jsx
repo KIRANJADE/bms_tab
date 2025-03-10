@@ -21,7 +21,6 @@ import {
   getAllDeath,
   getEventById,
   deleteDeath,
-  publishEvents,
 } from "../../state/redux/userApi";
 import { eventById, death } from "../../state/redux/authSlice";
 
@@ -39,17 +38,15 @@ const Death = () => {
   const [eventDatas, setEventDatas] = useState([]);
 
   const dispatch = useDispatch();
-  const eventListData = useSelector((state) => state.auth?.eventsData || []);
 
   const headers = [
+    { key: "name", label: "Name" },
     { key: "familyid", label: "Family Id" },
     { key: "memberId", label: "Member Id" },
     { key: "deathDate", label: "Death Date" },
     { key: "funeral", label: "Funeral Date" },
-    { key: "deathDetails", label: "Death Details Id" },
     { key: "amount", label: "Fine Amount" },
     { key: "description", label: "description" },
-    { key: "status", label: "Status" },
     { key: "actions", label: "Actions" },
   ];
 
@@ -60,13 +57,7 @@ const Death = () => {
       if (actionType === "delete") {
         const response = await deleteDeath(selectedId);
         if (response?.status) fetchDeathList();
-      } else if (actionType === "public") {
-        let payload = {
-          eventId: selectedId.eventId,
-        };
-        const response = await publishEvents(payload);
-        if (response?.status) fetchDeathList();
-      }
+      } 
     } catch (error) {
       // console.error(Error performing ${actionType}:, error);
     }
@@ -98,60 +89,49 @@ const Death = () => {
         
         console.log(response.deathdetails, "response.deathdetails")
         // Update table data immediately
-        const formattedData = response?.deathdetails.map((item) => ({
-          familyid: item?.familyId,
-          memberId: item.memberId,
-          deathDate: item.deathDate,
-          funeral: item.funeralDate,
-          deathDetails: item.deathdetailsId,
-          amount: item.fineAmount,
-          description: item.description,
-          status: item.status
-            ? item.status.charAt(0).toUpperCase() + item.status.slice(1)
-            : "",
+        const formattedData = response?.deathdetails?.map((item) => ({
+          name: item?.name ?? "",
+          familyid: item?.familyId ?? "",
+          memberId: item?.memberId ?? "",
+          deathDate: item?.deathDate ?? "",
+          funeral: item?.funeralDate ?? "",
+          amount: item?.fineAmount ?? 0,
+          description: item?.description ?? "",
           actions: (
             <div style={{ display: "flex", gap: "8px" }}>
-              {item.deathDate !== item.funeralDate &&  <IconButton
+              <IconButton
                 color="primary"
                 size="small"
                 onClick={() => handleEdit(item)}
-               
+                disabled={
+                  //item?.deathDate === item?.funeralDate &&
+                  item?.funeralDate != new Date().toISOString().split("T")[0]
+                }
               >
                 <EditIcon fontSize="small" />
-              </IconButton>}
+              </IconButton>
+        
               <IconButton
                 color="error"
                 size="small"
-                disabled={item.isalreadyAdded || item.status === "deleted"}
+                disabled={item?.funeralDate != new Date().toISOString().split("T")[0]}
                 onClick={() => handleConfirmationDelete(item?._id)}
               >
                 <DeleteIcon fontSize="small" />
               </IconButton>
-              
             </div>
           ),
-        }));
-        
+        })) ?? [];        
         setTableData(formattedData);
       }
     } catch (error) {
       console.error("Failed to fetch user data", error);
     }
   };
-  
 
   useEffect(() => {
     fetchDeathList();
   }, [page, rowsPerPage]);
-  
-
-  // useEffect(() => {
-  //   if (JSON.stringify(eventDatas) !== JSON.stringify(eventListData)) {
-  //     setEventDatas(eventListData);
-  //   }
-  // }, [eventListData, ]);
-  
-console.log(eventListData, "eventDatas")
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -161,8 +141,6 @@ console.log(eventListData, "eventDatas")
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0); // Reset to first page when rows per page changes
   };
-
-  
 
   return (
     <>

@@ -51,6 +51,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log(isEditUsers,'isEditUsers')
     if (cardsUserId && isEditUsers) {
       fetchUsersById();
     } else {
@@ -64,18 +65,30 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     "பொருளாளர்",
     "கணக்கர்",
     "செயலாளர்",
-    "Member",
+    "இணை செயலாளர் (நிர்வாகம்)",
+    "இணை செயலாளர் (குழுக்கள்)"
   ];
 
-  const chitCommitteePositionOptions = ["தலைவர்", "பொருளாளர்", "கணக்கர்"];
-  const statusOptions = ["Active", "Death", "Dismiss", "Suspend", "VRS"];
+  const chitCommitteePositionOptions = ["இணை செயலாளர்", "நிதி குழு உறுப்பினர் I", "நிதி குழு உறுப்பினர் II","நிதி குழு உறுப்பினர் III"];
+  const titleOptions = ["திரு", "திருமதி", "செல்வி", "செல்வன்"]
+  const statusOptions = [{ label: "Driving License", value: "Driving License" },
+    { label: "Active", value: "active" },
+    { label: "Death", value: "death" },
+    { label: "Suspend", value: "suspend" },
+    { label: "VRS", value: "VRS" }];
   const identityProofOptions = [
-    "Driving License",
-    "PAN Card",
-    "Aadhaar",
-    "Passport",
+    { label: "Driving License", value: "Driving License" },
+    { label: "PAN Card", value: "PAN Card" },
+    { label: "Aadhaar", value: "Aadhaar" },
+    { label: "Passport", value: "Passport" }
   ];
-  const jobTypeOptions = ["Govt", "Private", "Self", "Un Employee"];
+  const jobTypeOptions = [
+    { label: "Govt", value: "Govt" },
+    { label: "Private", value: "Private" },
+    { label: "Self", value: "Self" },
+    { label: "Un Employee", value: "Un Employee" },
+    { label: "Student", value: "Student" },
+  ];
   const jobPortalOptions = ["Central Govt", "State Govt"];
   const jobProfessionalOptions = ["Working", "Retired"];
 
@@ -98,8 +111,9 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
         userById?.isAdministrator === false ? "no" : "yes"
       );
       setValue("position", userById?.position);
-      // setValue("isChitCommitteeMember", userById?.isChitCommitteeMember);
+      setValue("isChitCommitteeMember", userById?.isChitCommitteeMember === false ? "no" : "yes");
       setValue("chitCommitteePosition", userById?.chitCommitteePosition);
+      setValue("title",userById?.title)
       setValue("role", userById?.role);
       setValue("status", userById?.status);
       setValue("statusChangedDate", userById?.statusChangedDate);
@@ -211,6 +225,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
     console.log("Form Data:", data);
     let payload = {
       profile: {
+        title:data.title,
         firstname: data.firstName,
         lastname: data.lastName,
         phoneno: data.phoneNumber,
@@ -321,6 +336,48 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
           style={{ flex: 1, overflow: "auto" }}
         >
           <Grid container spacing={3}>
+            <Grid item xs={12} sm={2}>
+              <FormControl
+                fullWidth
+                margin="normal"
+                size="small"
+                error={!!errors.title}
+              >
+                <InputLabel>Title</InputLabel>
+                <Controller
+                  name="title"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Select {...field} label="title">
+                      {titleOptions.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                {errors.title && (
+                  <FormHelperText>
+                    {errors.title?.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={1}>
+              <TextField
+                fullWidth
+                label="Last Name"
+                margin="normal"
+                size="small"
+                {...register("lastName", { required: "Last name is required" })}
+                slotProps={{ inputLabel: { shrink: true } }}
+                error={!!errors.lastName}
+                helperText={errors.lastName?.message}
+              />
+            </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
@@ -335,18 +392,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 helperText={errors.firstName?.message}
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                fullWidth
-                label="Last Name"
-                margin="normal"
-                size="small"
-                {...register("lastName", { required: "Last name is required" })}
-                slotProps={{ inputLabel: { shrink: true } }}
-                error={!!errors.lastName}
-                helperText={errors.lastName?.message}
-              />
-            </Grid>
+            
             <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
@@ -399,7 +445,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 <RadioGroup
                   row
                   {...register("gender", { required: true })}
-                  style={{ gap: "10px" }}
+                  style={{ gap: "2px" }}
                   value={userById?.profile?.gender || "male"}
                 >
                   <FormControlLabel
@@ -434,7 +480,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   }
                   rules={{ required: "Please select a marital status." }}
                   render={({ field }) => (
-                    <RadioGroup row {...field} style={{ gap: "10px" }}>
+                    <RadioGroup row {...field} style={{ gap: "2px" }}>
                       <FormControlLabel
                         value="single"
                         control={<Radio size="small" />}
@@ -484,7 +530,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   defaultValue="no"
                   rules={{ required: "Please select an option." }}
                   render={({ field }) => (
-                    <RadioGroup row {...field} style={{ gap: "10px" }}>
+                    <RadioGroup row {...field} style={{ gap: "2px" }}>
                       <FormControlLabel
                         value="yes"
                         control={<Radio size="small" />}
@@ -505,49 +551,48 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <FormControl
-                fullWidth
-                margin="normal"
-                size="small"
-                error={!!errors.position}
-              >
-                <InputLabel>Position</InputLabel>
-                <Controller
-                  name="position"
-                  control={control}
-                  rules={{ required: "Position is required" }}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <Select {...field} label="Position">
-                      {positionOptions.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Select>
+            {watch("isAdministrator") === "yes" && (
+              <Grid item xs={12} sm={3}>
+                <FormControl
+                  fullWidth
+                  margin="normal"
+                  size="small"
+                  error={!!errors.position}
+                >
+                  <InputLabel>Position</InputLabel>
+                  <Controller
+                    name="position"
+                    control={control}
+                    rules={{ required: "Position is required" }}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <Select {...field} label="Position">
+                        {positionOptions.map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                  {errors.position && (
+                    <FormHelperText>{errors.position?.message}</FormHelperText>
                   )}
-                />
-                {errors.position && (
-                  <FormHelperText>{errors.position?.message}</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-            {console.log(userById?.isChitCommitteeMember, "userById")}
+                </FormControl>
+              </Grid>
+            )}
             <Grid item xs={12} sm={3}>
               <FormControl margin="dense" component="fieldset">
                 <FormLabel style={{ fontSize: "0.9rem" }}>
                   Is Chit Committee Member
-                </FormLabel>
+                </FormLabel>{" "}
                 <Controller
                   name="isChitCommitteeMember"
                   control={control}
-                  defaultValue={
-                    userById?.isChitCommitteeMember === false ? "no" : "yes"
-                  } // Set default value based on user data
+                  defaultValue="no"
                   rules={{ required: "Please select an option." }}
                   render={({ field }) => (
-                    <RadioGroup row {...field} style={{ gap: "10px" }}>
+                    <RadioGroup row {...field} style={{ gap: "2px" }}>
                       <FormControlLabel
                         value="yes"
                         control={<Radio size="small" />}
@@ -569,35 +614,37 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={3}>
-              <FormControl
-                fullWidth
-                margin="normal"
-                size="small"
-                error={!!errors.chitCommitteePosition}
-              >
-                <InputLabel>Chit Committee Position</InputLabel>
-                <Controller
-                  name="chitCommitteePosition"
-                  control={control}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <Select {...field} label="Chit Committee Position">
-                      {chitCommitteePositionOptions.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Select>
+            {watch("isChitCommitteeMember") === "yes" && (
+              <Grid item xs={12} sm={3}>
+                <FormControl
+                  fullWidth
+                  margin="normal"
+                  size="small"
+                  error={!!errors.chitCommitteePosition}
+                >
+                  <InputLabel>Chit Committee Position</InputLabel>
+                  <Controller
+                    name="chitCommitteePosition"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <Select {...field} label="Chit Committee Position">
+                        {chitCommitteePositionOptions.map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                  {errors.chitCommitteePosition && (
+                    <FormHelperText>
+                      {errors.chitCommitteePosition?.message}
+                    </FormHelperText>
                   )}
-                />
-                {errors.chitCommitteePosition && (
-                  <FormHelperText>
-                    {errors.chitCommitteePosition?.message}
-                  </FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
+                </FormControl>
+              </Grid>
+            )}
 
             <Grid item xs={12} sm={3}>
               <FormControl margin="dense" component="fieldset">
@@ -614,7 +661,7 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   }
                   rules={{ required: "Please select a member type." }}
                   render={({ field }) => (
-                    <RadioGroup row {...field} style={{ gap: "10px" }}>
+                    <RadioGroup row {...field} style={{ gap: "2px" }}>
                       <FormControlLabel
                         value="a-class"
                         control={<Radio size="small" />}
@@ -647,9 +694,14 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 <Controller
                   name="userType"
                   control={control}
+                  defaultValue={
+                    userById?.memberdetails?.userType
+                      ? userById?.memberdetails?.userType
+                      : "full"
+                  }
                   rules={{ required: "Please select a user type." }}
                   render={({ field }) => (
-                    <RadioGroup row {...field} style={{ gap: "10px" }}>
+                    <RadioGroup row {...field} style={{ gap: "2px" }}>
                       <FormControlLabel
                         value="full"
                         control={<Radio size="small" />}
@@ -674,12 +726,12 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
             <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
-                label="Joining Date"
+                label="Date of Birth"
                 type="date"
                 margin="normal"
                 size="small"
                 slotProps={{ inputLabel: { shrink: true } }}
-                {...register("dob", { required: "Joining date is required" })}
+                {...register("dob", { required: "Date of Birth is required" })}
                 error={!!errors.dob}
                 helperText={errors.dob?.message}
               />
@@ -699,8 +751,8 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   render={({ field }) => (
                     <Select {...field} label="Status">
                       {statusOptions.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
                         </MenuItem>
                       ))}
                     </Select>
@@ -726,8 +778,8 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   render={({ field }) => (
                     <Select {...field} label="Identity Proof">
                       {identityProofOptions.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
                         </MenuItem>
                       ))}
                     </Select>
@@ -775,8 +827,8 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                   render={({ field }) => (
                     <Select {...field} label="Job Type">
                       {jobTypeOptions.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
                         </MenuItem>
                       ))}
                     </Select>
@@ -816,16 +868,18 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 </FormControl>
               </Grid>
             )}
-            <Grid item xs={12} sm={3}>
-              <TextField
-                fullWidth
-                label="Job Details"
-                margin="normal"
-                size="small"
-                {...register("jobDetails")}
-                slotProps={{ inputLabel: { shrink: true } }}
-              />
-            </Grid>
+            {watch("jobType") != "Un Employee" && watch("jobType") != "Student" && (
+              <Grid item xs={12} sm={3}>
+                <TextField
+                  fullWidth
+                  label="Job Details"
+                  margin="normal"
+                  size="small"
+                  {...register("jobDetails")}
+                  slotProps={{ inputLabel: { shrink: true } }}
+                />
+              </Grid>
+            )}
             {watch("jobType") === "Govt" && (
               <Grid item xs={12} sm={3}>
                 <FormControl
@@ -867,14 +921,14 @@ const AddNewModal = ({ open, onClose, cardsUserId, isEditUsers }) => {
                 slotProps={{ inputLabel: { shrink: true } }}
               />
             </Grid>
-            <Grid item xs={12} sm={12}>
+            {/* <Grid item xs={12} sm={12}>
               <Typography id="add-new-modal-title" component="h6">
                 Family Details
               </Typography>
             </Grid>
             <Grid item xs={12} sm={12}>
               <FamilyDetailsTables data={familydetail} search={false} />
-            </Grid>
+            </Grid> */}
           </Grid>
 
           {/* Buttons */}

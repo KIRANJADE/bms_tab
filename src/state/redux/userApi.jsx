@@ -16,9 +16,10 @@ export const createUserLogin = async (params) => {
       );
     }
     if (response) {
+      localStorage.setItem("memberId", response.data.user?.memberId || "");
       localStorage.setItem(
-        "memberId", response.data.user?.memberId,
-        
+        "membername",
+        `${response.data.user?.profile?.lastname || ""} ${response.data.user?.profile?.firstname || ""}`
       );
     }
     return response;
@@ -137,22 +138,25 @@ export const getUserById = async (id) => {
   }
 };
 
-export const CommitteeList = async (page = 1, limit = 10, payload = {}) => {
+export const CommitteeList = async (payload) => {
+  console.log(payload,'am here')
   try {
-    const authToken = JSON.parse(localStorage.getItem("authToken"));
-    const headers = {
-      "x-access-token": `${authToken}`,
-      "Content-Type": "application/json",
-    };
-    const response = await axios.post(`${BASE_URL}/api/committeemeeting/getAll`, payload, {
-      headers,
-    });
-    console.log(response.data,'response.data')
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching user list:", error);
-    throw error;
-  }
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		};  
+    console.log(headers,"headerssss");
+    
+		const response = await axios.post(`${BASE_URL}/api/committeemeeting/getall`,payload, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
 };
 
 export const deleteCommiteeDetails = async (id) => {
@@ -587,7 +591,6 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 	  }
 	};
 
-
   export const approveRejectNotifications = async (id,requestParams) => {
 	  try {
 		const authToken = JSON.parse(localStorage.getItem("authToken"));
@@ -733,6 +736,76 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
 	  }
 	};
 
+  export const getMemberBalance = async (requestParams) => {
+    try {
+      const authToken = JSON.parse(localStorage.getItem("authToken"));
+      const headers = {
+        "x-access-token": `${authToken}`,
+        "Content-Type": "application/json",
+      };  
+      
+      const response = await axios.post(`${BASE_URL}/api/users/getmemberbalance`,requestParams, {
+        headers,
+      });
+      
+      return response.data;
+    
+    } catch (error) {
+      console.error("Error fetching member balance:", error);
+      throw error;
+    }
+  };
 
+  export const createFamilyApi = async (params) => {
+    try {
+      const authToken = JSON.parse(localStorage.getItem("authToken"));
+      const headers = {
+        "x-access-token": `${authToken}`,
+        "Content-Type": "application/json",
+      };
+      const response = await axios.post(`${BASE_URL}/api/familydetails`, params, {
+        headers,
+      });
+      toast.success("Family details added successfully!");
   
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  export const getallmembersList = async () => {
+	  try {
+		const authToken = JSON.parse(localStorage.getItem("authToken"));
+		const headers = {
+		  "x-access-token": `${authToken}`,
+		  "Content-Type": "application/json",
+		}; 
+    
+		const response = await axios.get(`${BASE_URL}/api/common/getallmemberslist`, {
+		  headers,
+		});
+    
+		return response.data;
+	
+	  } catch (error) {
+		throw error;
+	  }
+	};
+  
+  export const getEventPayHistory = async (params) => {
+    try {
+      const authToken = JSON.parse(localStorage.getItem("authToken"));
+      const headers = {
+        "x-access-token": `${authToken}`,
+        "Content-Type": "application/json",
+      };
+      const response = await axios.post(`${BASE_URL}/api/events/geteventpayhistory`, params, {
+        headers,
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+	};
   

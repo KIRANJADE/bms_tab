@@ -104,12 +104,10 @@ const DashboardLayout = () => {
     }
   };
 
-  const fetchCommitteeList = async () => {
+  const fetchCommitteeList = async (payload) => {
     setLoading(true);
     try {
-      const response = await CommitteeList(page, limit, {
-        status: "active",
-      });
+      const response = await CommitteeList(payload);
 
       if (response.status) {
         dispatch(committeeListData(response.userDetails));

@@ -11,7 +11,7 @@ import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import CloseIcon from "@mui/icons-material/Close";
 
 
-const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => {
+const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit,onFamily}) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isresetCancelEditFlag, setIsResetCancelEditFlag] = useState(false);
 
@@ -28,6 +28,10 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
     onEdit()
   }
 
+  const handleFamilyDetails = () => {
+    onFamily()
+  }
+
   const genderIcon =
     userDetails?.profile?.gender === "male" ? (
       <MaleIcon color="primary" />
@@ -37,7 +41,7 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="user-details-modal">
-      <Box sx={{ position: "absolute", top: "50%",left: "50%", transform: "translate(-50%, -50%)", width: "90%",
+      <Box sx={{ position: "absolute", top: "50%",left: "50%", transform: "translate(-50%, -50%)", width: "100%",
           maxWidth: 500,bgcolor: "background.paper",borderRadius: 4, boxShadow: 24, p: 4, overflow: "hidden",}}>
         <Box
           sx={{
@@ -67,7 +71,7 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
           </Menu> 
 
           <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>
-            {userDetails?.profile?.firstname} {userDetails?.profile?.lastname}
+            {userDetails?.profile?.lastname} {userDetails?.profile?.firstname}
           </Typography>
           <Typography variant="subtitle1">
             Member ID: {userDetails?.memberdetails?.memberId}
@@ -147,12 +151,20 @@ const CardDetailPopUp = ({ open, onClose, userDetails, handleDelete,onEdit}) => 
             <Button
               variant="contained"
               color="primary"
+              style={{ marginRight: "10px" ,fontSize:"14px"}}
+              onClick={() => handleFamilyDetails()}
+            >
+              Family Details
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
               onClick={() => {}}
-              style={{ marginRight: "10px" }}
+              style={{ marginRight: "10px",fontSize:"14px" }}
             >
               View User
             </Button>
-            <Button variant="contained" onClick={() => handleEditUsers()} >Edit User</Button>
+            <Button variant="contained" onClick={() => handleEditUsers()} style={{fontSize:"14px" }}>Edit User</Button>
           </Grid>
         </Grid>
       </Box>
