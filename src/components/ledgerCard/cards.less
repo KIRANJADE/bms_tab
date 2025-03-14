@@ -1,0 +1,77 @@
+.action-card {
+    width: 100%; 
+    max-width: calc(100% - 32px); 
+    height: 9rem;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    &:hover {
+      box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;
+    }
+  
+    &-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      justify-content: space-between;
+      border-bottom: 1px solid #dbdbdb;
+      padding-block: 5px;
+    }
+  
+    &-avatar {
+      width: 30px !important;
+      height: 30px !important;
+    }
+  
+    &-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-left: 10px;
+    }
+  
+    &-name {
+      font-weight: 600;
+      color: #fff;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      word-break: break-word;
+    }
+  
+    &-id {
+      color: #e7e7e7;
+      font-weight: 400;
+    }
+  
+    &-phone, &-role, &-memberId, &-balance {
+      color: black;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  
+    &-options {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+  
+    &-details-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .action-card-name{
+      font-size: 13px;
+    }
+  }
+  

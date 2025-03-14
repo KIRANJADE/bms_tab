@@ -808,4 +808,40 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
       throw error;
     }
 	};
+
+  export const searchMembersList = async (params) => {
+    try {
+      const authToken = JSON.parse(localStorage.getItem("authToken"));
+      const headers = {
+        "x-access-token": `${authToken}`,
+        "Content-Type": "application/json",
+      };
+      const response = await axios.post(`${BASE_URL}/api/users/getmemberbalance`, params, {
+        headers,
+      });
+      // toast.success("Family details added successfully!");
+  
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  export const ledgerFullPay = async (params) => {
+    try {
+      const authToken = JSON.parse(localStorage.getItem("authToken"));
+      const headers = {
+        "x-access-token": `${authToken}`,
+        "Content-Type": "application/json",
+      };
+      const response = await axios.post(`${BASE_URL}/api/collections/fullledgercollection`, params, {
+        headers,
+      });
+      // toast.success("Family details added successfully!");
+  
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
   

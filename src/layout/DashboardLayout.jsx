@@ -205,7 +205,8 @@ const DashboardLayout = () => {
     tab5: <Chantha />,
     tab6: <Events />,
     tab7: <Death />,
-    tab8: <Ledger />,
+    // tab8: <Ledger />,
+    sub1: <Ledger />,
 
   };
 

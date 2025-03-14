@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from "react";
-import ActionCard from "../../components/cardList/card";
+import ActionCard from "../../components/ledgerCard/card";
 import {
-  Box,Button,IconButton,Grid,Collapse,TextField,Select,MenuItem,FormControl,InputLabel,
-  OutlinedInput,InputAdornment,Checkbox,Autocomplete,
+  Box,
+  Button,
+  IconButton,
+  Grid,
+  Collapse,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  Checkbox,
+  Autocomplete,
 } from "@mui/material";
 import AddNewModal from "../userAdd/addUser";
 import { useSelector, useDispatch } from "react-redux";
-import { userList, userSearch } from "../../state/redux/userApi";
-import { userListData } from "../../state/redux/authSlice";
+import { userList, searchMembersList } from "../../state/redux/userApi";
+import { userListData, searchMembers } from "../../state/redux/authSlice";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseSharpIcon from "@mui/icons-material/CloseSharp";
@@ -40,6 +52,8 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const users = useSelector((state) => state.auth?.users || []);
   const memberList = useSelector((state) => state.auth?.memberListData || []);
+  const searchList = useSelector((state) => state.auth?.memberSearchData || []);
+
   const {
     register,
     handleSubmit,
@@ -48,6 +62,7 @@ const Dashboard = () => {
     control,
     setValue,
     watch,
+    getValues,
   } = useForm({
     mode: "onChange",
   });
@@ -81,6 +96,21 @@ const Dashboard = () => {
     }
   };
 
+  const fetchSearchList = async (payload) => {
+    console.log("Received Payload in fetchSearchList:", payload); // Confirm payload here
+
+    try {
+      const response = await searchMembersList(payload); // API call
+      if (response.status) {
+        dispatch(searchMembers(response?.data)); // Dispatch to Redux store
+      } else {
+        console.error("API response error:", response);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data", error);
+    }
+  };
+
   useEffect(() => {
     fetchUserList(page); // Fetch data when the component mounts
   }, [page]);
@@ -92,61 +122,12 @@ const Dashboard = () => {
     setEditingCard(null);
   };
 
-  const handleEdit = (card) => {
-    setcardsUserId(card?._id);
-    setEditingCard(card);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = () => setEditingCard(null);
-
-  const handleLoadMore = () => {
-    if (hasMore) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-    }
-  };
-
   const handleExpandClick = () => {
     setIsExpanded(!isExpanded);
   };
 
   const handleSearchToggle = () => {
     setShowSearch(!showSearch);
-  };
-  const handleSearchClose = () => {
-    setSearchValue("");
-    fetchUserList(1);
-    setSearchData("");
-  };
-  const handleSearch = async () => {
-    try {
-      console.log("Searching:", searchData);
-      const result = await userSearch(searchData); // Pass searchValue to API
-      dispatch(
-        userListData({
-          userDetails: result?.data?.userDetails,
-          totalRecords: result?.data?.totalRecords,
-        })
-      );
-      console.log("Search result:", result); // Handle the result (e.g., update state)
-    } catch (error) {
-      console.error("Error searching:", error);
-    }
-  };
-
-  console.log(searchValue, "showSearch");
-
-  const handleFilter = () => {
-    setPage(1);
-    dispatch(userListData({ userDetails: [], totalRecords: 0 })); // Clear previous data
-    fetchUserList(1, {
-      ...{ isEdit: true },
-      ...(status && { status }),
-      ...(memberType && { "memberdetails.memberType": memberType }),
-      ...(gender && { "profile.gender": gender }),
-      ...(userType && { "memberdetails.userType": userType }),
-    });
   };
 
   const handleReset = () => {
@@ -157,6 +138,33 @@ const Dashboard = () => {
     setPage(1);
     dispatch(userListData({ userDetails: [], totalRecords: 0 })); // Clear previous data
     fetchUserList(1); // Fetch unfiltered data
+  };
+
+  const hanldeMembersSearch = () => {
+    const selectedUser = getValues("userDetails"); // Get selected user
+    console.log("Selected User:", selectedUser);
+
+    if (selectedUser) {
+      const memberId = selectedUser?.memberdetails?.memberId; // Check correct key
+
+      console.log(memberId, "Selected memberId");
+
+      // Check if memberId is available
+      if (!memberId) {
+        console.log("No valid member ID found");
+        return;
+      }
+
+      const payload = {
+        memberid: [memberId], // API expects array of member IDs
+      };
+
+      console.log(payload, "Payload being passed to fetchSearchList");
+
+      fetchSearchList(payload); // API Call
+    } else {
+      console.log("No user selected");
+    }
   };
 
   return (
@@ -210,7 +218,6 @@ const Dashboard = () => {
                 </MenuItem>
                 <MenuItem value="a-class">A-Class</MenuItem>
 
-
                 <MenuItem value="b-class">B-Class</MenuItem>
                 <MenuItem value="c-class">C-Class</MenuItem>
               </Select>
@@ -238,110 +245,96 @@ const Dashboard = () => {
         </Box>
 
         <Box sx={{ mt: 2, mb: 2 }}>
-  <Box
-    sx={{
-      display: "flex",
-      gap: 2,
-      alignItems: "center",
-      flexDirection: { xs: "column", sm: "row" }, // Stack on xs, row on sm and above
-      justifyContent: { xs: "flex-start", sm: "space-between" }, // Alignments
-      width: "100%",
-    }}
-  >
-    {showSearch && (
-      <Box sx={{ width: { xs: "100%", sm: "46%" } }}> {/* Take full width on mobile */}
-        <Controller
-          name="userDetails"
-          control={control}
-          render={({ field }) => (
-            <Autocomplete
-              {...field}
-              options={Array.isArray(memberList) ? memberList : []}
-              getOptionLabel={(option) => option?.profile?.firstname || ""}
-              value={field.value || null}
-              onChange={(_, value) => field.onChange(value)}
-              isOptionEqualToValue={(option, value) => option._id === value._id}
-              renderOption={(props, option) => {
-                const isSelected = field.value?._id === option._id;
-                return (
-                  <li {...props}>
-                    <Checkbox
-                      icon={<CheckBoxOutlineBlankIcon />}
-                      checkedIcon={<CheckBoxIcon />}
-                      checked={isSelected}
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              flexDirection: { xs: "column", sm: "row" }, // Stack on xs, row on sm and above
+              justifyContent: { xs: "flex-start", sm: "space-between" }, // Alignments
+              width: "100%",
+            }}
+          >
+            <>
+              <Box sx={{ width: { xs: "100%", sm: "46%" } }}>
+                <Controller
+                  name="userDetails"
+                  control={control}
+                  render={({ field }) => (
+                    <Autocomplete
+                      {...field}
+                      options={Array.isArray(memberList) ? memberList : []}
+                      getOptionLabel={(option) =>
+                        option?.profile?.firstname || ""
+                      }
+                      value={field.value || null}
+                      onChange={(_, value) => field.onChange(value)}
+                      isOptionEqualToValue={(option, value) =>
+                        option._id === value._id
+                      }
+                      renderOption={(props, option) => {
+                        const isSelected = field.value?._id === option._id;
+                        return (
+                          <li {...props}>
+                            <Checkbox
+                              icon={<CheckBoxOutlineBlankIcon />}
+                              checkedIcon={<CheckBoxIcon />}
+                              checked={isSelected}
+                            />
+                            {option?.profile?.firstname || ""}
+                          </li>
+                        );
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Select User" fullWidth />
+                      )}
                     />
-                    {option?.profile?.firstname || ""}
-                  </li>
-                );
-              }}
-              renderInput={(params) => (
-                <TextField {...params} label="Select User" fullWidth />
-              )}
-            />
-          )}
-        />
-      </Box>
-    )}
+                  )}
+                />
+              </Box>
 
-    <IconButton
-      onClick={handleSearchToggle}
-      aria-label="toggle search"
-      sx={{
-        marginRight: { xs: 0, sm: 1 },
-        alignSelf: { xs: "flex-end", sm: "center" }, // Align button right on mobile
-      }}
-    >
-      {showSearch ? (
-        <CloseSharpIcon onClick={handleSearchClose} />
-      ) : (
-        <h6
+              <Button
+                variant="contained"
+                onClick={hanldeMembersSearch}
+                color="primary"
+              >
+                Search
+              </Button>
+            </>
+
+            <IconButton
+              onClick={handleSearchToggle}
+              aria-label="toggle search"
+              sx={{
+                marginRight: { xs: 0, sm: 1 },
+                alignSelf: { xs: "flex-end", sm: "center" }, // Align button right on mobile
+              }}
+            ></IconButton>
+          </Box>
+        </Box>
+
+        {searchList?.balanceDetails ? (
+          <Grid
+          container
+          spacing={1}
           style={{
-            margin: 0,
-            fontWeight: 400,
-            fontSize: "14px",
-            whiteSpace: "nowrap", // Prevent wrapping
+            height: 460,
+            overflowY: "scroll",
+            justifyContent: "center", // Horizontal center
           }}
         >
-          Please search and select members
-        </h6>
-      )}
-    </IconButton>
-  </Box>
-</Box>
-
-
-        <div className="mb-3 d-flex justify-content-end ">
-          Total Count : {users?.totalRecords}
-        </div>
-        {users?.userDetails?.length > 0 ? (
-          <Grid
-            container
-            spacing={1}
-            style={{ height: 460, overflowY: "scroll" }}
-          >
-            ledgerCollection
+          <Grid item xs={12} sm={6} md={8} lg={8}>
+            <ActionCard data={searchList?.balanceDetails?.ledgersData[0]} totalData= {searchList?.balanceDetails} memberDetails={getValues("userDetails")} />
           </Grid>
+        </Grid>
+        
         ) : (
           <>
             <EmptyState />
           </>
         )}
 
-        {hasMore &&
-          !(status || memberType || gender || userType || searchData) && (
-            <Box
-              sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
-            >
-              <Button
-                style={{ backgroundColor: "#4c79f8", color: "white" }}
-                variant="outlined"
-                onClick={handleLoadMore}
-                disabled={loading}
-              >
-                {loading ? "Loading..." : "Load More"}
-              </Button>
-            </Box>
-          )}
+        
       </div>
     </>
   );
