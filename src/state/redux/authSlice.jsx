@@ -16,6 +16,7 @@ const INTIAL_STATE = {
     deathData: [],
     memberListData : [],
     memberSearchData : [],
+    ledgerBalanceData : [],
 }
 
   export const loginSlice = createSlice({
@@ -73,9 +74,12 @@ const INTIAL_STATE = {
             searchMembers : (state,action) => {
                 state.memberSearchData = action.payload
             },
+            ledgerBalance : (state,action) => {
+                state.ledgerBalanceData = action.payload
+            },
         }
   })
 
 export const {adminLogin,userListData,userCreate,deleteUser, committeeListData,
-    administratorData,committeCommonData,committeebyId,chanthaList, eventsList, eventById, notify, death, memberData, searchMembers, familyListData,familyCreate } = loginSlice.actions;
+    administratorData,committeCommonData,committeebyId,chanthaList, eventsList, eventById, notify, death, memberData, searchMembers, familyListData,familyCreate, ledgerBalance } = loginSlice.actions;
 export default loginSlice.reducer

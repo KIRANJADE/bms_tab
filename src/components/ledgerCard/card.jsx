@@ -4,10 +4,11 @@ import { ledgerFullPay } from "../../state/redux/userApi";
 import { Card, Typography, Box, Button } from "@mui/material";
 import "../../components/cardList/cards.less";
 
-const ActionCard = ({ data, totalData, memberDetails }) => {
+const ActionCard = ({ data, totalData, memberDetails, ledgerBalance }) => {
   const dispatch = useDispatch();
 
-  console.log("userfrrrrrrrrrrrrrrrrrs", data);
+  console.log("userfrrrrrrrrrrrrrrrrrs", ledgerBalance);
+  console.log(memberDetails, "memberDetails");
 
   // Button action handlers (replace with real actions)
   const handleFullPay = (data) => {
@@ -19,40 +20,53 @@ const ActionCard = ({ data, totalData, memberDetails }) => {
       const year = today.getFullYear();
       return `${day}-${month}-${year}`;
     };
+
+
     let payload = {
-      "collectionType": "ledger",
-      "memberDetail": [
-          {
-              "memberId": memberDetails?.memberId,
-              "memberType": memberDetails?.memberType,
-              "userType": memberDetails?.userType,
-          }
+      collectionType: "ledger",
+      memberDetail: [
+        {
+          memberId: memberDetails?.memberdetails?.memberId,
+          memberType: memberDetails?.memberdetails?.memberType,
+          userType: memberDetails?.memberdetails?.userType,
+        },
       ],
-      "collectionDetail": {
-          "amount": "900",
-          "title": "ledger",
-          "date": getTodayDate()
+      collectionDetail: {
+        amount: [
+          data?.ledgerBalance ?? 0,
+          data?.chanthaBalance ?? 0,
+          data?.oldCreditBalance ?? 0,
+        ].reduce((acc, curr) => acc + Number(curr), 0),
       },
-      "payDetail": {
-          "payType": "cash",
-          "UTR": ""
+      title: "ledger",
+      date: getTodayDate(),
+
+      payDetail: {
+        payType: "cash",
+        UTR: "",
       },
-      "ledgercollectionDetail": {
-          "chanthaAmount": data?.chanthaBalance,
-          "chanthapayedDate": "10-01-2025",
-          "committeeAmount": "100",
-          "committeepayedDate": "10-01-2025",
-          "deathtributeAmount": "100",
-          "deathtributepayedDate":"10-01-2025",
-          "eventsfineAmount": "100",
-          "eventsfinepayedDate":"10-01-2025",
-          "oldbalanceAmount": "100",
-          "oldbalancepayedDate":"10-01-2025",
-          "oldcreditbalanceAmount": "100",
-          "oldcreditbalancepayedDate": "10-01-2025"
-      }
-  }
-    // dispatch(fetchFullPayApi(data));
+      ledgercollectionDetail: {
+        chanthaAmount: data?.chanthaBalance,
+        oldchanthaBalance: ledgerBalance?.oldchanthaBalance,
+        chanthapayedDate: "13-03-2025",
+        committeeAmount: ledgerBalance?.committeeBalance,
+        committeepayedDate: "13-03-2025",
+        deathtributeAmount: ledgerBalance?.deathBalance,
+        deathtributepayedDate: "13-03-2025",
+        eventsAmount: ledgerBalance?.eventsBalance,
+        currenteventsBalance: ledgerBalance?.currenteventsBalance,
+        eventspayedDate: "13-03-2025",
+        eventsfineAmount: ledgerBalance?.eventsFineBalance,
+        eventsfinepayedDate: "13-03-2025",
+        ledgersBalance: ledgerBalance?.ledgersBalance,
+        ledgerspayedDate: "13-03-2025",
+        oldtributeBalance: ledgerBalance?.oldtributeBalance,
+        oldtributepayedDate: "13-03-2025",
+        oldcreditbalanceAmount: ledgerBalance?.oldCreditBalance,
+        oldcreditpayedDate: "13-03-2025",
+      },
+    };
+    dispatch(fetchFullPayApi(payload));
   };
 
   const handlePartialPay = () => {
@@ -156,6 +170,30 @@ const ActionCard = ({ data, totalData, memberDetails }) => {
               {data?.oldCreditBalance}
             </Typography>
           </Box>
+
+          {/* Calculate Total Amount */}
+          <Box
+            className="action-card-details-item"
+            sx={{
+              paddingTop: "10px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: "bold", color: "green" }}
+              className="action-card-total"
+            >
+              Total Amount:{" "}
+              {[
+                data?.ledgerBalance ?? 0,
+                data?.chanthaBalance ?? 0,
+                data?.oldCreditBalance ?? 0,
+              ].reduce((acc, curr) => acc + Number(curr), 0)}
+            </Typography>
+          </Box>
         </Box>
       </Card>
 
@@ -168,14 +206,15 @@ const ActionCard = ({ data, totalData, memberDetails }) => {
           marginTop: 2,
         }}
       >
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleFullPay(data)}
-          sx={{ borderRadius: "20px", minWidth: "120px" }}
-        >
-          Full Pay
-        </Button>
+       <Button
+  variant="contained"
+  color="primary"
+  onClick={() => handleFullPay(data)} // Fixed issue
+  sx={{ borderRadius: "20px", minWidth: "120px" }}
+>
+  Full Pay
+</Button>
+
         <Button
           variant="contained"
           color="primary"

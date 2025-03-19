@@ -18,8 +18,16 @@ import {
 } from "@mui/material";
 import AddNewModal from "../userAdd/addUser";
 import { useSelector, useDispatch } from "react-redux";
-import { userList, searchMembersList } from "../../state/redux/userApi";
-import { userListData, searchMembers } from "../../state/redux/authSlice";
+import {
+  userList,
+  searchMembersList,
+  getledgerbalance,
+} from "../../state/redux/userApi";
+import {
+  userListData,
+  searchMembers,
+  ledgerBalance,
+} from "../../state/redux/authSlice";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseSharpIcon from "@mui/icons-material/CloseSharp";
@@ -53,6 +61,9 @@ const Dashboard = () => {
   const users = useSelector((state) => state.auth?.users || []);
   const memberList = useSelector((state) => state.auth?.memberListData || []);
   const searchList = useSelector((state) => state.auth?.memberSearchData || []);
+  const ledgerBalanceList = useSelector(
+    (state) => state.auth?.ledgerBalanceData || []
+  );
 
   const {
     register,
@@ -111,11 +122,27 @@ const Dashboard = () => {
     }
   };
 
+  const fetchLedgerBalance = async (payload) => {
+    try {
+      const response = await getledgerbalance(payload); // API call
+      if (response.status) {
+        console.log(response, "response")
+        dispatch(ledgerBalance(response?.data?.balanceDetails)); // Dispatch to Redux store
+      } else {
+        console.error("API response error:", response);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data", error);
+    }
+  };
+
   useEffect(() => {
     fetchUserList(page); // Fetch data when the component mounts
   }, [page]);
 
   const handleModalOpen = () => setIsModalOpen(true);
+
+  console.log(ledgerBalanceList, "Ledger Balanceeeeeeeeeeeeeeeeeeeeeeeeeeeee"); 
 
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -162,6 +189,7 @@ const Dashboard = () => {
       console.log(payload, "Payload being passed to fetchSearchList");
 
       fetchSearchList(payload); // API Call
+      fetchLedgerBalance(payload);
     } else {
       console.log("No user selected");
     }
@@ -315,26 +343,28 @@ const Dashboard = () => {
 
         {searchList?.balanceDetails ? (
           <Grid
-          container
-          spacing={1}
-          style={{
-            height: 460,
-            overflowY: "scroll",
-            justifyContent: "center", // Horizontal center
-          }}
-        >
-          <Grid item xs={12} sm={6} md={8} lg={8}>
-            <ActionCard data={searchList?.balanceDetails?.ledgersData[0]} totalData= {searchList?.balanceDetails} memberDetails={getValues("userDetails")} />
+            container
+            spacing={1}
+            style={{
+              height: 460,
+              overflowY: "scroll",
+              justifyContent: "center", // Horizontal center
+            }}
+          >
+            <Grid item xs={12} sm={6} md={8} lg={8}>
+              <ActionCard
+                data={searchList?.balanceDetails?.ledgersData[0]}
+                totalData={searchList?.balanceDetails}
+                memberDetails={getValues("userDetails")}
+                ledgerBalance={ledgerBalanceList}
+              />
+            </Grid>
           </Grid>
-        </Grid>
-        
         ) : (
           <>
             <EmptyState />
           </>
         )}
-
-        
       </div>
     </>
   );

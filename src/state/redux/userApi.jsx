@@ -844,4 +844,22 @@ export const updateCommiteeMeetingDetails = async (id, requestParams) => {
       throw error;
     }
   };
+
+
+  
+  export const getledgerbalance = async (params) => {
+    try {
+      const authToken = JSON.parse(localStorage.getItem("authToken"));
+      const headers = {
+        "x-access-token": `${authToken}`,
+        "Content-Type": "application/json",
+      };
+      const response = await axios.post(`${BASE_URL}/api/users/getledgerbalance`, params, {
+        headers,
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+	};
   
